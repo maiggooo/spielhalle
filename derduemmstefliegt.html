@@ -4444,9 +4444,16 @@ function nextQuestion() {
 }
 
 $("#revealBtn").addEventListener("click", () => {
+  const card = document.querySelector("#screen-game .card");
+  const from = card.offsetHeight;
   $("#qAnswer").classList.add("show");
   $("#revealBtn").style.display = "none";
   $("#nextQBtn").style.display = "inline-flex";
+  // Kasten wächst schnell auf die neue Höhe, statt zu springen
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    card.animate([{ height: from + "px", overflow: "hidden" }, { height: card.offsetHeight + "px", overflow: "hidden" }],
+                 { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" });
+  }
 });
 $("#nextQBtn").addEventListener("click", nextQuestion);
 
