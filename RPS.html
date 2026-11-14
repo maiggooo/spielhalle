@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Schere &amp; Stein &amp; Papier — Vol. I · Nº 03</title>
+<meta name="description" content="Beweise dich gegen den Computer.">
+<meta name="theme-color" content="#f4efe6">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Maiko&#39;s Spiele &amp; Tools">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="Schere Stein Papier — Maiko&#x27;s Spiele &amp; Tools">
+<meta property="og:description" content="Beweise dich gegen den Computer.">
+<meta property="og:url" content="https://maiggooo.github.io/RPS.html">
+<meta property="og:image" content="https://maiggooo.github.io/og/RPS.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Schere Stein Papier">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+
+
+
+  .mast .brand, .ad-title, .ad-hero, .mini-hero h1, .verdict .v-text, .glyph,
+  .subhead a.back .arrow {
+    text-shadow: 0 0 .45px currentColor, .18px .12px .55px rgba(0,0,0,.10);
+  }
+  .mast .brand em, .mini-hero h1 em, .ad--paypal .ad-hero, .ad--kirche .ad-hero {
+    text-shadow: 0 0 .5px currentColor, .3px .2px .8px rgba(200,68,42,.18);
+  }
+  html[data-theme="dark"] .mast .brand,
+  html[data-theme="dark"] .ad-title,
+  html[data-theme="dark"] .ad-hero,
+  html[data-theme="dark"] .mini-hero h1,
+  html[data-theme="dark"] .verdict .v-text,
+  html[data-theme="dark"] .glyph {
+    text-shadow: 0 0 .5px currentColor, .15px .1px .6px rgba(255,235,200,.08);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ==================== GAME ==================== */
+  .mini-hero { padding: 46px 0 26px; text-align: center; }
+  .mini-hero h1 {
+    font-family: 'Fraunces', serif; font-weight: 400; font-style: italic;
+    font-size: clamp(38px, 6vw, 64px); letter-spacing: -.03em; line-height: .95;
+    color: var(--ink);
+  }
+  .mini-hero h1 em { color: var(--accent); font-style: italic; }
+
+  .arena {
+    padding: 30px 0 40px;
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 20px; min-height: 280px;
+  }
+  .fighter { text-align: center; }
+  .fighter .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: .22em;
+    color: var(--muted); margin-bottom: 4px;
+  }
+  .fighter .score {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+    font-size: 34px; line-height: 1; color: var(--accent);
+    letter-spacing: -.03em; margin-bottom: 14px;
+    font-variant-numeric: tabular-nums;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .fighter .score.bump { transform: scale(1.25); }
+  .versus-wrap { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .versus-wrap .draw-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    text-transform: uppercase; letter-spacing: .22em;
+    color: var(--muted); margin-top: 6px;
+  }
+  .versus-wrap .draw-num {
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 18px;
+    line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .versus-wrap .draw-num.bump { transform: scale(1.25); }
+  .glyph {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(96px, 16vw, 180px); line-height: 1;
+    color: var(--ink); display: inline-block;
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .2s ease;
+  }
+  .glyph.idle { opacity: .18; }
+  .glyph.reveal { animation: reveal .55s cubic-bezier(.34,1.56,.64,1); }
+  .glyph.spin { animation: spin .5s linear; }
+  @keyframes reveal {
+    0% { transform: scale(.4) rotate(-12deg); opacity: 0; }
+    60% { transform: scale(1.15) rotate(4deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+  @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+  .versus {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: clamp(28px, 4vw, 42px);
+    color: var(--accent); letter-spacing: -.02em;
+  }
+
+  .verdict {
+    margin-top: 28px; padding: 18px 20px;
+    background: var(--paper-2);
+    border-left: 3px solid var(--rule-soft);
+    transition: border-color .3s ease; min-height: 76px;
+  }
+  .verdict .v-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: .18em;
+    color: var(--muted); margin-bottom: 6px;
+    transition: color .3s ease;
+  }
+  .verdict .v-text {
+    font-family: 'Fraunces', serif; font-size: 22px;
+    line-height: 1.25; color: var(--ink);
+  }
+  .verdict.win  { border-left-color: var(--ok); }
+  .verdict.win  .v-label { color: var(--ok); }
+  .verdict.lose { border-left-color: var(--accent); }
+  .verdict.lose .v-label { color: var(--accent); }
+  .verdict.draw { border-left-color: var(--warn); }
+  .verdict.draw .v-label { color: var(--warn); }
+
+  .choices {
+    margin-top: 34px; display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .choice {
+    position: relative; padding: 28px 20px; text-align: center;
+    cursor: pointer; background: none; border: none;
+    border-right: 1px solid var(--rule-soft);
+    font: inherit; color: inherit;
+    transition: background-color .2s ease;
+  }
+  .choice:last-child { border-right: none; }
+  .choice::before {
+    content: ""; position: absolute; left: 0; bottom: -1px;
+    height: 2px; width: 0; background: var(--accent);
+    transition: width .35s cubic-bezier(.7,0,.2,1);
+  }
+  .choice:hover::before, .choice:focus-visible::before { width: 100%; }
+  .choice:focus-visible { outline: none; background: var(--paper-2); }
+  .choice .num {
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 26px;
+    color: var(--accent); letter-spacing: -.03em; margin-bottom: 6px;
+  }
+  .choice .cg {
+    font-family: 'Fraunces', serif; font-size: 44px; line-height: 1;
+    margin-bottom: 10px; color: var(--ink);
+  }
+  .choice .cn {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .18em; color: var(--muted);
+  }
+
+  .cta-row {
+    margin-top: 30px; display: flex; justify-content: center;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .14em;
+    padding: 13px 22px; border: 1px solid var(--rule);
+    background: transparent; color: var(--ink); cursor: pointer;
+    transition: background .15s ease, transform .05s ease;
+  }
+  .btn:hover { background: var(--paper-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn .arrow {
+    font-family:'Fraunces', serif; font-style:italic;
+    text-transform:none; letter-spacing:0;
+  }
+
+  @media (max-width: 720px) {
+    .mini-hero { padding: 32px 0 18px; }
+    .arena { grid-template-columns: 1fr; gap: 8px; min-height: 0; padding: 24px 0; }
+    .versus { padding: 4px 0; }
+    .glyph { font-size: clamp(80px, 22vw, 140px); }
+    .choice { padding: 20px 8px; }
+    .choice .cg { font-size: 34px; }
+    .choice .num { font-size: 20px; }
+  }
+  @media (max-width:560px) {
+    .cta-row .btn { flex: 1 1 100%; text-align: center; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="edition left">Vol. I · SS 2026 · Nº 03</div>
+    <div class="brand">Schere<em>&amp;</em>Stein<em>&amp;</em>Papier</div>
+    <div class="edition right">
+      <button class="toggle" id="adsToggle" aria-label="Werbung ein/aus" title="Werbung ein/aus">
+        <span class="dot" id="adsDot"></span>
+        <span id="adsLabel">Ads</span>
+      </button>
+      <button class="toggle" id="themeToggle" aria-label="Theme wechseln">
+        <span class="dot" id="themeDot"></span>
+        <span id="themeLabel">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="subhead">
+    <a class="back" href="index.html" aria-label="Zurück zur Startseite">
+      <span class="arrow">&larr;</span>
+      <span>Zurück zur Startseite</span>
+    </a>
+    <span class="meta">Ein Spiel · Drei Gesten</span>
+  </div>
+
+  <main>
+    <section class="mini-hero">
+      <h1>Wählen Sie <em>eine</em> Geste.</h1>
+    </section>
+
+    <section class="arena">
+      <div class="fighter">
+        <div class="label">Sie</div>
+        <div id="playerScore" class="score">0</div>
+        <div id="playerGlyph" class="glyph idle">✋</div>
+      </div>
+      <div class="versus-wrap">
+        <div class="versus">vs.</div>
+        <div class="draw-label">Patt</div>
+        <div id="drawScore" class="draw-num">0</div>
+      </div>
+      <div class="fighter">
+        <div class="label">Automat</div>
+        <div id="cpuScore" class="score">0</div>
+        <div id="cpuGlyph" class="glyph idle">✋</div>
+      </div>
+    </section>
+
+    <div id="verdict" class="verdict">
+      <div class="v-label">Ausgang</div>
+      <div class="v-text" id="verdictText">Treffen Sie Ihre Wahl.</div>
+    </div>
+
+    <div class="choices" role="group" aria-label="Ihre Wahl">
+      <button class="choice" data-move="scissors" aria-label="Schere">
+        <div class="num">i.</div>
+        <div class="cg">✌</div>
+        <div class="cn">Schere</div>
+      </button>
+      <button class="choice" data-move="rock" aria-label="Stein">
+        <div class="num">ii.</div>
+        <div class="cg">✊</div>
+        <div class="cn">Stein</div>
+      </button>
+      <button class="choice" data-move="paper" aria-label="Papier">
+        <div class="num">iii.</div>
+        <div class="cg">✋</div>
+        <div class="cn">Papier</div>
+      </button>
+    </div>
+
+    <div class="cta-row">
+      <button id="resetBtn" class="btn">Neu beginnen&nbsp;&nbsp;<span class="arrow">↺</span></button>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <span>Strauss · Biebergemünd</span>
+    <span id="footYear">© SS 2026 — Editorial edition</span>
+  </footer>
+</div>
+
+<aside class="ads-side left"  aria-hidden="true"><div class="ad-slot" id="adSlotLeft"></div></aside>
+<aside class="ads-side right" aria-hidden="true"><div class="ad-slot" id="adSlotRight"></div></aside>
+
+<script src="site.js"></script>
+<script>
+const $ = sel => document.querySelector(sel);
+
+/* GAME (Logik unverändert) */
+(function(){
+  const GLYPH = { scissors: '✌', rock: '✊', paper: '✋' };
+  const NAME  = { scissors: 'Schere', rock: 'Stein', paper: 'Papier' };
+  const BEATS = { scissors: 'paper', rock: 'scissors', paper: 'rock' };
+
+  const playerG = document.getElementById('playerGlyph');
+  const cpuG    = document.getElementById('cpuGlyph');
+  const verdict = document.getElementById('verdict');
+  const vText   = document.getElementById('verdictText');
+  const vLabel  = verdict.querySelector('.v-label');
+
+  let busy = false;
+  const score = { player: 0, cpu: 0, draw: 0 };
+  const pScoreEl = document.getElementById('playerScore');
+  const cScoreEl = document.getElementById('cpuScore');
+  const dScoreEl = document.getElementById('drawScore');
+  function bump(el, key) {
+    score[key]++;
+    el.textContent = score[key];
+    el.classList.remove('bump');
+    void el.offsetWidth;
+    el.classList.add('bump');
+  }
+  function reveal(el, glyph, cls) {
+    el.textContent = glyph;
+    el.classList.remove('idle', 'reveal', 'spin');
+    void el.offsetWidth;
+    el.classList.add(cls);
+  }
+  function play(move) {
+    if (busy) return;
+    busy = true;
+    reveal(playerG, GLYPH[move], 'reveal');
+    cpuG.classList.remove('idle');
+    let ticks = 0;
+    const glyphs = Object.values(GLYPH);
+    const spin = setInterval(() => {
+      cpuG.textContent = glyphs[ticks % 3];
+      ticks++;
+    }, 90);
+    setTimeout(() => {
+      clearInterval(spin);
+      const cpuMove = ['scissors','rock','paper'][Math.floor(Math.random()*3)];
+      reveal(cpuG, GLYPH[cpuMove], 'reveal');
+      verdict.classList.remove('win','lose','draw');
+      if (move === cpuMove) {
+        verdict.classList.add('draw');
+        vLabel.textContent = 'Patt';
+        vText.innerHTML = '<em style="font-style:italic;color:var(--warn)">Unentschieden.</em> Beide wählten ' + NAME[move] + '.';
+        bump(dScoreEl, 'draw');
+      } else if (BEATS[move] === cpuMove) {
+        verdict.classList.add('win');
+        vLabel.textContent = 'Sieg';
+        vText.innerHTML = NAME[move] + ' schlägt ' + NAME[cpuMove] + '. <em style="font-style:italic;color:var(--ok)">Sie gewinnen.</em>';
+        bump(pScoreEl, 'player');
+      } else {
+        verdict.classList.add('lose');
+        vLabel.textContent = 'Niederlage';
+        vText.innerHTML = NAME[cpuMove] + ' schlägt ' + NAME[move] + '. <em style="font-style:italic;color:var(--accent)">Der Automat gewinnt.</em>';
+        bump(cScoreEl, 'cpu');
+      }
+      busy = false;
+    }, 720);
+  }
+  document.querySelectorAll('.choice').forEach(btn => {
+    btn.addEventListener('click', () => play(btn.dataset.move));
+  });
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    playerG.textContent = '✋'; cpuG.textContent = '✋';
+    playerG.classList.remove('reveal','spin'); cpuG.classList.remove('reveal','spin');
+    playerG.classList.add('idle'); cpuG.classList.add('idle');
+    verdict.classList.remove('win','lose','draw');
+    vLabel.textContent = 'Ausgang';
+    vText.textContent = 'Treffen Sie Ihre Wahl.';
+    score.player = 0; score.cpu = 0; score.draw = 0;
+    pScoreEl.textContent = '0'; cScoreEl.textContent = '0'; dScoreEl.textContent = '0';
+  });
+  document.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if (k === '1' || k === 's') play('scissors');
+    else if (k === '2' || k === 't') play('rock');
+    else if (k === '3' || k === 'p') play('paper');
+    else if (k === 'r') document.getElementById('resetBtn').click();
+  });
+})();
+
+</script>
+</body>
+</html>

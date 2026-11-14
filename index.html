@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maikos Spielhalle</title>
+<meta name="description" content="Partyspiele im Browser, ohne App. Dreh am Automaten oder such dir eins aus.">
+<meta name="theme-color" content="#0B3B2A">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="Maikos Spielhalle">
+<meta property="og:description" content="Partyspiele im Browser, ohne App.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --felt: #0B3B2A; --gold: #E8B83A; --gold-hi: #FFD86B; --red: #8E1622;
+    --ink: #16161A; --cell: 170px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--felt); color: #fff;
+    font-family: 'Outfit', system-ui, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wrap {
+    max-width: 480px; min-height: 100dvh; margin: 0 auto; padding: 0 14px;
+    display: flex; flex-direction: column;
+  }
+  .display { font-family: 'Limelight', Georgia, serif; font-weight: 400; letter-spacing: .04em; }
+
+  header {
+    height: 64px; display: flex; align-items: center; justify-content: center; gap: 12px;
+    color: var(--gold); font-size: 24px;
+  }
+  header svg { width: 14px; height: 14px; flex: none; }
+
+  /* AUTOMAT */
+  .machine {
+    display: flex; flex-direction: column; gap: 14px; padding: 16px;
+    background: var(--red); border: 3px solid var(--gold);
+    border-radius: 28px 28px 20px 20px; box-shadow: 0 8px 0 #062318;
+  }
+  .sign { background: #1A0A0D; border-radius: 12px; padding: 8px 12px 10px; }
+  .bulbs {
+    height: 10px; margin-bottom: 6px;
+    background: radial-gradient(circle, var(--gold-hi) 3px, transparent 4px) center / 18px 10px;
+  }
+  .sign h1 { margin: 0; text-align: center; font-size: 22px; color: var(--gold-hi); }
+  .window { display: flex; gap: 8px; padding: 8px; background: #111; border-radius: 12px; }
+  .reel { flex: 1; min-width: 0; height: var(--cell); overflow: hidden; border-radius: 8px; }
+  .cell {
+    height: var(--cell); padding: 12px 6px; text-align: center; text-decoration: none;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    font-size: 14px; font-weight: 700; line-height: 1.15;
+  }
+  .cell svg { width: 64px; height: 64px; }
+  .cell span { min-height: 3.45em; display: flex; align-items: center; }
+  #spin {
+    height: 64px; margin-bottom: 6px; border: 0; border-radius: 32px; cursor: pointer;
+    background: var(--gold); color: #1A0A0D; box-shadow: 0 6px 0 #8F6A0C;
+    font-size: 28px; letter-spacing: .06em;
+    transition: transform .08s, box-shadow .08s;
+  }
+  #spin:active, #spin:disabled { transform: translateY(4px); box-shadow: 0 2px 0 #8F6A0C; }
+  .hint { margin: 0; text-align: center; font-size: 13px; line-height: 1.4; color: #FFE9EC; }
+
+  /* ALLE SPIELE */
+  .all-title {
+    display: flex; align-items: center; gap: 10px; margin: 34px 0 14px;
+    color: var(--gold); font-size: 18px; letter-spacing: .06em;
+  }
+  .all-title::before, .all-title::after { content: ""; flex: 1; height: 1px; background: var(--gold); }
+  .all { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card {
+    min-height: 72px; padding: 10px; border-radius: 12px; background: #fff; color: var(--ink);
+    display: flex; align-items: center; gap: 10px; text-decoration: none;
+    font-size: 15px; font-weight: 700; line-height: 1.15;
+  }
+  .chip {
+    flex: none; width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chip svg { width: 28px; height: 28px; }
+  .cell:active, .card:active { filter: brightness(.9); }
+  a:focus-visible, button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+  footer { margin-top: auto; padding: 28px 0 20px; text-align: center; font-size: 12px; color: #CFE3D9; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="display">
+    <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 0l7 7-7 7-7-7z" fill="currentColor"/></svg>
+    MAIKOS SPIELHALLE
+    <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 0l7 7-7 7-7-7z" fill="currentColor"/></svg>
+  </header>
+
+  <section class="machine" aria-label="Spielautomat">
+    <div class="sign">
+      <div class="bulbs" aria-hidden="true"></div>
+      <h1 class="display">WAS SPIELEN WIR?</h1>
+    </div>
+    <div class="window">
+      <div class="reel"><div class="strip"></div></div>
+      <div class="reel"><div class="strip"></div></div>
+      <div class="reel"><div class="strip"></div></div>
+    </div>
+    <button id="spin" class="display" type="button">DREHEN</button>
+    <p class="hint">Tippe auf ein Spiel, um es zu starten. Oder dreh und lass den Automaten entscheiden.</p>
+  </section>
+
+  <h2 class="all-title display">ALLE SPIELE</h2>
+  <nav class="all" aria-label="Alle Spiele"></nav>
+
+  <footer>Gemacht aus Langeweile · und mit KI</footer>
+</div>
+
+<script>
+  // n: Name, p: Datei, bg/fg: Schachtelfarben, d: Symbol (ein SVG-Pfad, viewBox 64)
+  const G = [
+    { n: 'Der Dümmste fliegt',  p: 'derduemmstefliegt.html', bg: '#2B4BFF', fg: '#FFFFFF', d: 'M4 30l56-22-20 48-9-19z' },
+    { n: 'Zündschnur',          p: 'zuendschnur.html',       bg: '#C8371D', fg: '#FFFFFF', d: 'M10 38a18 18 0 1 0 36 0a18 18 0 1 0-36 0zM38 22l8-10 4 4-8 10zM54 0l2 5 5 2-5 2-2 5-2-5-5-2 5-2z' },
+    { n: 'Stirnraten',          p: 'stirnraten.html',        bg: '#FF86BC', fg: '#16161A', d: 'M15 44a17 17 0 1 0 34 0a17 17 0 1 0-34 0zM18 6h28v18H18z' },
+    { n: 'Wizard',              p: 'wizard.html',            bg: '#5B33C4', fg: '#FFC531', d: 'M34 4l13 37H17zM5 49a27 7 0 1 0 54 0a27 7 0 1 0-54 0z' },
+    { n: 'Spyfall',             p: 'spyfall.html',           bg: '#1F2430', fg: '#FFC531', d: 'M18 26c0-11 6-17 14-17s14 6 14 17zM6 26h52v6H6zM14 46a8 8 0 1 0 16 0a8 8 0 1 0-16 0zM34 46a8 8 0 1 0 16 0a8 8 0 1 0-16 0z' },
+    { n: 'Werwölfe',            p: 'werwolf.html',           bg: '#17306B', fg: '#F4EDB8', d: 'M40 8a24 24 0 1 0 16 36a20 20 0 0 1-16-36z' },
+    { n: 'Chooser',             p: 'Chooser.html',           bg: '#19B5A5', fg: '#16161A', d: 'M6 32a26 26 0 1 0 52 0a26 26 0 1 0-52 0zM14 32a18 18 0 1 0 36 0a18 18 0 1 0-36 0zM24 32a8 8 0 1 0 16 0a8 8 0 1 0-16 0z' },
+    { n: 'Higher Lower',        p: 'HL.html',                bg: '#FFC531', fg: '#16161A', d: 'M20 6l14 16h-9v32H15V22H6zM44 58l14-16h-9V10H39v32h-9z' },
+    { n: 'Schere Stein Papier', p: 'RPS.html',               bg: '#1C7A3A', fg: '#FFFFFF', d: 'M4 46a11 11 0 1 0 22 0a11 11 0 1 0-22 0zM32 28h18v28H32zM36 4l5-2 6 18-5 2zM58 4l-5-2-6 18 5 2z' },
+    { n: 'ZeitZähler',          p: 'ZeitZaehler.html',       bg: '#FF8F2B', fg: '#16161A', d: 'M14 6h36v5H14zM14 53h36v5H14zM18 13h28L32 31zM32 33l14 18H18z' }
+  ];
+
+  const icon = g => `<svg viewBox="0 0 64 64" aria-hidden="true"><path fill="${g.fg}" fill-rule="evenodd" d="${g.d}"/></svg>`;
+  const cell = g => `<a class="cell" href="${g.p}" style="background:${g.bg};color:${g.fg}">${icon(g)}<span>${g.n}</span></a>`;
+
+  document.querySelector('.all').innerHTML = G.map(g =>
+    `<a class="card" href="${g.p}"><span class="chip" style="background:${g.bg}">${icon(g)}</span>${g.n}</a>`).join('');
+
+  const strips = [...document.querySelectorAll('.strip')];
+  const spinBtn = document.getElementById('spin');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rand = () => Math.floor(Math.random() * G.length);
+  const pick3 = () => { const pool = G.map((_, i) => i), out = []; while (out.length < 3) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]); return out; };
+
+  let shown = pick3(), busy = false, holdUntil = 0;
+  strips.forEach((s, i) => s.innerHTML = cell(G[shown[i]]));
+
+  // Lässt eine Walze durch `path` (Spiel-Indizes) rollen; am Ende steht nur noch das letzte Spiel da.
+  function roll(s, path, ms) {
+    const settle = () => { s.style.transition = 'none'; s.style.transform = ''; s.innerHTML = cell(G[path.at(-1)]); };
+    if (calm) { settle(); return Promise.resolve(); }
+    s.innerHTML = path.map(k => cell(G[k])).join('');
+    s.offsetHeight; // Startposition festschreiben, sonst startet die Transition nicht
+    s.style.transition = `transform ${ms}ms cubic-bezier(.15,.8,.25,1)`;
+    s.style.transform = `translateY(-${(path.length - 1) * 100 / path.length}%)`;
+    return new Promise(done => setTimeout(() => { settle(); done(); }, ms + 40));
+  }
+
+  async function show(next, big) {
+    if (busy) return;
+    busy = true; spinBtn.disabled = big;
+    await Promise.all(next.map((target, i) => {
+      const path = [shown[i]];
+      if (big) for (let j = 0; j < 10 + i * 5; j++) path.push(rand());
+      path.push(target);
+      return roll(strips[i], path, big ? 1100 + i * 450 : 450);
+    }));
+    shown = next; busy = false; spinBtn.disabled = false;
+  }
+
+  spinBtn.addEventListener('click', () => { holdUntil = Date.now() + 8000; show(pick3(), true); });
+
+  // Walzen wechseln von selbst durch, außer kurz nach einem Dreh oder bei reduzierter Bewegung.
+  if (!calm) setInterval(() => {
+    if (!document.hidden && Date.now() > holdUntil) show(shown.map(k => (k + 1) % G.length), false);
+  }, 3500);
+</script>
+</body>
+</html>

@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Spyfall — Maiko's Spiele &amp; Tools</title>
+<meta name="description" content="Ein Handy. Ein Ort. Ein Spion unter euch.">
+<meta name="theme-color" content="#f4efe6">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Maiko&#39;s Spiele &amp; Tools">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="Spyfall — Maiko&#x27;s Spiele &amp; Tools">
+<meta property="og:description" content="Ein Handy. Ein Ort. Ein Spion unter euch.">
+<meta property="og:url" content="https://maiggooo.github.io/spyfall.html">
+<meta property="og:image" content="https://maiggooo.github.io/og/spyfall.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Spyfall">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  .wrap { max-width:900px; }
+
+
+
+  .mast .brand, .hero h1, .card-face { text-shadow: 0 0 .45px currentColor, .18px .12px .55px rgba(0,0,0,.10); }
+
+
+
+  /* Hero */
+  .hero { padding:26px 0 18px; border-bottom:1px solid var(--rule); text-align:center; }
+  .hero .eyebrow { font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--muted); }
+  .hero h1 { font-family:'Fraunces', serif; font-weight:800; font-size:clamp(42px, 8vw, 72px); letter-spacing:-.02em; line-height:.95; margin-top:8px; }
+  .hero h1 em { font-style:italic; font-weight:400; color:var(--accent); }
+  .hero .lede { margin-top:10px; font-family:'Fraunces', serif; font-style:italic; font-size:15px; color:var(--muted); }
+
+  /* Screens */
+  .screen { display:none; padding:24px 0; }
+  .screen.active { display:block; }
+
+  /* Sections */
+  .section-title {
+    font-family:'JetBrains Mono', monospace; font-size:10.5px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
+    border-top:1px solid var(--rule-soft); padding-top:10px; margin-top:18px; margin-bottom:10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .section-title::before { content:"§"; color:var(--accent); font-family:'Fraunces', serif; font-style:italic; }
+
+  /* Inputs / Buttons */
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  input[type="text"] {
+    flex:1; min-width:0; padding:11px 12px;
+    background:var(--paper); color:var(--ink);
+    border:1px solid var(--rule); border-radius:0;
+    font-family:'Inter', sans-serif; font-size:15px;
+    outline:none; transition:border-color .15s;
+  }
+  input[type="text"]:focus { border-color:var(--accent); }
+
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:11px 16px; background:var(--ink); color:var(--paper);
+    border:1px solid var(--ink); font-family:'JetBrains Mono', monospace;
+    font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+    font-weight:700; cursor:pointer; text-decoration:none;
+    box-shadow:3px 3px 0 var(--accent);
+    transition:transform .12s ease, box-shadow .18s ease, background .18s;
+  }
+  .btn:hover { transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--accent); }
+  .btn:active { transform:translate(1px,1px); box-shadow:1px 1px 0 var(--accent); }
+  .btn.ghost { background:transparent; color:var(--ink); box-shadow:2px 2px 0 var(--rule); }
+  .btn.ghost:hover { box-shadow:3px 3px 0 var(--rule); background:var(--paper-2); }
+  .btn.accent { background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:3px 3px 0 var(--ink); }
+  .btn.accent:hover { box-shadow:4px 4px 0 var(--ink); }
+  .btn.big { padding:15px 22px; font-size:13px; }
+  .btn.block { display:flex; width:100%; }
+  .btn.danger { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn:disabled { opacity:.45; cursor:not-allowed; transform:none !important; box-shadow:2px 2px 0 var(--rule-soft) !important; }
+
+  .chip {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 12px; border:1px solid var(--rule);
+    background:var(--paper); cursor:pointer;
+    font-family:'JetBrains Mono', monospace; font-size:11px;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
+    transition:background .15s, color .15s;
+    user-select:none;
+  }
+  .chip:hover { background:var(--paper-2); }
+  .chip.active { background:var(--ink); color:var(--paper); }
+  .chip.accent.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+  /* Players list */
+  .players { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+  .player-item {
+    display:flex; align-items:center; gap:10px; padding:8px 12px;
+    border:1px solid var(--rule-soft); background:var(--paper-2);
+    font-family:'Inter', sans-serif;
+  }
+  .player-item .num { font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); min-width:22px; }
+  .player-item .name { flex:1; font-weight:500; }
+  .player-item .rm {
+    background:transparent; border:none; color:var(--accent);
+    font-family:'Fraunces', serif; font-style:italic; font-size:20px; cursor:pointer; line-height:1;
+    padding:0 6px;
+  }
+  .player-item .rm:hover { color:var(--ink); }
+
+  .count-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'JetBrains Mono', monospace; font-size:10.5px;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+  }
+
+  /* Setting rows */
+  .setting {
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+    padding:12px 0; border-bottom:1px dashed var(--rule-soft);
+  }
+  .setting-label {
+    flex:1; min-width:140px;
+    font-family:'Fraunces', serif; font-size:17px; font-weight:600;
+  }
+  .setting-label .hint { display:block; font-family:'Inter', sans-serif; font-weight:400; font-size:12px; color:var(--muted); letter-spacing:0; text-transform:none; margin-top:2px; }
+  .setting-controls { display:flex; flex-wrap:wrap; gap:6px; }
+
+  /* Places: overview + collapsible categories */
+  #placesControls { flex-direction:column; gap:8px; align-items:stretch; }
+  .places-overview {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; padding:6px 10px;
+    background:var(--paper-2); border:1px dashed var(--rule-soft);
+  }
+  .places-count {
+    font-family:'JetBrains Mono', monospace; font-size:11px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft);
+  }
+  .places-quick { display:flex; gap:6px; }
+  .mini-btn {
+    background:var(--paper); border:1px solid var(--rule);
+    color:var(--ink);
+    font-family:'JetBrains Mono', monospace; font-size:10px;
+    letter-spacing:.14em; text-transform:uppercase;
+    padding:4px 8px; cursor:pointer; transition:background .15s, color .15s;
+  }
+  .mini-btn:hover { background:var(--ink); color:var(--paper); }
+
+  .place-category { border:1px solid var(--rule-soft); background:var(--paper); }
+  .cat-header {
+    width:100%; display:flex; align-items:center; gap:10px;
+    padding:10px 12px; background:transparent; border:none;
+    cursor:pointer; text-align:left; color:var(--ink);
+    font-family:'Fraunces', serif; font-size:15px; font-weight:600;
+    border-bottom:1px dashed transparent;
+    transition:background .15s;
+  }
+  .cat-header:hover { background:var(--paper-2); }
+  .place-category.open .cat-header { border-bottom-color:var(--rule-soft); background:var(--paper-2); }
+  .cat-icon { font-size:16px; }
+  .cat-name { flex:1; }
+  .cat-count {
+    font-family:'JetBrains Mono', monospace; font-size:10.5px;
+    letter-spacing:.14em; color:var(--muted);
+    padding:2px 8px; border:1px solid var(--rule-soft);
+    background:var(--paper);
+  }
+  .cat-toggle {
+    font-family:'JetBrains Mono', monospace; font-size:14px;
+    color:var(--accent); min-width:14px; text-align:right;
+  }
+  .cat-body { display:none; padding:10px 12px 12px; }
+  .place-category.open .cat-body { display:block; }
+  .cat-quick { display:flex; gap:6px; margin-bottom:8px; }
+  .cat-places { display:flex; flex-wrap:wrap; gap:6px; }
+
+  /* Section toggle (whole "Orte" block collapsible) */
+  .places-setting { flex-direction:column; align-items:stretch; gap:0; padding:0; border-bottom:1px dashed var(--rule-soft); }
+  .section-toggle {
+    width:100%; display:flex; align-items:center; gap:10px;
+    padding:14px 4px; background:transparent; border:none;
+    cursor:pointer; text-align:left; color:var(--ink);
+    font-family:'Fraunces', serif; font-size:17px; font-weight:600;
+  }
+  .section-toggle:hover { color:var(--accent); }
+  .section-toggle-label { flex:1; }
+  .section-toggle-label .hint {
+    display:block; font-family:'Inter', sans-serif; font-weight:400;
+    font-size:12px; color:var(--muted); letter-spacing:0;
+    text-transform:none; margin-top:2px;
+  }
+  .section-toggle-icon {
+    font-family:'JetBrains Mono', monospace; font-size:16px;
+    color:var(--accent); min-width:16px; text-align:right;
+  }
+  .places-body { display:flex; flex-direction:column; gap:8px; padding:0 0 14px; }
+  .places-body[hidden] { display:none; }
+
+
+  /* Cards phase */
+  .card-stage { display:flex; flex-direction:column; align-items:center; gap:18px; padding:20px 0; }
+  .card-stage .hand-msg {
+    text-align:center; font-family:'JetBrains Mono', monospace;
+    font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
+  }
+  .card-stage .hand-msg .player-name {
+    display:block; margin-top:8px; font-family:'Fraunces', serif;
+    font-style:italic; font-size:28px; letter-spacing:-.01em;
+    color:var(--ink); text-transform:none;
+  }
+  .card-instr { text-align:center; font-family:'Fraunces', serif; font-style:italic; color:var(--muted); font-size:14px; }
+
+  .flip-card {
+    width:min(88vw, 340px); aspect-ratio: 3/4.4;
+    perspective: 1200px; cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .flip-inner {
+    position:relative; width:100%; height:100%;
+    transition: transform .7s cubic-bezier(.7,0,.2,1);
+    transform-style: preserve-3d;
+  }
+  .flip-card.revealed .flip-inner { transform: rotateY(180deg); }
+  .card-face {
+    position:absolute; inset:0; backface-visibility:hidden;
+    border:2px solid var(--rule); background:var(--paper);
+    padding:22px; display:flex; flex-direction:column;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .card-back {
+    background: repeating-linear-gradient(45deg, var(--paper) 0 12px, var(--paper-2) 12px 24px);
+    align-items:center; justify-content:center; text-align:center; gap:14px;
+  }
+  .card-back .back-frame {
+    border:2px solid var(--ink); padding:22px 18px 18px; width:100%;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    background:var(--paper);
+  }
+  .card-back .back-label {
+    font-family:'JetBrains Mono', monospace; font-size:10.5px;
+    letter-spacing:.28em; text-transform:uppercase; color:var(--muted);
+  }
+  .card-back .spy-icon { width:70%; max-width:180px; height:auto; }
+  .card-back .back-title {
+    font-family:'Fraunces', serif; font-style:italic; font-weight:800;
+    font-size:32px; letter-spacing:-.01em; color:var(--ink);
+  }
+  .card-back .tap-hint {
+    font-family:'JetBrains Mono', monospace; font-size:10px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--accent);
+    margin-top:2px;
+  }
+
+  .card-front { transform: rotateY(180deg); justify-content:space-between; }
+  .card-front .cf-eyebrow {
+    font-family:'JetBrains Mono', monospace; font-size:10px;
+    letter-spacing:.24em; text-transform:uppercase; color:var(--muted);
+  }
+  .card-front .cf-place {
+    font-family:'Fraunces', serif; font-weight:800; font-size:36px;
+    line-height:1; letter-spacing:-.02em; margin-top:6px;
+  }
+  .card-front .cf-role-label { margin-top:22px; font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); }
+  .card-front .cf-role { font-family:'Fraunces', serif; font-style:italic; font-size:24px; margin-top:2px; }
+  .card-front .cf-mission-label { margin-top:16px; font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); }
+  .card-front .cf-mission { font-family:'Fraunces', serif; font-size:15px; line-height:1.3; margin-top:2px; color:var(--ink-soft); }
+  .card-front .cf-footer {
+    margin-top:auto; border-top:1px solid var(--rule-soft); padding-top:8px;
+    font-family:'JetBrains Mono', monospace; font-size:9.5px;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+    display:flex; justify-content:space-between;
+  }
+  .card-front.spy { background:var(--paper-2); border-color:var(--accent); }
+  .card-front.spy .cf-place { color:var(--accent); font-style:italic; }
+
+  /* Game */
+  .game-topbar { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:14px; }
+  .mode-badge {
+    font-family:'JetBrains Mono', monospace; font-size:10px;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--muted);
+    border:1px solid var(--rule-soft); padding:4px 8px;
+  }
+  .timer-box {
+    text-align:center; padding:26px 12px; border:2px solid var(--rule);
+    background:var(--paper-2); margin:12px 0 20px;
+  }
+  .timer-label { font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); }
+  .timer-value { font-family:'Fraunces', serif; font-weight:800; font-size:clamp(64px, 16vw, 108px); line-height:1; margin-top:4px; letter-spacing:-.03em; }
+  .timer-value.warn { color:var(--accent); }
+  .timer-value.paused { opacity:.5; }
+  .game-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .game-actions .btn { padding:15px 12px; font-size:11.5px; }
+  .game-actions .full { grid-column: 1 / -1; }
+
+  /* Voting */
+  .player-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:8px; margin-top:12px; }
+  .player-choice {
+    padding:16px 12px; border:1px solid var(--rule); background:var(--paper); color:var(--ink);
+    cursor:pointer; text-align:center;
+    font-family:'Fraunces', serif; font-size:17px; font-weight:600;
+    transition: background .15s, transform .12s, box-shadow .15s;
+  }
+  .player-choice:hover { background:var(--paper-2); box-shadow:3px 3px 0 var(--rule); transform:translate(-1px,-1px); }
+  .player-choice.selected { background:var(--ink); color:var(--paper); }
+  .player-choice.done-spy { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .player-choice.done-inn { opacity:.4; }
+
+  /* Places grid (guess) */
+  .place-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:8px; margin-top:12px; }
+  .place-choice {
+    padding:16px 12px; border:1px solid var(--rule); background:var(--paper); color:var(--ink);
+    cursor:pointer; text-align:center;
+    font-family:'Fraunces', serif; font-size:16px; font-weight:600;
+    transition: background .15s, transform .12s, box-shadow .15s;
+  }
+  .place-choice:hover { background:var(--paper-2); box-shadow:3px 3px 0 var(--rule); transform:translate(-1px,-1px); }
+  .place-choice.selected { background:var(--ink); color:var(--paper); }
+
+  /* Result / reveal */
+  .reveal-card {
+    border:2px solid var(--rule); background:var(--paper-2);
+    padding:18px 20px; margin-top:14px;
+  }
+  .reveal-card h3 { font-family:'Fraunces', serif; font-size:24px; letter-spacing:-.01em; }
+  .reveal-card h3 em { font-style:italic; color:var(--accent); }
+  .reveal-list { margin-top:12px; display:flex; flex-direction:column; gap:6px; }
+  .reveal-row {
+    display:flex; justify-content:space-between; gap:10px;
+    padding:8px 10px; background:var(--paper); border:1px solid var(--rule-soft);
+    font-family:'Inter', sans-serif; font-size:14px;
+  }
+  .reveal-row .who { font-weight:600; }
+  .reveal-row .what { color:var(--muted); font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+  .reveal-row.spy .who { color:var(--accent); }
+  .reveal-row.spy .what { color:var(--accent); }
+
+  /* Event overlay */
+  .event-overlay {
+    position:fixed; inset:0; z-index:9999; display:none;
+    background:rgba(200,68,42,.10); align-items:center; justify-content:center;
+    padding:22px; backdrop-filter: blur(2px);
+  }
+  .event-overlay.show { display:flex; animation: flashSiren 1.6s ease; }
+  @keyframes flashSiren {
+    0%,100% { background:rgba(200,68,42,.10); }
+    10%,30%,50% { background:rgba(200,68,42,.55); }
+    20%,40% { background:rgba(200,68,42,.15); }
+  }
+  .event-card {
+    max-width:520px; width:100%; background:var(--paper);
+    border:3px solid var(--accent); padding:26px 22px; text-align:center;
+    box-shadow:8px 8px 0 var(--ink);
+    animation: eventPop .5s cubic-bezier(.7,0,.2,1);
+  }
+  @keyframes eventPop { from { transform:scale(.85); opacity:0; } to { transform:scale(1); opacity:1; } }
+  .event-card .ev-eyebrow {
+    font-family:'JetBrains Mono', monospace; font-size:11px;
+    letter-spacing:.28em; text-transform:uppercase; color:var(--accent); font-weight:700;
+  }
+  .event-card .ev-title {
+    font-family:'Fraunces', serif; font-weight:800; font-size:32px;
+    letter-spacing:-.02em; margin-top:6px; line-height:1;
+  }
+  .event-card .ev-desc { margin-top:10px; font-family:'Fraunces', serif; font-style:italic; font-size:16px; color:var(--ink-soft); }
+  .event-card .btn { margin-top:16px; }
+
+  /* Modal */
+  .modal {
+    position:fixed; inset:0; z-index:9990; display:none;
+    background:rgba(0,0,0,.4); align-items:center; justify-content:center; padding:20px;
+  }
+  .modal.show { display:flex; }
+  .modal-inner {
+    max-width:460px; width:100%; background:var(--paper);
+    border:2px solid var(--rule); padding:22px; box-shadow:6px 6px 0 var(--ink);
+  }
+  .modal-inner h3 { font-family:'Fraunces', serif; font-size:22px; margin-bottom:8px; }
+  .modal-inner p { font-family:'Fraunces', serif; font-style:italic; color:var(--ink-soft); }
+  .modal-actions { display:flex; gap:10px; margin-top:16px; justify-content:flex-end; flex-wrap:wrap; }
+
+
+  @media (max-width:560px) {
+    .hero { padding:18px 0 12px; }
+    .setting-label { min-width:100%; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="edition left">Vol. I · SS 2026 · Nº 05</div>
+    <div class="brand">Spy<em>fall</em></div>
+    <div class="edition right">
+      <button class="toggle" id="themeToggle" aria-label="Theme wechseln">
+        <span class="dot" id="themeDot"></span>
+        <span id="themeLabel">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="subhead">
+    <a class="back" href="index.html" aria-label="Zurück zur Startseite">
+      <span class="arrow">&larr;</span>
+      <span>Zurück zur Startseite</span>
+    </a>
+    <span class="meta">Editorial Edition · Spyfall</span>
+  </div>
+
+  <!-- ============= SETUP ============= -->
+  <section id="screen-setup" class="screen active">
+    <div class="hero">
+      <div class="eyebrow">Ein Spiel für Neugierige &amp; Schwindler</div>
+      <h1>Spy<em>fall</em></h1>
+      <div class="lede">Ein Handy. Ein Ort. Ein Spion unter euch.</div>
+    </div>
+
+    <div class="section-title">Mitspieler <span class="count-badge" id="playerCount" style="margin-left:auto;">0 Spieler</span></div>
+    <div class="row">
+      <input type="text" id="playerInput" placeholder="Name eingeben …" maxlength="20" autocomplete="off">
+      <button class="btn" id="addPlayerBtn">Hinzufügen</button>
+    </div>
+    <div class="players" id="playersList"></div>
+
+    <div class="section-title">Spione</div>
+    <div class="setting">
+      <div class="setting-label">
+        Anzahl Spione
+        <span class="hint">Standard: 1 · maximal 1 weniger als Mitspieler</span>
+      </div>
+      <div class="setting-controls" id="spyCountControls"></div>
+    </div>
+
+    <div class="section-title">Spiellänge</div>
+    <div class="setting">
+      <div class="setting-label">
+        Rundendauer
+        <span class="hint">Abstimmung ist jederzeit über den Button möglich</span>
+      </div>
+      <div class="setting-controls" id="durationControls">
+        <button class="chip" data-min="3">3 min</button>
+        <button class="chip" data-min="5">5 min</button>
+        <button class="chip active" data-min="8">8 min</button>
+        <button class="chip" data-min="10">10 min</button>
+        <button class="chip" data-min="15">15 min</button>
+        <button class="chip" data-min="0">∞</button>
+      </div>
+    </div>
+
+    <div class="section-title">Orte</div>
+    <div class="setting places-setting" id="placesSection">
+      <button type="button" class="section-toggle" id="placesToggle" aria-expanded="false">
+        <span class="section-toggle-label">
+          Aktive Orte im Pool
+          <span class="hint" id="placesSummary">60 / 60 aktiv · tippe zum Ausklappen</span>
+        </span>
+        <span class="section-toggle-icon" id="placesToggleIcon">▸</span>
+      </button>
+      <div class="setting-controls places-body" id="placesControls" hidden></div>
+    </div>
+
+    <div class="section-title">Extra-Modi</div>
+    <div class="setting">
+      <div class="setting-label">
+        Kombinierbar
+        <span class="hint">Aktiviere so viele du willst — auch alle gleichzeitig</span>
+      </div>
+      <div class="setting-controls" id="modesControls">
+        <button class="chip accent" data-mode="confused">🎭 Verwirrter</button>
+        <button class="chip accent" data-mode="events">🚨 Ereignisse</button>
+        <button class="chip accent" data-mode="missions">🎯 Missionen</button>
+        <button class="chip accent" data-mode="anonvote">🕶 Anonymes Voting</button>
+      </div>
+    </div>
+
+    <div style="margin-top:22px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn accent big block" id="startGameBtn">Spiel starten</button>
+    </div>
+    <div id="setupError" style="color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; margin-top:10px; min-height:16px;"></div>
+  </section>
+
+  <!-- ============= CARDS PHASE ============= -->
+  <section id="screen-cards" class="screen">
+    <div class="card-stage">
+      <div class="hand-msg">
+        <div>Handy weitergeben an</div>
+        <div class="player-name" id="handTo">—</div>
+      </div>
+
+      <div class="flip-card" id="flipCard" role="button" aria-label="Karte umdrehen">
+        <div class="flip-inner">
+          <div class="card-face card-back">
+            <div class="back-frame">
+              <div class="back-label">Streng geheim</div>
+              <svg class="spy-icon" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <!-- Hutkrempe -->
+                <ellipse cx="100" cy="52" rx="86" ry="16" fill="currentColor"/>
+                <!-- Hutkrone -->
+                <path d="M42 52 Q42 12 100 12 Q158 12 158 52 Z" fill="currentColor"/>
+                <!-- Hutband -->
+                <rect x="42" y="46" width="116" height="8" fill="var(--paper)"/>
+                <!-- Kopf -->
+                <ellipse cx="100" cy="96" rx="46" ry="42" fill="currentColor"/>
+                <!-- Sonnenbrille -->
+                <rect x="54" y="86" width="92" height="6" fill="var(--paper)"/>
+                <ellipse cx="78" cy="98" rx="18" ry="12" fill="var(--paper)" stroke="currentColor" stroke-width="3"/>
+                <ellipse cx="122" cy="98" rx="18" ry="12" fill="var(--paper)" stroke="currentColor" stroke-width="3"/>
+                <line x1="96" y1="98" x2="104" y2="98" stroke="currentColor" stroke-width="3"/>
+                <!-- Kragen / Mantel -->
+                <path d="M40 168 Q100 138 160 168 L160 220 L40 220 Z" fill="currentColor"/>
+                <path d="M100 138 L84 210 L100 200 L116 210 Z" fill="var(--paper)"/>
+                <!-- Krawatte -->
+                <path d="M100 148 L94 158 L100 190 L106 158 Z" fill="var(--accent)"/>
+              </svg>
+              <div class="back-title">Spyfall</div>
+              <div class="tap-hint">Tippen zum Aufdecken</div>
+            </div>
+          </div>
+          <div class="card-face card-front" id="cardFront">
+            <!-- Wird per JS gefüllt -->
+          </div>
+        </div>
+      </div>
+
+      <div class="card-instr" id="cardInstr">Nur du solltest die Karte sehen.</div>
+
+      <button class="btn ghost" id="nextPlayerBtn" style="display:none;">Karte verdecken &amp; Handy weitergeben</button>
+      <button class="btn accent" id="startRoundBtn" style="display:none;">Runde starten</button>
+    </div>
+  </section>
+
+  <!-- ============= GAME ============= -->
+  <section id="screen-game" class="screen">
+    <div class="game-topbar" id="modeBadges"></div>
+
+    <div class="timer-box">
+      <div class="timer-label" id="timerLabel">Verbleibende Zeit</div>
+      <div class="timer-value" id="timerValue">00:00</div>
+    </div>
+
+    <div class="game-actions">
+      <button class="btn accent" id="startVoteBtn">🗳 Abstimmung</button>
+      <button class="btn" id="guessPlaceBtn">🔍 Ort raten</button>
+      <button class="btn ghost full" id="pauseBtn">⏸ Pausieren</button>
+      <button class="btn ghost full" id="abortBtn" style="border-color:var(--accent); color:var(--accent);">Runde abbrechen</button>
+    </div>
+  </section>
+
+  <!-- ============= VOTING ============= -->
+  <section id="screen-vote" class="screen">
+    <div class="section-title" id="voteTitle">Abstimmung · Wer ist der Spion?</div>
+    <div style="font-family:'Fraunces', serif; font-style:italic; color:var(--muted);" id="voteSubtitle">
+      Tippt gemeinsam auf einen Verdächtigen und bestätigt.
+    </div>
+    <div class="player-grid" id="voteGrid"></div>
+    <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn accent" id="confirmVoteBtn" disabled>Verdacht bestätigen</button>
+      <button class="btn ghost" id="cancelVoteBtn">Zurück ins Spiel</button>
+    </div>
+    <div id="voteReveal"></div>
+  </section>
+
+  <!-- ============= GUESS PLACE ============= -->
+  <section id="screen-guess" class="screen">
+    <div class="section-title">Ort raten · Nur der Spion!</div>
+    <div style="font-family:'Fraunces', serif; font-style:italic; color:var(--muted);">
+      Wähle einen Ort. Richtig geraten → Spion gewinnt. Falsch → Spion verliert.
+    </div>
+    <div class="place-grid" id="guessGrid"></div>
+    <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn accent" id="confirmGuessBtn" disabled>Rateversuch bestätigen</button>
+      <button class="btn ghost" id="cancelGuessBtn">Zurück ins Spiel</button>
+    </div>
+  </section>
+
+  <!-- ============= RESULT ============= -->
+  <section id="screen-result" class="screen">
+    <div class="hero" style="border-bottom:none;">
+      <div class="eyebrow" id="resultEyebrow">Runde beendet</div>
+      <h1 id="resultHeadline">Auflösung</h1>
+      <div class="lede" id="resultLede"></div>
+    </div>
+
+    <div class="reveal-card">
+      <h3>Der Ort war: <em id="revealPlace">—</em></h3>
+      <div class="reveal-list" id="revealList"></div>
+    </div>
+
+    <div id="missionsBlock" style="display:none;">
+      <div class="section-title">🎯 Missionen (Ehrenrunde)</div>
+      <div class="reveal-list" id="missionsList"></div>
+    </div>
+
+    <div style="margin-top:22px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn accent" id="newRoundBtn">Neue Runde (gleiche Spieler)</button>
+      <button class="btn ghost" id="backMenuBtn">Zurück zum Menü</button>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Strauss · Biebergemünd</span>
+    <span>© SS 2026 — Editorial edition</span>
+  </footer>
+</div>
+
+<!-- Event overlay -->
+<div class="event-overlay" id="eventOverlay">
+  <div class="event-card">
+    <div class="ev-eyebrow">🚨 Ereignis</div>
+    <div class="ev-title" id="evTitle">—</div>
+    <div class="ev-desc" id="evDesc">—</div>
+    <button class="btn accent" id="evCloseBtn">Verstanden</button>
+  </div>
+</div>
+
+<!-- Confirm modal -->
+<div class="modal" id="confirmModal">
+  <div class="modal-inner">
+    <h3 id="cmTitle">Sicher?</h3>
+    <p id="cmText">—</p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="cmCancel">Abbrechen</button>
+      <button class="btn accent" id="cmOk">Bestätigen</button>
+    </div>
+  </div>
+</div>
+
+<script src="site.js"></script>
+<script>
+/* ================= DATEN: ORTE & ROLLEN ================= */
+// 60 Orte in 10 Kategorien — jeder Ort hat 6 passende Rollen
+const PLACE_CATEGORIES = [
+  {
+    name: "Freizeit & Urlaub", icon: "🏖", places: [
+      { name: "Strand",           roles: ["Rettungsschwimmer","Touristin","Surfer","Eisverkäufer","Sandburgen-Kind","Strandkellner"] },
+      { name: "Freizeitpark",     roles: ["Achterbahn-Operator","Maskottchen","Zuckerwatte-Verkäufer","Gestresste Mutter","Fotograf","Sicherheitspersonal"] },
+      { name: "Zoo",              roles: ["Tierpfleger","Kartenverkäufer","Schulklassen-Lehrer","Zoologe","Reinigungskraft","Souvenir-Verkäufer"] },
+      { name: "Campingplatz",     roles: ["Platzwart","Wohnmobil-Rentner","Pfadfinder","Grillmeister","Angler","Gitarrenspieler"] },
+      { name: "Kreuzfahrtschiff", roles: ["Kapitän","Animateur","Barkeeper","Steward","Passagier","Küchenchef"] },
+      { name: "Skigebiet",        roles: ["Skilehrer","Liftwart","Après-Ski-DJ","Rettungssanitäter","Snowboarder","Hüttenwirt"] },
+      { name: "Escape Room",      roles: ["Spielleiter","Rätselknacker","Nervöser Neuling","Gruppenchef","Techniker","Foto-Fotograf"] }
+    ]
+  },
+  {
+    name: "Kultur & Unterhaltung", icon: "🎭", places: [
+      { name: "Kino",             roles: ["Kartenabreißer","Popcorn-Verkäufer","Filmvorführer","Kinogänger","Reinigungskraft","Flyer-Verteiler"] },
+      { name: "Theater",          roles: ["Regisseur","Souffleuse","Hauptdarsteller","Bühnenbildner","Beleuchter","Platzanweiser"] },
+      { name: "Konzert / Festival", roles: ["Rockstar","Roadie","Security","Fan in erster Reihe","Bierverkäufer","Ton-Techniker"] },
+      { name: "Museum",           roles: ["Kurator","Wachmann","Schulklassen-Führer","Restaurator","Kassenwart","Kunststudent"] },
+      { name: "Zirkus",           roles: ["Zirkusdirektor","Clown","Trapezkünstler","Löwenbändiger","Kartenverkäufer","Kind mit Ballon"] },
+      { name: "Kunstgalerie",     roles: ["Galerist","Künstler","Kritiker","Sammler","Praktikant","Vernissage-Barkeeper"] }
+    ]
+  },
+  {
+    name: "Essen & Trinken", icon: "🍽", places: [
+      { name: "Restaurant",       roles: ["Kellner","Chefkoch","Sommelier","Gast","Spülkraft","Restaurantkritiker"] },
+      { name: "Fast-Food-Restaurant", roles: ["Kassierer","Fritteusen-Mitarbeiter","Drive-Thru-Personal","Hungriger Kunde","Reinigungskraft","Filialleiter"] },
+      { name: "Bar / Kneipe",     roles: ["Barkeeper","Türsteher","Stammgast","DJ","Cocktail-Kellnerin","Betrunkener Tourist"] },
+      { name: "Bäckerei",         roles: ["Bäckermeister","Verkäuferin","Lehrling","Frühkunde","Auslieferungsfahrer","Konditor"] },
+      { name: "Weingut",          roles: ["Winzer","Sommelier","Erntehelfer","Touristenführer","Weinkritiker","Fassbinder"] },
+      { name: "Weihnachtsmarkt",  roles: ["Glühwein-Verkäufer","Weihnachtsmann","Frierendes Kind","Marktleiter","Handwerker mit Stand","Krippenspieler"] }
+    ]
+  },
+  {
+    name: "Transport & Reise", icon: "🚂", places: [
+      { name: "Flughafen",        roles: ["Check-in-Personal","Sicherheitskontrolleur","Gepäckabfertiger","Wartender Passagier","Duty-Free-Verkäufer","Reinigungskraft"] },
+      { name: "Flugzeug",         roles: ["Kapitän","Stewardess","Business-Class-Passagier","Nervöser Erstflieger","Air Marshal","Schlafendes Baby"] },
+      { name: "Zug / ICE",        roles: ["Zugführer","Schaffner","Bordbistro-Mitarbeiter","Pendler","Tourist mit Riesenkoffer","Kontrolleur"] },
+      { name: "U-Bahn-Station",   roles: ["U-Bahn-Fahrer","Straßenmusiker","Pendler","Ticketkontrolleur","Obdachloser","Tourist mit Karte"] },
+      { name: "Segelboot / Yacht", roles: ["Skipper","Matrose","Millionär","Sonnendeck-Gast","Bordkoch","Steward"] },
+      { name: "Raststätte Autobahn", roles: ["Kassierer","LKW-Fahrer","Familienvater","Kellnerin","Tankwart","Reinigungskraft"] }
+    ]
+  },
+  {
+    name: "Arbeit & Büro", icon: "🏢", places: [
+      { name: "Bürogebäude",      roles: ["Chef","Praktikant","Empfangsdame","IT-Support","Putzkraft","Kaffeeküchen-Plauderer"] },
+      { name: "Baustelle",        roles: ["Polier","Kranführer","Maurer","Architekt","Sicherheitsbeauftragter","Lehrling"] },
+      { name: "Fabrik",           roles: ["Fließbandarbeiter","Schichtleiter","Qualitätsprüfer","Gabelstaplerfahrer","Ingenieur","Reinigungspersonal"] },
+      { name: "Bank",             roles: ["Filialleiter","Kassierer","Kundenberater","Sicherheitsdienst","Kunde","Geldbote"] },
+      { name: "Anwaltskanzlei",   roles: ["Star-Anwalt","Junior-Anwalt","Sekretärin","Mandant","Praktikant","Empfang"] },
+      { name: "Radiostation",     roles: ["Moderator","Producer","Nachrichtensprecher","Tontechniker","Studiogast","Praktikant"] }
+    ]
+  },
+  {
+    name: "Gesundheit & Notfall", icon: "🏥", places: [
+      { name: "Krankenhaus",      roles: ["Chefarzt","Krankenschwester","Patient","Besucher","Sanitäter","Reinigungskraft"] },
+      { name: "Feuerwache",       roles: ["Feuerwehrhauptmann","Neuling","Fahrzeugmechaniker","Notrufannahme","Dalmatiner-Besitzer","Kochdienst"] },
+      { name: "Polizeistation",   roles: ["Kommissar","Streifenpolizist","Verdächtiger","Anwalt","Empfang","Zeuge"] },
+      { name: "Apotheke",         roles: ["Apotheker","PTA","Kunde mit Rezept","Pharma-Vertreter","Praktikant","Rentner-Stammkunde"] }
+    ]
+  },
+  {
+    name: "Bildung", icon: "🏫", places: [
+      { name: "Schule",           roles: ["Lehrer","Schüler","Direktor","Hausmeister","Sekretärin","Kantinenmitarbeiter"] },
+      { name: "Universität",      roles: ["Professor","Student","Bibliothekar","Mensa-Personal","Tutor","Erstsemester"] },
+      { name: "Fahrschule",       roles: ["Fahrlehrer","Fahrschüler","Prüfer","Theorieschüler","Sekretärin","Fahrzeugmechaniker"] },
+      { name: "Kindergarten",     roles: ["Erzieherin","Kind","Praktikantin","Abholender Elternteil","Koch","Leitung"] }
+    ]
+  },
+  {
+    name: "Shopping & Dienstleistung", icon: "🛒", places: [
+      { name: "Supermarkt",       roles: ["Kassierer","Regalauffüller","Kunde mit XXL-Einkauf","Metzger","Bäckereipersonal","Marktleiter"] },
+      { name: "Einkaufszentrum",  roles: ["Ladendetektiv","Verkäufer","Teenager-Clique","Reinigungskraft","Weihnachtsmann-Darsteller","Info-Personal"] },
+      { name: "Friseursalon",     roles: ["Chef-Friseur","Auszubildende","Stammkundin","Färbe-Spezialist","Empfang","Lehrling am Kehren"] },
+      { name: "Autowerkstatt",    roles: ["Mechaniker-Meister","Lehrling","Kunde","Werkstattleiter","Ersatzteil-Verkäufer","TÜV-Prüfer"] },
+      { name: "Tankstelle",       roles: ["Kassierer","Autofahrer","LKW-Fahrer","Reinigungskraft","Waschstraßen-Personal","Bierkäufer"] }
+    ]
+  },
+  {
+    name: "Geheim & Spektakulär", icon: "🕵", places: [
+      { name: "Casino",           roles: ["Croupier","Highroller","Pit-Boss","Kartenmischer","Kartenzähler","Anfänger"] },
+      { name: "Bankraub (im Gange)", roles: ["Anführer","Fluchtwagenfahrer","Techniker","Geisel","Verhandlungsführer","Sniper"] },
+      { name: "Geheimlabor",      roles: ["Chef-Wissenschaftler","Assistent","Testperson","Sicherheitschef","Reinigungspersonal","Spionage-Verdächtiger"] },
+      { name: "Militärbasis",     roles: ["General","Rekrut","Ausbilder","Koch","Wachposten","Techniker"] },
+      { name: "U-Boot",           roles: ["Kapitän","Navigator","Koch","Techniker","Funker","Neuling"] },
+      { name: "Raumstation",      roles: ["Kommandant","Wissenschaftler","Ingenieur","Weltraumtourist","Roboter-Techniker","Bordarzt"] }
+    ]
+  },
+  {
+    name: "Sonstiges", icon: "🏛", places: [
+      { name: "Hotel-Lobby",      roles: ["Rezeptionist","Concierge","Page","Gast","Hoteldirektor","Reinigungskraft"] },
+      { name: "Fitnessstudio",    roles: ["Trainer","Bodybuilder","Anfänger","Rezeptionist","Reinigungskraft","Sauna-Gast"] },
+      { name: "Schwimmbad",       roles: ["Bademeister","Schwimmschüler","Rentner beim Bahnenziehen","Rutschen-Kind","Kassierer","Kioskbetreiber"] },
+      { name: "Kirche / Hochzeit", roles: ["Pfarrer","Braut","Bräutigam","Trauzeuge","Fotograf","Organist"] },
+      { name: "Standesamt",       roles: ["Standesbeamter","Braut","Bräutigam","Trauzeuge","Fotograf","Wartendes Paar"] },
+      { name: "Gerichtssaal",     roles: ["Richter","Staatsanwalt","Verteidiger","Angeklagter","Zeuge","Protokollantin"] },
+      { name: "Gefängnis",        roles: ["Wärter","Häftling","Direktor","Küchenpersonal","Anwaltsbesuch","Neuzugang"] },
+      { name: "Fußballstadion",   roles: ["Spieler","Trainer","Ordner","Fan","Bierverkäufer","TV-Kommentator"] },
+      { name: "Filmset",          roles: ["Regisseur","Hauptdarsteller","Kameramann","Maskenbildner","Statist","Catering"] },
+      { name: "Tierarztpraxis",   roles: ["Tierarzt","Sprechstundenhilfe","Besorgter Hundebesitzer","Katzenbesitzer","Praktikant","Futterlieferant"] }
+    ]
+  }
+];
+// Flache Liste für schnelle Lookups
+const PLACES = PLACE_CATEGORIES.flatMap(c => c.places);
+
+/* ================= EREIGNISSE ================= */
+const EVENTS = [
+  // Sprach-Ereignisse
+  { title:"Flüster-Modus", desc:"Ab jetzt wird nur noch geflüstert (30 Sek.)." },
+  { title:"Reim-Zwang", desc:"Alle Antworten müssen sich reimen (60 Sek.)." },
+  { title:"Ein-Wort-Antworten", desc:"Nur noch ein einziges Wort pro Antwort (30 Sek.)." },
+  { title:"Gestikulier-Modus", desc:"Keine Wörter mehr — nur noch Gesten (30 Sek.)." },
+  { title:"Akzent-Runde", desc:"Alle sprechen mit einem übertriebenen Akzent (60 Sek.)." },
+  // Wortverbote
+  { title:"Kein „Ja/Nein“", desc:"Niemand darf „Ja“ oder „Nein“ sagen — bis zum nächsten Ereignis." },
+  { title:"Kein „Ich“", desc:"Das Wort „ich“ ist ab jetzt verboten — bis zum nächsten Ereignis." },
+  { title:"Pflichtwort: „eigentlich“", desc:"Alle müssen in jeder Antwort das Wort „eigentlich“ verwenden — bis zum nächsten Ereignis." },
+  // Fragerhythmus
+  { title:"Reihum im Uhrzeigersinn", desc:"Fragen nur noch im Uhrzeigersinn — bis zum nächsten Ereignis." },
+  { title:"Reihum gegen den Uhrzeigersinn", desc:"Fragen nur noch gegen den Uhrzeigersinn — bis zum nächsten Ereignis." },
+  { title:"Doppelfrage", desc:"Wer gefragt wird, stellt die Frage sofort an eine andere Person weiter — bis zum nächsten Ereignis." },
+  // Meta
+  { title:"Themenwechsel", desc:"Die nächsten 3 Fragen müssen sich um Essen drehen." },
+  { title:"Themenwechsel", desc:"Die nächsten 3 Fragen müssen sich um Wetter drehen." },
+  { title:"Themenwechsel", desc:"Die nächsten 3 Fragen müssen sich um Gefühle drehen." }
+];
+
+/* ================= MISSIONEN ================= */
+const MISSIONS = [
+  // Redemuster (ohne 4,5,7,8)
+  "Beginne jeden Satz mit „Ja“.",
+  "Beginne jeden Satz mit „Also“.",
+  "Beende jede Antwort mit einer Gegenfrage.",
+  "Sage mindestens 3x „ehrlich gesagt“.",
+  // Wort-Vermeidung
+  "Vermeide das Wort „nein“.",
+  "Vermeide das Wort „ich“.",
+  "Vermeide alle Farben.",
+  "Vermeide Zahlen.",
+  // Interaktion
+  "Rede der Person links von dir 3x ins Wort.",
+  "Lache mindestens 5x (auch grundlos).",
+  "Stelle mindestens 4 Fragen in dieser Runde.",
+  "Stelle die erste Frage an die Person rechts von dir.",
+  "Widersprich mindestens 2x jemandem.",
+  "Stimme mindestens 3x jemandem übertrieben zu.",
+  // Verhalten (ohne 20)
+  "Kratz dir 3x am Kopf, wenn du sprichst.",
+  "Räuspere dich vor jeder Antwort.",
+  "Zeig 2x auf jemanden, während du sprichst."
+];
+
+/* ================= STATE ================= */
+const state = {
+  players: [],
+  spyCount: 1,
+  durationMin: 8,          // 0 = unendlich
+  activePlaces: PLACES.map(p => p.name), // alle aktiv
+  modes: { confused:false, events:false, missions:false, anonvote:false },
+  // Runde
+  round: null,             // { place, roles:[{player,role,isSpy,mission,confusedPlace}], spies:[idx], confusedIdx, revealedIdx, votingFound:[], startTs, remaining, paused, timerId, eventTimer }
+};
+
+/* ================= UI HELFER ================= */
+const $  = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+function show(id) {
+  $$(".screen").forEach(el => el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i=a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function fmtTime(sec){ const m=Math.floor(sec/60), s=sec%60; return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"); }
+
+/* ================= SETUP: PLAYERS ================= */
+function renderPlayers() {
+  const list = $("#playersList");
+  list.innerHTML = "";
+  state.players.forEach((n,i) => {
+    const el = document.createElement("div");
+    el.className = "player-item";
+    el.innerHTML = `<span class="num">${String(i+1).padStart(2,"0")}</span>
+                    <span class="name"></span>
+                    <button class="rm" title="Entfernen">×</button>`;
+    el.querySelector(".name").textContent = n;
+    el.querySelector(".rm").addEventListener("click", () => {
+      state.players.splice(i,1);
+      renderPlayers();
+      renderSpyCount();
+    });
+    list.appendChild(el);
+  });
+  $("#playerCount").textContent = state.players.length + " Spieler";
+}
+function addPlayer() {
+  const inp = $("#playerInput");
+  const v = inp.value.trim();
+  if (!v) return;
+  if (state.players.length >= 12) { flashSetupError("Maximal 12 Spieler."); return; }
+  state.players.push(v);
+  inp.value = "";
+  inp.focus();
+  renderPlayers();
+  renderSpyCount();
+}
+$("#addPlayerBtn").addEventListener("click", addPlayer);
+$("#playerInput").addEventListener("keydown", e => { if (e.key==="Enter") { e.preventDefault(); addPlayer(); } });
+
+/* ================= SETUP: SPY COUNT ================= */
+function renderSpyCount() {
+  const wrap = $("#spyCountControls");
+  wrap.innerHTML = "";
+  const max = Math.max(1, state.players.length - 1);
+  if (state.spyCount > max) state.spyCount = 1;
+  for (let i=1; i<=max; i++) {
+    const b = document.createElement("button");
+    b.className = "chip" + (i===state.spyCount ? " active" : "");
+    b.textContent = i;
+    b.addEventListener("click", () => { state.spyCount = i; renderSpyCount(); });
+    wrap.appendChild(b);
+  }
+  if (state.players.length < 3) {
+    wrap.innerHTML = '<span style="font-family:\'Fraunces\',serif; font-style:italic; color:var(--muted);">Erst Mitspieler hinzufügen …</span>';
+  }
+}
+
+/* ================= SETUP: DURATION ================= */
+$$("#durationControls .chip").forEach(c => {
+  c.addEventListener("click", () => {
+    $$("#durationControls .chip").forEach(x => x.classList.remove("active"));
+    c.classList.add("active");
+    state.durationMin = parseInt(c.dataset.min,10);
+  });
+});
+
+/* ================= SETUP: PLACES (kategorisiert, ausklappbar) ================= */
+const openCats = new Set(); // welche Kategorien aufgeklappt sind
+
+function togglePlace(name) {
+  if (state.activePlaces.includes(name)) {
+    state.activePlaces = state.activePlaces.filter(x => x !== name);
+  } else {
+    state.activePlaces.push(name);
+  }
+  renderPlaces();
+}
+function setCategoryActive(catIdx, active) {
+  const cat = PLACE_CATEGORIES[catIdx];
+  cat.places.forEach(p => {
+    const isOn = state.activePlaces.includes(p.name);
+    if (active && !isOn) state.activePlaces.push(p.name);
+    if (!active && isOn) state.activePlaces = state.activePlaces.filter(x => x !== p.name);
+  });
+  renderPlaces();
+}
+
+function renderPlaces() {
+  const wrap = $("#placesControls");
+  wrap.innerHTML = "";
+
+  // Übersichts-Zeile: Alle / Keine + Zähler
+  const totalCount = PLACES.length;
+  const activeCount = state.activePlaces.length;
+  const overview = document.createElement("div");
+  overview.className = "places-overview";
+  overview.innerHTML = `
+    <div class="places-count">${activeCount} / ${totalCount} aktiv</div>
+    <div class="places-quick">
+      <button type="button" class="mini-btn" id="placesAllBtn">Alle an</button>
+      <button type="button" class="mini-btn" id="placesNoneBtn">Alle aus</button>
+    </div>
+  `;
+  wrap.appendChild(overview);
+
+  PLACE_CATEGORIES.forEach((cat, ci) => {
+    const activeInCat = cat.places.filter(p => state.activePlaces.includes(p.name)).length;
+    const isOpen = openCats.has(ci);
+
+    const catEl = document.createElement("div");
+    catEl.className = "place-category" + (isOpen ? " open" : "");
+
+    catEl.innerHTML = `
+      <button type="button" class="cat-header" data-cat="${ci}">
+        <span class="cat-icon">${cat.icon}</span>
+        <span class="cat-name">${cat.name}</span>
+        <span class="cat-count">${activeInCat}/${cat.places.length}</span>
+        <span class="cat-toggle">${isOpen ? "▾" : "▸"}</span>
+      </button>
+      <div class="cat-body">
+        <div class="cat-quick">
+          <button type="button" class="mini-btn" data-cat-all="${ci}">Alle</button>
+          <button type="button" class="mini-btn" data-cat-none="${ci}">Keine</button>
+        </div>
+        <div class="cat-places">
+          ${cat.places.map(p => `
+            <button type="button" class="chip${state.activePlaces.includes(p.name) ? " active" : ""}" data-place="${p.name.replace(/"/g,'&quot;')}">${p.name}</button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+    wrap.appendChild(catEl);
+  });
+
+  // Handler: Kategorie-Header (aufklappen)
+  wrap.querySelectorAll(".cat-header").forEach(h => {
+    h.addEventListener("click", () => {
+      const ci = parseInt(h.dataset.cat, 10);
+      if (openCats.has(ci)) openCats.delete(ci); else openCats.add(ci);
+      renderPlaces();
+    });
+  });
+  // Handler: Ort-Chip toggle
+  wrap.querySelectorAll(".cat-places .chip").forEach(b => {
+    b.addEventListener("click", (e) => {
+      e.stopPropagation();
+      togglePlace(b.dataset.place);
+    });
+  });
+  // Handler: Kategorie Alle/Keine
+  wrap.querySelectorAll("[data-cat-all]").forEach(b => {
+    b.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setCategoryActive(parseInt(b.dataset.catAll,10), true);
+    });
+  });
+  wrap.querySelectorAll("[data-cat-none]").forEach(b => {
+    b.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setCategoryActive(parseInt(b.dataset.catNone,10), false);
+    });
+  });
+  // Handler: Globales Alle / Keine
+  const allBtn = wrap.querySelector("#placesAllBtn");
+  const noneBtn = wrap.querySelector("#placesNoneBtn");
+  if (allBtn) allBtn.addEventListener("click", () => {
+    state.activePlaces = PLACES.map(p => p.name);
+    renderPlaces();
+  });
+  if (noneBtn) noneBtn.addEventListener("click", () => {
+    state.activePlaces = [];
+    renderPlaces();
+  });
+
+  // Summary im Section-Toggle aktualisieren
+  const summary = document.getElementById("placesSummary");
+  if (summary) {
+    const isOpen = document.getElementById("placesControls") && !document.getElementById("placesControls").hasAttribute("hidden");
+    summary.textContent = `${activeCount} / ${totalCount} aktiv` + (isOpen ? "" : " · tippe zum Ausklappen");
+  }
+}
+
+// Section-Toggle: ganzen Orte-Block auf-/zuklappen
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("placesToggle");
+  const body = document.getElementById("placesControls");
+  const icon = document.getElementById("placesToggleIcon");
+  if (!btn || !body || !icon) return;
+  btn.addEventListener("click", () => {
+    const isHidden = body.hasAttribute("hidden");
+    if (isHidden) {
+      body.removeAttribute("hidden");
+      icon.textContent = "▾"; // ▾
+      btn.setAttribute("aria-expanded", "true");
+    } else {
+      body.setAttribute("hidden", "");
+      icon.textContent = "▸"; // ▸
+      btn.setAttribute("aria-expanded", "false");
+    }
+    // Summary neu rendern
+    if (typeof renderPlaces === "function") renderPlaces();
+  });
+});
+
+/* ================= SETUP: MODES ================= */
+$$("#modesControls .chip").forEach(c => {
+  c.addEventListener("click", () => {
+    const m = c.dataset.mode;
+    state.modes[m] = !state.modes[m];
+    c.classList.toggle("active", state.modes[m]);
+  });
+});
+
+/* Initialrendering */
+renderPlayers();
+renderSpyCount();
+renderPlaces();
+
+function flashSetupError(msg) {
+  const el = $("#setupError");
+  el.textContent = msg;
+  setTimeout(()=>{ if (el.textContent===msg) el.textContent=""; }, 3500);
+}
+
+/* ================= SPIEL STARTEN ================= */
+$("#startGameBtn").addEventListener("click", () => {
+  if (state.players.length < 3) { flashSetupError("Mindestens 3 Mitspieler nötig."); return; }
+  if (state.activePlaces.length < 1) { flashSetupError("Mindestens 1 Ort aktivieren."); return; }
+  if (state.modes.confused && state.activePlaces.length < 2) { flashSetupError("Verwirrter-Modus braucht mindestens 2 aktive Orte."); return; }
+  if (state.spyCount >= state.players.length) { flashSetupError("Zu viele Spione."); return; }
+  setupRound();
+});
+
+function setupRound() {
+  // Ort wählen
+  const activePlaceObjs = PLACES.filter(p => state.activePlaces.includes(p.name));
+  const place = activePlaceObjs[rand(0, activePlaceObjs.length-1)];
+  // Rollen mischen (nicht wiederholend)
+  const rolesPool = shuffle(place.roles);
+  const n = state.players.length;
+  // Spion-Indexe wählen
+  const spyIdx = shuffle([...Array(n).keys()]).slice(0, state.spyCount);
+  // Verwirrter (aus Nicht-Spionen)
+  let confusedIdx = -1, confusedPlace = null;
+  if (state.modes.confused) {
+    const nonSpies = [...Array(n).keys()].filter(i => !spyIdx.includes(i));
+    if (nonSpies.length > 0) {
+      confusedIdx = nonSpies[rand(0, nonSpies.length-1)];
+      // Anderer Ort als der echte
+      const otherPlaces = activePlaceObjs.filter(p => p.name !== place.name);
+      confusedPlace = otherPlaces[rand(0, otherPlaces.length-1)];
+    }
+  }
+  // Missionen
+  const missionsShuffled = shuffle(MISSIONS);
+
+  const roles = state.players.map((name, i) => {
+    let role, placeShown = place.name;
+    const isSpy = spyIdx.includes(i);
+    if (isSpy) {
+      role = "Spion";
+    } else if (i === confusedIdx) {
+      // Verwirrter kriegt Rolle aus dem FALSCHEN Ort
+      role = confusedPlace.roles[rand(0, confusedPlace.roles.length-1)];
+      placeShown = confusedPlace.name;
+    } else {
+      role = rolesPool.pop() || place.roles[rand(0, place.roles.length-1)];
+    }
+    return {
+      player: name,
+      role: role,
+      isSpy: isSpy,
+      isConfused: (i === confusedIdx),
+      placeShown: placeShown,
+      mission: state.modes.missions ? missionsShuffled[i % missionsShuffled.length] : null
+    };
+  });
+
+  state.round = {
+    place: place.name,
+    roles: roles,
+    spies: spyIdx,
+    confusedIdx: confusedIdx,
+    confusedPlace: confusedPlace ? confusedPlace.name : null,
+    activePlacesNames: state.activePlaces.slice(),
+    revealedIdx: 0,
+    cardRevealed: false,
+    votingFound: [],
+    remaining: state.durationMin * 60,
+    unendlich: state.durationMin === 0,
+    paused: false,
+    timerId: null,
+    eventTimeoutId: null
+  };
+  show("screen-cards");
+  renderCard();
+}
+
+/* ================= CARDS PHASE ================= */
+// Wie lange die Flip-Animation dauert (muss mit CSS übereinstimmen)
+const FLIP_MS = 700;
+
+function renderCard() {
+  const r = state.round;
+  const idx = r.revealedIdx;
+  const info = r.roles[idx];
+  $("#handTo").textContent = info.player;
+  $("#cardInstr").textContent = "Nur du solltest die Karte sehen.";
+  $("#nextPlayerBtn").style.display = "none";
+  $("#startRoundBtn").style.display = "none";
+
+  const card = $("#flipCard");
+  const wasRevealed = card.classList.contains("revealed");
+  card.classList.remove("revealed");
+  r.cardRevealed = false;
+
+  // Front-Inhalt erst NACH der Zurück-Flip-Animation leeren,
+  // damit während der Rotation nichts vom vorherigen Spieler
+  // zum nächsten Spieler durchblitzt.
+  const clearDelay = wasRevealed ? FLIP_MS + 50 : 0;
+  const myIdx = idx;
+  setTimeout(() => {
+    if (!state.round) return;
+    if (!state.round.cardRevealed && state.round.revealedIdx === myIdx) {
+      const front = $("#cardFront");
+      front.innerHTML = "";
+      front.classList.remove("spy");
+    }
+  }, clearDelay);
+}
+
+function populateCardFront() {
+  const r = state.round;
+  const idx = r.revealedIdx;
+  const info = r.roles[idx];
+  const front = $("#cardFront");
+  front.classList.toggle("spy", info.isSpy);
+  const missionHtml = info.mission
+    ? `<div class="cf-mission-label">Deine Mission</div>
+       <div class="cf-mission">${info.mission}</div>` : "";
+  if (info.isSpy) {
+    front.innerHTML = `
+      <div>
+        <div class="cf-eyebrow">Deine Rolle</div>
+        <div class="cf-place">SPION</div>
+      </div>
+      <div>
+        <div class="cf-role-label">Auftrag</div>
+        <div class="cf-role">Errate den Ort — bleib unentdeckt.</div>
+        ${missionHtml}
+      </div>
+      <div class="cf-footer"><span>Streng geheim</span><span>${idx+1}/${r.roles.length}</span></div>
+    `;
+  } else {
+    front.innerHTML = `
+      <div>
+        <div class="cf-eyebrow">Der Ort ist</div>
+        <div class="cf-place">${info.placeShown}</div>
+      </div>
+      <div>
+        <div class="cf-role-label">Deine Rolle</div>
+        <div class="cf-role">${info.role}</div>
+        ${missionHtml}
+      </div>
+      <div class="cf-footer"><span>Streng geheim</span><span>${idx+1}/${r.roles.length}</span></div>
+    `;
+  }
+}
+
+$("#flipCard").addEventListener("click", () => {
+  const r = state.round;
+  const card = $("#flipCard");
+  if (!r.cardRevealed) {
+    // Content JETZT befüllen, direkt bevor wir zur Front drehen.
+    // Vorher war die Front leer -> während der Zurück-Flip-Animation
+    // (nach "Nächster Spieler" / Verdecken) ist nichts zu sehen.
+    populateCardFront();
+    card.classList.add("revealed");
+    r.cardRevealed = true;
+    $("#cardInstr").textContent = "Karte merken. Zum Verdecken erneut tippen.";
+    // Button erscheint erst nach kurzer Zeit, damit man liest
+    setTimeout(()=> {
+      if (r.revealedIdx === r.roles.length - 1) {
+        $("#startRoundBtn").style.display = "inline-flex";
+      } else {
+        $("#nextPlayerBtn").style.display = "inline-flex";
+      }
+    }, 400);
+  } else {
+    card.classList.remove("revealed");
+    r.cardRevealed = false;
+    $("#cardInstr").textContent = "Karte verdeckt. Erneut tippen zum Ansehen.";
+    // Nach der Zurück-Flip-Animation Inhalt entfernen
+    const myIdx = r.revealedIdx;
+    setTimeout(() => {
+      if (!state.round) return;
+      if (!state.round.cardRevealed && state.round.revealedIdx === myIdx) {
+        const front = $("#cardFront");
+        front.innerHTML = "";
+        front.classList.remove("spy");
+      }
+    }, FLIP_MS + 50);
+  }
+});
+
+$("#nextPlayerBtn").addEventListener("click", () => {
+  const r = state.round;
+  r.revealedIdx++;
+  renderCard();
+});
+$("#startRoundBtn").addEventListener("click", () => {
+  startGame();
+});
+
+/* ================= GAME PHASE ================= */
+function startGame() {
+  show("screen-game");
+  // Mode badges
+  const badges = $("#modeBadges");
+  badges.innerHTML = "";
+  if (state.modes.confused)  badges.innerHTML += `<span class="mode-badge">🎭 Verwirrter</span>`;
+  if (state.modes.events)    badges.innerHTML += `<span class="mode-badge">🚨 Ereignisse</span>`;
+  if (state.modes.missions)  badges.innerHTML += `<span class="mode-badge">🎯 Missionen</span>`;
+  if (state.modes.anonvote)  badges.innerHTML += `<span class="mode-badge">🕶 Anonymes Voting</span>`;
+  badges.innerHTML += `<span class="mode-badge">🕵 ${state.round.spies.length} Spion${state.round.spies.length>1?"e":""}</span>`;
+
+  const r = state.round;
+  if (r.unendlich) {
+    $("#timerLabel").textContent = "Verstrichene Zeit";
+    r.remaining = 0;
+  } else {
+    $("#timerLabel").textContent = "Verbleibende Zeit";
+  }
+  updateTimerDisplay();
+  runTimer();
+  scheduleNextEvent();
+  $("#pauseBtn").textContent = "⏸ Pausieren";
+}
+
+function updateTimerDisplay() {
+  const r = state.round;
+  const el = $("#timerValue");
+  el.textContent = r.unendlich ? fmtTime(r.remaining) : fmtTime(r.remaining);
+  el.classList.toggle("warn", !r.unendlich && r.remaining <= 30 && r.remaining > 0);
+  el.classList.toggle("paused", r.paused);
+}
+function runTimer() {
+  const r = state.round;
+  if (r.timerId) clearInterval(r.timerId);
+  r.timerId = setInterval(() => {
+    if (r.paused) return;
+    if (r.unendlich) { r.remaining++; }
+    else {
+      r.remaining--;
+      if (r.remaining <= 0) {
+        r.remaining = 0;
+        updateTimerDisplay();
+        clearInterval(r.timerId); r.timerId = null;
+        clearTimeout(r.eventTimeoutId);
+        // Zeit abgelaufen → automatisch ins Voting
+        openVote(true);
+        return;
+      }
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+$("#pauseBtn").addEventListener("click", () => {
+  const r = state.round;
+  r.paused = !r.paused;
+  $("#pauseBtn").textContent = r.paused ? "▶ Fortsetzen" : "⏸ Pausieren";
+  updateTimerDisplay();
+});
+$("#abortBtn").addEventListener("click", () => {
+  confirmDo("Runde wirklich abbrechen?", "Die aktuelle Runde wird ohne Auflösung beendet.", () => {
+    stopRoundTimers();
+    show("screen-setup");
+  });
+});
+
+function stopRoundTimers() {
+  const r = state.round;
+  if (!r) return;
+  if (r.timerId) { clearInterval(r.timerId); r.timerId = null; }
+  if (r.eventTimeoutId) { clearTimeout(r.eventTimeoutId); r.eventTimeoutId = null; }
+}
+
+/* ================= EREIGNISSE ================= */
+function scheduleNextEvent() {
+  const r = state.round;
+  if (!state.modes.events) return;
+  const wait = rand(60, 120) * 1000;
+  r.eventTimeoutId = setTimeout(fireEvent, wait);
+}
+function fireEvent() {
+  const r = state.round;
+  if (!r || r.paused) { // wenn pausiert, gleich neu planen
+    if (r) r.eventTimeoutId = setTimeout(fireEvent, 4000);
+    return;
+  }
+  // aktuelle Screen? Nur wenn im Spiel
+  if (!$("#screen-game").classList.contains("active")) {
+    scheduleNextEvent(); return;
+  }
+  const ev = EVENTS[rand(0, EVENTS.length-1)];
+  $("#evTitle").textContent = ev.title;
+  $("#evDesc").textContent  = ev.desc;
+  $("#eventOverlay").classList.add("show");
+  try { if (navigator.vibrate) navigator.vibrate([120,60,120,60,240]); } catch(e){}
+}
+$("#evCloseBtn").addEventListener("click", () => {
+  $("#eventOverlay").classList.remove("show");
+  scheduleNextEvent();
+});
+
+/* ================= VOTING ================= */
+$("#startVoteBtn").addEventListener("click", () => openVote(false));
+
+function openVote(auto) {
+  const r = state.round;
+  if (!r) return;
+  r.paused = true;
+  updateTimerDisplay();
+  $("#voteReveal").innerHTML = "";
+  $("#confirmVoteBtn").disabled = true;
+  $("#confirmVoteBtn").style.display = "";
+  $("#cancelVoteBtn").style.display = auto ? "none" : "";
+  $("#voteTitle").textContent = auto ? "Zeit abgelaufen · Abstimmung!" : "Abstimmung · Wer ist der Spion?";
+  const remainingSpies = r.spies.length - r.votingFound.length;
+  $("#voteSubtitle").textContent = remainingSpies > 1
+    ? `Noch ${remainingSpies} Spione zu finden. Tippt gemeinsam auf einen Verdächtigen.`
+    : "Tippt gemeinsam auf einen Verdächtigen und bestätigt.";
+  renderVoteGrid();
+  show("screen-vote");
+}
+
+function renderVoteGrid() {
+  const r = state.round;
+  const grid = $("#voteGrid");
+  grid.innerHTML = "";
+  r.roles.forEach((info, i) => {
+    const b = document.createElement("button");
+    b.className = "player-choice";
+    b.dataset.idx = i;
+    b.textContent = info.player;
+    // bereits enttarnte
+    const alreadyFoundSpy = r.votingFound.includes(i);
+    const alreadyClearedNonSpy = r._clearedNonSpies && r._clearedNonSpies.includes(i);
+    if (alreadyFoundSpy) { b.classList.add("done-spy"); b.disabled = true; b.textContent = state.modes.anonvote ? "🕵 " + info.player : "🕵 " + info.player + " (Spion)"; }
+    if (alreadyClearedNonSpy) { b.classList.add("done-inn"); b.disabled = true; }
+    b.addEventListener("click", () => {
+      grid.querySelectorAll(".player-choice").forEach(x => x.classList.remove("selected"));
+      b.classList.add("selected");
+      $("#confirmVoteBtn").disabled = false;
+      $("#confirmVoteBtn").dataset.idx = i;
+    });
+    grid.appendChild(b);
+  });
+}
+
+$("#cancelVoteBtn").addEventListener("click", () => {
+  const r = state.round;
+  r.paused = false;
+  updateTimerDisplay();
+  show("screen-game");
+});
+
+$("#confirmVoteBtn").addEventListener("click", () => {
+  const r = state.round;
+  const idx = parseInt($("#confirmVoteBtn").dataset.idx, 10);
+  const info = r.roles[idx];
+  r._clearedNonSpies = r._clearedNonSpies || [];
+  const grid = $("#voteGrid");
+  const btn = grid.querySelector(`.player-choice[data-idx="${idx}"]`);
+  const anon = state.modes.anonvote;
+
+  if (info.isSpy) {
+    // Spion erwischt
+    r.votingFound.push(idx);
+    btn.classList.remove("selected");
+    btn.classList.add("done-spy");
+    btn.disabled = true;
+    btn.textContent = anon ? "🕵 " + info.player : "🕵 " + info.player + " (Spion)";
+    const remaining = r.spies.length - r.votingFound.length;
+    if (remaining === 0) {
+      // Alle Spione erwischt → Nicht-Spione gewinnen
+      endRound({ winner:"innocents", reason:"Alle Spione enttarnt!" });
+      return;
+    } else {
+      $("#voteSubtitle").textContent = `Weiter! Noch ${remaining} Spion${remaining>1?"e":""} zu finden.`;
+      $("#confirmVoteBtn").disabled = true;
+    }
+  } else {
+    // Kein Spion → Spione gewinnen
+    if (anon) {
+      // Anonymes Voting: Rolle NICHT direkt zeigen, sondern nur „kein Spion", Runde endet trotzdem
+      btn.classList.add("done-inn");
+      btn.disabled = true;
+    }
+    endRound({ winner:"spies", reason: anon
+      ? `Falscher Verdacht — ${info.player} war kein Spion.`
+      : `Falsch! ${info.player} war „${info.role}“ — kein Spion.` });
+  }
+});
+
+/* ================= ORT RATEN ================= */
+$("#guessPlaceBtn").addEventListener("click", () => {
+  const r = state.round;
+  r.paused = true;
+  updateTimerDisplay();
+  const grid = $("#guessGrid");
+  grid.innerHTML = "";
+  r.activePlacesNames.forEach(name => {
+    const b = document.createElement("button");
+    b.className = "place-choice";
+    b.textContent = name;
+    b.addEventListener("click", () => {
+      grid.querySelectorAll(".place-choice").forEach(x => x.classList.remove("selected"));
+      b.classList.add("selected");
+      $("#confirmGuessBtn").disabled = false;
+      $("#confirmGuessBtn").dataset.place = name;
+    });
+    grid.appendChild(b);
+  });
+  $("#confirmGuessBtn").disabled = true;
+  show("screen-guess");
+});
+$("#cancelGuessBtn").addEventListener("click", () => {
+  const r = state.round;
+  r.paused = false;
+  updateTimerDisplay();
+  show("screen-game");
+});
+$("#confirmGuessBtn").addEventListener("click", () => {
+  const r = state.round;
+  const guessed = $("#confirmGuessBtn").dataset.place;
+  if (guessed === r.place) {
+    endRound({ winner:"spies", reason:`Der Spion hat den Ort korrekt erraten: „${guessed}“.` });
+  } else {
+    endRound({ winner:"innocents", reason:`Der Spion hat falsch geraten („${guessed}“). Es war „${r.place}“.` });
+  }
+});
+
+/* ================= RUNDENENDE / RESULT ================= */
+function endRound({ winner, reason }) {
+  const r = state.round;
+  stopRoundTimers();
+  $("#resultEyebrow").textContent = winner === "spies" ? "Sieg für die Spione" : "Sieg für die Mitspieler";
+  $("#resultHeadline").textContent = winner === "spies" ? "Der Spion triumphiert" : "Enttarnt!";
+  $("#resultLede").textContent = reason;
+  $("#revealPlace").textContent = r.place;
+
+  const list = $("#revealList");
+  list.innerHTML = "";
+  r.roles.forEach(info => {
+    const row = document.createElement("div");
+    row.className = "reveal-row" + (info.isSpy ? " spy" : "");
+    let what = info.role;
+    if (info.isSpy) what = "SPION";
+    if (info.isConfused) what = info.role + " · verwirrt (dachte: " + info.placeShown + ")";
+    row.innerHTML = `<span class="who"></span><span class="what"></span>`;
+    row.querySelector(".who").textContent = info.player;
+    row.querySelector(".what").textContent = what;
+    list.appendChild(row);
+  });
+
+  // Missionen
+  if (state.modes.missions) {
+    $("#missionsBlock").style.display = "";
+    const ml = $("#missionsList");
+    ml.innerHTML = "";
+    r.roles.forEach(info => {
+      const row = document.createElement("div");
+      row.className = "reveal-row";
+      row.innerHTML = `<span class="who"></span><span class="what" style="text-align:right; max-width:60%; white-space:normal;"></span>`;
+      row.querySelector(".who").textContent = info.player;
+      row.querySelector(".what").textContent = info.mission || "—";
+      ml.appendChild(row);
+    });
+  } else {
+    $("#missionsBlock").style.display = "none";
+  }
+
+  show("screen-result");
+}
+
+$("#newRoundBtn").addEventListener("click", () => setupRound());
+$("#backMenuBtn").addEventListener("click", () => { stopRoundTimers(); show("screen-setup"); });
+
+/* ================= CONFIRM MODAL ================= */
+function confirmDo(title, text, cb) {
+  $("#cmTitle").textContent = title;
+  $("#cmText").textContent = text;
+  $("#confirmModal").classList.add("show");
+  const ok = $("#cmOk"), cancel = $("#cmCancel");
+  const close = () => { $("#confirmModal").classList.remove("show"); ok.onclick=null; cancel.onclick=null; };
+  ok.onclick = () => { close(); cb(); };
+  cancel.onclick = close;
+}
+
+</script>
+</body>
+</html>

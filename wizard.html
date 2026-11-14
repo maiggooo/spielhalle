@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Wizard — Maiko's Spiele &amp; Tools</title>
+<meta name="description" content="Wizard online: Stiche ansagen, Trumpf beachten, Punkte sammeln — jeder auf seinem eigenen Handy.">
+<meta name="theme-color" content="#f4efe6">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Maiko&#39;s Spiele &amp; Tools">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="Wizard — Maiko&#x27;s Spiele &amp; Tools">
+<meta property="og:description" content="Wizard online: Stiche ansagen, Trumpf beachten, Punkte sammeln — jeder auf seinem eigenen Handy.">
+<meta property="og:url" content="https://maiggooo.github.io/wizard.html">
+<meta property="og:image" content="https://maiggooo.github.io/og/wizard.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Wizard">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  .wrap { max-width:900px; }
+  :root { --s-R:#c0392b; --s-B:#2c5aa0; --s-G:#2f7d46; --s-Y:#d4a017; }
+
+  /* Hero / sections (same vocabulary as the other games) */
+  .hero { padding:26px 0 18px; border-bottom:1px solid var(--rule); text-align:center; }
+  .hero .eyebrow { font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--muted); }
+  .hero h1 { font-family:'Fraunces', serif; font-weight:800; font-size:clamp(42px, 8vw, 72px); letter-spacing:-.02em; line-height:.95; margin-top:8px; }
+  .hero h1 em { font-style:italic; font-weight:400; color:var(--accent); }
+  .hero .lede { margin-top:10px; font-family:'Fraunces', serif; font-style:italic; font-size:15px; color:var(--muted); }
+  .screen { display:none; padding:22px 0; }
+  .screen.active { display:block; }
+  .section-title {
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
+    border-top:1px solid var(--rule-soft); padding-top:10px; margin:20px 0 10px; display:flex; align-items:center; gap:8px;
+  }
+  .section-title::before { content:"§"; color:var(--accent); font-family:'Fraunces', serif; font-style:italic; }
+  .section-title .count { margin-left:auto; color:var(--ink); }
+
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  input[type="text"] {
+    flex:1; min-width:0; padding:11px 12px; background:var(--paper); color:var(--ink);
+    border:1px solid var(--rule); border-radius:0; font-family:'Inter', sans-serif; font-size:16px; outline:none;
+  }
+  input[type="text"]:focus { border-color:var(--accent); }
+  input.code { text-transform:uppercase; letter-spacing:.3em; font-family:'JetBrains Mono', monospace; max-width:170px; }
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px;
+    padding:11px 16px; background:var(--ink); color:var(--paper); border:1px solid var(--ink);
+    font-family:'JetBrains Mono', monospace; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+    font-weight:700; cursor:pointer; box-shadow:3px 3px 0 var(--accent);
+    transition:transform .12s ease, box-shadow .18s ease, background .18s;
+  }
+  .btn:hover { transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--accent); }
+  .btn:active { transform:translate(1px,1px); box-shadow:1px 1px 0 var(--accent); }
+  .btn.ghost { background:transparent; color:var(--ink); box-shadow:2px 2px 0 var(--rule); }
+  .btn.accent { background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:3px 3px 0 var(--ink); }
+  .btn.block { display:flex; width:100%; }
+  .btn:disabled { opacity:.4; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+  .or { text-align:center; font-family:'Fraunces', serif; font-style:italic; color:var(--muted); margin:14px 0; }
+  .note { font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.08em; color:var(--muted); margin-top:8px; }
+  .error { color:var(--accent); }
+
+  /* Waiting room */
+  .room-code { text-align:center; padding:18px 0 6px; }
+  .room-code .lbl { font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--muted); }
+  .room-code .code { font-family:'Fraunces', serif; font-weight:800; font-size:clamp(44px, 12vw, 72px); letter-spacing:.12em; color:var(--accent); line-height:1.1; }
+  .plist { list-style:none; display:grid; gap:6px; }
+  .plist li { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid var(--rule-soft); font-family:'Fraunces', serif; font-size:18px; }
+  .plist li small { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  .switch { display:flex; flex-wrap:wrap; align-items:center; gap:2px 10px; cursor:pointer; font-size:15px; color:var(--ink-soft); padding:6px 0; }
+  .switch small { flex-basis:100%; padding-left:30px; font-size:13px; }
+  .switch input { width:20px; height:20px; accent-color:var(--accent); }
+
+  /* Cards */
+  .card {
+    --c:var(--ink); position:relative; flex:none;
+    width:52px; height:76px; border-radius:6px; border:1.5px solid var(--c);
+    background:var(--paper); color:var(--c); display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:800; font-size:24px; line-height:1; user-select:none;
+    box-shadow:2px 2px 0 rgba(0,0,0,.18);
+  }
+  .card::before, .card::after { content:attr(data-v); position:absolute; font-size:10px; font-family:'JetBrains Mono', monospace; font-weight:700; }
+  .card::before { top:4px; left:5px; } .card::after { bottom:4px; right:5px; transform:rotate(180deg); }
+  .card.s-R { --c:var(--s-R); } .card.s-B { --c:var(--s-B); } .card.s-G { --c:var(--s-G); } .card.s-Y { --c:var(--s-Y); }
+  .card.s-R, .card.s-B, .card.s-G, .card.s-Y { background:color-mix(in srgb, var(--c) 10%, var(--paper)); }
+  .card.z { background:#1a1a1a; color:#f4d97a; border-color:#f4d97a; font-style:italic; }
+  .card.n { background:repeating-linear-gradient(45deg, var(--paper) 0 6px, var(--paper-2) 6px 12px); color:var(--muted); border-color:var(--muted); border-style:dashed; font-style:italic; }
+  .card.x { flex-direction:column; gap:2px; background:linear-gradient(160deg, #2b2440, #18131f); color:#f4d97a; border-color:#b89cf0; }
+  .card.x .ic { font-size:24px; line-height:1; font-family:system-ui, sans-serif; }
+  .card.x .nm { font-family:'JetBrains Mono', monospace; font-size:7.5px; letter-spacing:.04em; font-weight:700; text-transform:uppercase; max-width:100%; overflow:hidden; text-overflow:ellipsis; padding:0 2px; }
+  .card.back { background:repeating-linear-gradient(135deg, var(--accent) 0 5px, color-mix(in srgb, var(--accent) 70%, #000) 5px 10px); color:#fff; border-color:var(--accent); font-style:italic; }
+  .card.dead { opacity:.4; }
+  .card.big { width:66px; height:96px; font-size:30px; }
+  .card.big.x .ic { font-size:30px; } .card.big.x .nm { font-size:8.5px; }
+  .card.tiny.x .ic { font-size:16px; } .card.tiny.x .nm { display:none; }
+  .card.tiny { width:34px; height:50px; font-size:15px; border-radius:4px; }
+  .card.tiny::before, .card.tiny::after { display:none; }
+
+  /* Game layout */
+  .bar { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--rule); flex-wrap:wrap; }
+  .bar .round { font-family:'Fraunces', serif; font-weight:800; font-size:22px; }
+  .bar .round small { font-family:'JetBrains Mono', monospace; font-weight:400; font-size:11px; letter-spacing:.14em; color:var(--muted); margin-left:6px; }
+  .trump { display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  .trump b { color:var(--ink); }
+  .seats { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:6px; margin:12px 0; }
+  .seat { border:1px solid var(--rule-soft); padding:8px 10px; position:relative; transition:border-color .2s, background .2s; }
+  .seat.turn { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 8%, transparent); }
+  .seat.me .name::after { content:" (du)"; color:var(--muted); font-weight:400; font-style:italic; }
+  .seat.away { opacity:.45; }
+  .seat .top { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .seat .name { font-family:'Fraunces', serif; font-weight:600; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+  .seat .score { font-family:'Fraunces', serif; font-weight:800; font-size:17px; }
+  .seat .meta { font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.04em; color:var(--muted); margin-top:3px; display:flex; flex-wrap:wrap; gap:2px 8px; align-items:center; }
+  .seat .meta b { color:var(--ink); font-weight:700; }
+  .seat .tag.start { color:var(--ok); }
+  .seat .peek { display:flex; gap:4px; margin-top:6px; flex-wrap:wrap; }
+  .seat .tag { font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); border:1px solid currentColor; padding:0 4px; }
+
+  .table {
+    min-height:150px; border:1px solid var(--rule); background:var(--paper-2);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:14px 10px;
+  }
+  .table .status { font-family:'Fraunces', serif; font-style:italic; font-size:17px; text-align:center; color:var(--ink-soft); }
+  .table .status b { font-style:normal; color:var(--accent); }
+  .trick { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+  .trick .play { display:flex; flex-direction:column; align-items:center; gap:4px; animation:deal .3s cubic-bezier(.2,.7,.2,1) backwards; }
+  .trick .play span { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.08em; color:var(--muted); max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .trick .play.win .card { box-shadow:0 0 0 3px var(--accent); }
+  .trick .play.win span { color:var(--accent); font-weight:700; }
+  .trick .play em { font-family:'JetBrains Mono', monospace; font-size:9.5px; font-style:normal; color:var(--ink-soft); }
+  .trick .card.ok { cursor:pointer; } .trick .card.sel { box-shadow:0 0 0 3px var(--accent); }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { display:inline-flex; align-items:center; gap:6px; min-height:40px; padding:8px 12px; border:1px solid var(--rule); background:var(--paper); color:var(--ink); cursor:pointer;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.06em; transition:background .15s, color .15s; }
+  .chip.on { background:var(--ink); color:var(--paper); }
+  .chip:disabled { cursor:default; opacity:.7; }
+  .opt-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:14px 0 8px; font-size:15px; color:var(--ink-soft); }
+  .opt-head .btn { min-height:36px; padding:6px 12px; font-size:10.5px; }
+  @keyframes deal { from { opacity:0; transform:translateY(14px) scale(.9); } }
+
+  .panel { margin-top:12px; }
+  .bids { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .bids .btn { min-width:52px; padding:10px 12px; font-size:15px; }
+  .suits { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  .suits .btn { color:#fff; box-shadow:2px 2px 0 var(--ink); border:0; }
+
+  .hand-wrap { margin-top:16px; border-top:2px solid var(--rule); padding-top:10px; }
+  .hand-head { display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+  .hand { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; padding-bottom:8px; }
+  .hand .card { cursor:default; transition:transform .15s ease, opacity .15s, box-shadow .15s; }
+  .hand.active .card.ok { cursor:pointer; }
+  .hand.active .card.ok:hover { transform:translateY(-4px); }
+  .hand.active .card.no { opacity:.35; }
+  .hand .card.sel { transform:translateY(-12px); box-shadow:0 0 0 3px var(--accent), 2px 6px 0 rgba(0,0,0,.2); }
+  .hint { text-align:center; font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.1em; color:var(--muted); min-height:16px; }
+
+  /* Result tables */
+  .score-table { width:100%; border-collapse:collapse; font-size:14px; }
+  .score-table th, .score-table td { padding:8px 6px; border-bottom:1px dashed var(--rule-soft); text-align:right; white-space:nowrap; }
+  .score-table th:first-child, .score-table td:first-child { text-align:left; }
+  .score-table th { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500; }
+  .score-table td { font-family:'Fraunces', serif; }
+  .score-table .pos { color:var(--ok); } .score-table .neg { color:var(--accent); }
+  .score-table tr.lead td:first-child { font-weight:800; }
+  .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .podium { text-align:center; padding:16px 0; }
+  .podium .crown { font-size:40px; }
+  .podium .who { font-family:'Fraunces', serif; font-weight:800; font-size:clamp(34px, 8vw, 56px); line-height:1; }
+  .podium .pts { font-family:'JetBrains Mono', monospace; letter-spacing:.14em; color:var(--muted); margin-top:6px; }
+
+  /* Overlay for missing players */
+  .overlay { position:fixed; inset:0; z-index:10000; background:rgba(20,20,16,.72); display:none; align-items:center; justify-content:center; padding:20px; }
+  .overlay.show { display:flex; }
+  .overlay .box { background:var(--paper); border:1px solid var(--rule); padding:22px; max-width:380px; width:100%; text-align:center; box-shadow:6px 6px 0 var(--accent); }
+  .overlay h3 { font-family:'Fraunces', serif; font-size:24px; margin-bottom:8px; }
+  .overlay p { color:var(--ink-soft); margin-bottom:16px; }
+
+  /* Admin mode (secret: tap the title 5×) */
+  .admin-only { display:none !important; }
+  body.admin .admin-only { display:revert !important; }
+  .admin-bar { position:fixed; left:12px; bottom:calc(12px + env(safe-area-inset-bottom)); z-index:9999; display:flex; gap:6px; align-items:center;
+    background:var(--ink); color:var(--paper); padding:6px 10px; font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; box-shadow:3px 3px 0 var(--accent); }
+  body.admin .admin-bar { display:flex !important; }
+  .admin-bar label { display:flex; align-items:center; gap:6px; cursor:pointer; }
+  .admin-bar input { accent-color:var(--accent); width:16px; height:16px; }
+  .bot-row { gap:8px; margin-top:10px; }
+  body.admin .bot-row { display:flex !important; }
+  .bot-row .btn { flex:1; }
+  /* Long-press card info */
+  .card, .chip[data-x] { -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
+  .card-info { position:fixed; z-index:10001; width:min(320px, calc(100vw - 24px)); background:var(--paper); color:var(--ink);
+    border:1px solid var(--rule); box-shadow:5px 5px 0 var(--accent); padding:14px 16px; display:none; animation:info-in .16s ease-out; }
+  .card-info.show { display:block; }
+  @keyframes info-in { from { opacity:0; transform:translateY(6px) scale(.98); } }
+  .card-info h4 { font-family:'Fraunces', serif; font-size:22px; font-weight:800; display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .card-info h4 .ic { font-size:26px; font-family:system-ui, sans-serif; font-weight:400; }
+  .card-info .sec { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; margin:10px 0 4px; }
+  .card-info .sec.good { color:var(--ok); } .card-info .sec.bad { color:var(--accent); } .card-info .sec.perk { color:var(--muted); }
+  .card-info ul { margin:0 0 0 16px; display:grid; gap:3px; font-size:14px; line-height:1.35; color:var(--ink-soft); }
+  .card-info .now { margin-top:10px; padding-top:8px; border-top:1px dashed var(--rule-soft); font-size:13px; font-style:italic; color:var(--ink-soft); }
+  .card-info .close { position:absolute; top:6px; right:10px; background:none; border:0; color:var(--muted); font-size:20px; cursor:pointer; }
+  details.rules { margin-top:22px; border-top:1px solid var(--rule-soft); padding-top:10px; }
+  details.rules summary { cursor:pointer; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+  details.rules ul { margin:10px 0 0 18px; display:grid; gap:6px; color:var(--ink-soft); font-size:15px; }
+
+  @media (max-width:560px) {
+    .card { width:44px; height:66px; font-size:21px; }
+    .card.big { width:56px; height:82px; font-size:26px; }
+    .seats { grid-template-columns:repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="edition left">Vol. I · SS 2026 · Nº 09</div>
+    <div class="brand">Wiz<em>ard</em></div>
+    <div class="edition right">
+      <button class="toggle" id="themeToggle" aria-label="Theme wechseln">
+        <span class="dot" id="themeDot"></span>
+        <span id="themeLabel">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="subhead">
+    <a class="back" href="index.html" aria-label="Zurück zur Startseite">
+      <span class="arrow">&larr;</span>
+      <span>Zurück zur Startseite</span>
+    </a>
+    <span class="meta" id="roomMeta">Online · 3–6 Spieler</span>
+  </div>
+
+  <!-- ============= START ============= -->
+  <section id="screen-start" class="screen active">
+    <div class="hero">
+      <div class="eyebrow">Das Kartenspiel · Online · jeder am eigenen Handy</div>
+      <h1>Wiz<em>ard</em></h1>
+      <div class="lede">Sag an, wie viele Stiche du holst — und dann hol genau so viele.</div>
+    </div>
+
+    <div class="section-title">Dein Name</div>
+    <input type="text" id="nameInput" maxlength="16" placeholder="Name eingeben …" autocomplete="off">
+
+    <div class="section-title">Neues Spiel</div>
+    <button class="btn accent block" id="createBtn">Raum erstellen &rarr;</button>
+
+    <div class="or">— oder —</div>
+
+    <div class="section-title">Raum beitreten</div>
+    <div class="row">
+      <input type="text" class="code" id="codeInput" maxlength="5" placeholder="CODE" autocomplete="off" autocapitalize="characters">
+      <button class="btn" id="joinBtn">Beitreten</button>
+    </div>
+    <div class="note error" id="startError"></div>
+
+    <details class="rules">
+      <summary>Spielregeln in Kürze</summary>
+      <ul>
+        <li>60 Karten: vier Farben von 1 bis 13, dazu 4 Zauberer (Z) und 4 Narren (N).</li>
+        <li>Runde 1 hat 1 Karte pro Person, Runde 2 hat 2 und so weiter — bis alle Karten verteilt sind.</li>
+        <li>Die nächste Karte vom Stapel bestimmt Trumpf. Zauberer: Der Geber wählt. Narr: kein Trumpf.</li>
+        <li>Jeder sagt an, wie viele Stiche er holt. Dann wird gespielt: Farbe bedienen, Zauberer und Narr gehen immer.</li>
+        <li>Der erste Zauberer gewinnt den Stich, sonst der höchste Trumpf, sonst die höchste Karte der ausgespielten Farbe.</li>
+        <li>Richtig angesagt: 20 Punkte + 10 pro Stich. Daneben: −10 pro Stich Abweichung.</li>
+        <li>Wer ansagt und ausspielt, wechselt jede Runde: Es beginnt immer die Person links vom Geber, und der Geber rückt eins weiter.</li>
+        <li>Blindrunde (einstellbar): In Runde 1 siehst du die Karte der anderen, aber nicht deine eigene.</li>
+      </ul>
+      <p class="note">Tipp: Halte eine Sonderkarte, einen Zauberer oder Narren lange gedrückt (am PC: Rechtsklick), um zu sehen, was sie schlägt und was sie kann.</p>
+      <div style="margin-top:12px; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted)">Sonderkarten (einzeln zuschaltbar)</div>
+      <ul id="specialRules"></ul>
+      <p class="note">Sonderkarten dürfen immer gespielt werden. Liegt eine als Trumpfkarte: Drache, Wolke, Jongleur, Gestaltwandler und Vampir — der Geber wählt Trumpf; Fee, Bombe und Hexe — kein Trumpf; Werwolf — die nächste Karte entscheidet.</p>
+    </details>
+  </section>
+
+  <!-- ============= LOBBY ============= -->
+  <section id="screen-lobby" class="screen">
+    <div class="room-code">
+      <div class="lbl">Raumcode</div>
+      <div class="code" id="lobbyCode">—</div>
+    </div>
+    <button class="btn ghost block" id="shareBtn">Einladung teilen</button>
+
+    <div class="section-title">Am Tisch <span class="count" id="lobbyCount"></span></div>
+    <ul class="plist" id="lobbyPlayers"></ul>
+
+    <div class="bot-row admin-only">
+      <button class="btn ghost" id="addBotBtn">+ Bot</button>
+      <button class="btn ghost" id="removeBotsBtn">Bots entfernen</button>
+    </div>
+
+    <div class="section-title">Regeln</div>
+    <label class="switch"><input type="checkbox" id="optBlind"> Blindrunde <small style="color:var(--muted)">(Runde 1: Du siehst die Karten der anderen, aber nicht deine eigene)</small></label>
+    <label class="switch"><input type="checkbox" id="optNoEven"> Ansagen dürfen nicht aufgehen <small style="color:var(--muted)">(der Geber darf nicht so ansagen, dass die Summe der Stichzahl entspricht)</small></label>
+
+    <div class="opt-head"><span>Sonderkarten <small style="color:var(--muted)" id="specialCount"></small></span><button class="btn ghost" id="specialAll">Alle an</button></div>
+    <div class="chips" id="specialChips"></div>
+
+    <div style="margin-top:18px; display:grid; gap:10px;">
+      <button class="btn accent block" id="startBtn" disabled>Spiel starten</button>
+      <div class="note" id="lobbyNote" style="text-align:center"></div>
+      <button class="btn ghost block" id="leaveLobbyBtn">Raum verlassen</button>
+    </div>
+  </section>
+
+  <!-- ============= GAME ============= -->
+  <section id="screen-game" class="screen">
+    <div class="bar">
+      <div class="round" id="roundLbl">Runde 1</div>
+      <div class="trump" id="trumpBox"></div>
+    </div>
+    <div class="seats" id="seats"></div>
+
+    <div class="table">
+      <div class="status" id="status"></div>
+      <div class="trick" id="trick"></div>
+    </div>
+
+    <div class="panel" id="panel"></div>
+
+    <div class="hand-wrap">
+      <div class="hand-head"><span>Deine Karten</span><span id="myInfo"></span></div>
+      <div class="hand" id="hand"></div>
+      <div class="hint" id="hint"></div>
+    </div>
+    <button class="btn ghost block" id="leaveGameBtn" style="margin-top:22px">Raum verlassen</button>
+  </section>
+
+  <!-- ============= ROUND / GAME END ============= -->
+  <section id="screen-score" class="screen">
+    <div class="podium" id="podium"></div>
+    <div class="section-title" id="scoreTitle">Runde</div>
+    <div class="table-scroll"><table class="score-table" id="scoreTable"></table></div>
+    <div style="margin-top:18px; display:grid; gap:10px;" id="scoreActions"></div>
+  </section>
+
+  <footer class="foot">
+    <span>Strauss · Biebergemünd</span>
+    <span>© SS 2026 — Editorial edition</span>
+  </footer>
+</div>
+
+<div class="admin-bar admin-only" id="adminBar">
+  <span>Admin</span>
+  <label><input type="checkbox" id="autoMe"> Autoplay</label>
+</div>
+
+<div class="card-info" id="cardInfo" role="dialog" aria-live="polite"></div>
+
+<div class="overlay" id="awayOverlay">
+  <div class="box">
+    <h3>Warte auf Mitspieler</h3>
+    <p id="awayText"></p>
+    <button class="btn ghost block" id="abortBtn">Zurück in die Lobby</button>
+  </div>
+</div>
+
+<script src="site.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="multiplayer.js"></script>
+<script>
+/* =========================================================
+   RULES — pure functions on the shared state
+   Cards: "R7" = Rot 7 (suits R, B, G, Y; 1–13), "Z1".."Z4" Zauberer, "N1".."N4" Narr.
+   Special cards (anniversary editions, each can be switched on in the lobby):
+   XD Drache, XF Fee, XB Bombe, XW Werwolf, XJ Jongleur, XC Wolke, XS Gestaltwandler, XV Vampir, XH Hexe
+========================================================= */
+const SUITS = { R:"Rot", B:"Blau", G:"Grün", Y:"Gelb" };
+const SPECIALS = {
+  XD: { name:"Drache",         icon:"🐉", text:"Schlägt alles, auch Zauberer — nur nicht die Fee." },
+  XF: { name:"Fee",            icon:"🧚", text:"Verliert gegen alles, sogar gegen Narren. Liegt der Drache im Stich, gewinnt die Fee." },
+  XB: { name:"Bombe",          icon:"💣", text:"Den Stich bekommt niemand. Wer die höchste Karte gelegt hat, spielt aus." },
+  XW: { name:"Werwolf",        icon:"🐺", text:"Wer ihn bekommt, tauscht ihn gegen die Trumpfkarte und bestimmt Trumpf (oder keinen)." },
+  XJ: { name:"Jongleur",       icon:"🤹", text:"Zählt 7½ in einer Farbe deiner Wahl. Danach gibt jeder eine Karte nach links weiter." },
+  XC: { name:"Wolke",          icon:"☁️", text:"Zählt 9¾ in einer Farbe deiner Wahl. Wer den Stich gewinnt, ändert seine Ansage um +1 oder −1." },
+  XS: { name:"Gestaltwandler", icon:"🎭", text:"Spielst du als Zauberer oder als Narr — deine Wahl." },
+  XV: { name:"Vampir",         icon:"🧛", text:"Kopiert die aufgedeckte Trumpfkarte samt ihren Fähigkeiten." },
+  XH: { name:"Hexe",           icon:"🧙", text:"Niedriger als Narr und Fee. Nach dem Stich darfst du eine Handkarte gegen eine Karte aus dem Stich tauschen." },
+};
+const SPECIAL_IDS = Object.keys(SPECIALS);
+const isZ = c => c[0] === "Z", isN = c => c[0] === "N", isX = c => c[0] === "X";
+const isColor = c => !!c && !isZ(c) && !isN(c) && !isX(c);
+const suitOf = c => isColor(c) ? c[0] : null;
+const valOf = c => +c.slice(1);
+
+function newDeck(settings) {
+  const d = [];
+  for (const s of "RBGY") for (let v = 1; v <= 13; v++) d.push(s + v);
+  for (let i = 1; i <= 4; i++) d.push("Z" + i, "N" + i);
+  for (const x of SPECIAL_IDS) if (settings?.specials?.[x]) d.push(x);
+  for (let i = d.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; }
+  return d;
+}
+const maxRounds = n => Math.floor(60 / n);
+
+// What a played card counts as: k = C (colour, with suit/val), Z, N, D (Drache), F (Fee), B (Bombe), H (Hexe)
+function baseEff(c, play) {
+  if (!c) return { k:"N" };
+  if (isZ(c)) return { k:"Z" };
+  if (isN(c)) return { k:"N" };
+  if (isColor(c)) return { k:"C", suit:c[0], val:valOf(c) };
+  switch (c) {
+    case "XD": return { k:"D" };
+    case "XF": return { k:"F" };
+    case "XB": return { k:"B", fx:"B" };
+    case "XH": return { k:"H", fx:"H" };
+    case "XW": return { k:"N" };                       // only playable if there was nothing to swap with
+    case "XJ": return { k:"C", suit:play.s || "R", val:7.5, fx:"J" };
+    case "XC": return { k:"C", suit:play.s || "R", val:9.75, fx:"C" };
+    case "XS": return play.as === "Z" ? { k:"Z" } : { k:"N" };
+  }
+  return { k:"N" };
+}
+function eff(play, s) {
+  if (play.dead) return { k:"N" };                     // card a Hexe slipped into a finished trick
+  if (play.c === "XV") return baseEff(play.v || s.trump.card, play);
+  return baseEff(play.c, play);
+}
+// Which choice a card needs when it is played
+function choiceFor(card, s) {
+  const c = card === "XV" ? s.trump.card : card;
+  if (c === "XJ" || c === "XC") return "suit";
+  if (c === "XS") return "shape";
+  return null;
+}
+
+// Lead suit: first colour card (Jongleur/Wolke count with their chosen suit). Narr-like cards
+// are skipped; a Zauberer or Drache first means anything goes.
+function leadSuit(trick, s) {
+  for (const p of trick) {
+    const e = eff(p, s);
+    if (e.k === "C") return e.suit;
+    if (e.k === "Z" || e.k === "D") return null;
+  }
+  return null;
+}
+function canPlay(hand, card, trick, s) {
+  if (!isColor(card)) return true;                     // Zauberer, Narr and all special cards can always be played
+  const ls = leadSuit(trick, s);
+  if (!ls || suitOf(card) === ls) return true;
+  return !hand.some(c => suitOf(c) === ls);
+}
+function pickWinner(E, trump) {
+  const d = E.findIndex(e => e.k === "D"), f = E.findIndex(e => e.k === "F");
+  if (d >= 0) return f >= 0 ? f : d;
+  const z = E.findIndex(e => e.k === "Z");
+  if (z >= 0) return z;
+  if (!E.some(e => e.k === "C")) {                     // only Narr-like cards: Narr beats Fee beats Hexe
+    for (const k of ["N", "F", "H", "B"]) { const i = E.findIndex(e => e.k === k); if (i >= 0) return i; }
+    return 0;
+  }
+  const ls = E.find(e => e.k === "C").suit;
+  let best = -1, bestScore = -1;
+  E.forEach((e, i) => {
+    if (e.k !== "C") return;
+    const sc = (e.suit === trump ? 200 : e.suit === ls ? 100 : 0) + e.val;
+    if (sc > bestScore) { best = i; bestScore = sc; }
+  });
+  return best;
+}
+// { winner: index or null (Bombe), lead: index of who opens the next trick }
+function resolveTrick(trick, s) {
+  const E = trick.map(p => eff(p, s));
+  const w = pickWinner(E, s.trump.suit);
+  return { winner: E.some(e => e.k === "B") ? null : w, lead: w, E };
+}
+
+function sortHand(hand, trump) {
+  const rank = c => isZ(c) || c === "XD" ? -1 : isX(c) ? 500 + SPECIAL_IDS.indexOf(c) : isN(c) ? 999 :
+    (suitOf(c) === trump ? 0 : 1 + "RBGY".indexOf(suitOf(c))) * 20 + valOf(c);
+  return [...hand].sort((a, b) => rank(a) - rank(b));
+}
+function norm(s) {
+  s.order ||= []; s.hands ||= {}; s.bids ||= {}; s.tricksWon ||= {}; s.scores ||= {};
+  s.trick ||= []; s.history ||= []; s.ready ||= {}; s.settings ||= {}; s.trump ||= {}; s.names ||= {};
+  s.stock ||= []; s.fx ||= []; s.passes ||= {};
+  s.settings.specials ||= {};
+  for (const p of s.order) { s.hands[p] ||= []; s.tricksWon[p] ||= 0; s.scores[p] ||= 0; }
+  return s;
+}
+
+// Trump from the turned-up card: colour = that suit; Zauberer-like = dealer chooses; Narr-like = none
+function trumpKind(c) {
+  if (!c) return "none";
+  if (isColor(c)) return "suit";
+  if (isZ(c) || ["XD", "XC", "XJ", "XS", "XV"].includes(c)) return "choose";
+  return "none";                                       // Narr, Fee, Bombe, Hexe
+}
+function deal(s) {
+  const n = s.order.length, r = s.round, deck = newDeck(s.settings);
+  s.hands = {}; s.bids = {}; s.tricksWon = {}; s.ready = {}; s.trick = []; s.lastTrick = null;
+  s.fx = []; s.passes = {}; s.fxPid = null; s.trickWinner = null; s.nextLead = null;
+  s.order.forEach((p, i) => { s.hands[p] = deck.slice(i * r, i * r + r); s.tricksWon[p] = 0; });
+  let stock = deck.slice(n * r);
+  // A Werwolf turned up as trump card is set aside and the next card decides
+  while (stock[0] === "XW") stock = stock.slice(1);
+  const tc = stock[0] || null;
+  s.stock = stock.slice(1);
+  s.trump = { card: tc, suit: trumpKind(tc) === "suit" ? suitOf(tc) : null };
+  s.trickNo = 0;
+  const wolf = s.order.findIndex(p => s.hands[p].includes("XW"));
+  if (wolf >= 0) { s.phase = "werwolf"; s.turn = wolf; }
+  else if (trumpKind(tc) === "choose") { s.phase = "trumpPick"; s.turn = s.dealer; }
+  else { s.phase = "bidding"; s.turn = (s.dealer + 1) % n; }
+}
+function startGame(s, presentOrder, names) {
+  s.order = presentOrder; s.names = names; s.round = 1; s.scores = {}; s.history = [];
+  presentOrder.forEach(p => s.scores[p] = 0);
+  s.dealer = Math.floor(Math.random() * presentOrder.length);
+  deal(s);
+}
+function forbiddenBid(s) {
+  if (!s.settings.noEven) return null;
+  const n = s.order.length;
+  if (Object.keys(s.bids).length !== n - 1) return null;   // only the last bidder (the dealer) is restricted
+  const sum = Object.values(s.bids).reduce((a, b) => a + b, 0);
+  const f = s.round - sum;
+  return f >= 0 ? f : null;
+}
+function startBidding(s) { s.phase = "bidding"; s.turn = (s.dealer + 1) % s.order.length; }
+function applyTrump(s, pid, suit) {
+  if (s.phase !== "trumpPick" || s.order[s.dealer] !== pid || !SUITS[suit]) return false;
+  s.trump.suit = suit; startBidding(s);
+}
+// Werwolf holder swaps it for the trump card and names trump (suit or null = no trump)
+function applyWerwolf(s, pid, suit) {
+  if (s.phase !== "werwolf" || s.order[s.turn] !== pid || (suit !== null && !SUITS[suit])) return false;
+  if (s.trump.card) {
+    s.hands[pid] = s.hands[pid].filter(c => c !== "XW").concat(s.trump.card);
+    s.trump.card = "XW";
+  }
+  s.trump.suit = suit;
+  startBidding(s);
+}
+function applyBid(s, pid, bid) {
+  if (s.phase !== "bidding" || s.order[s.turn] !== pid || s.bids[pid] !== undefined) return false;
+  if (!(bid >= 0 && bid <= s.round) || bid === forbiddenBid(s)) return false;
+  s.bids[pid] = bid;
+  const n = s.order.length;
+  if (Object.keys(s.bids).length === n) { s.phase = "playing"; s.turn = (s.dealer + 1) % n; }
+  else s.turn = (s.turn + 1) % n;
+}
+function applyPlay(s, pid, card, opt = {}) {
+  if (s.phase !== "playing" || s.order[s.turn] !== pid) return false;
+  const hand = s.hands[pid];
+  if (!hand.includes(card) || !canPlay(hand, card, s.trick, s)) return false;
+  const play = { p: pid, c: card };
+  if (card === "XV") {
+    // Vampir on a swapped-in Werwolf: turn up the next card, it sets trump from now on and is copied
+    if (s.trump.card === "XW" && s.stock.length) {
+      const nc = s.stock.shift();
+      s.trump.card = nc;
+      const k = trumpKind(nc);
+      if (k === "suit") s.trump.suit = suitOf(nc); else if (k === "none") s.trump.suit = null;
+    }
+    play.v = s.trump.card || "N0";
+  }
+  const need = choiceFor(card, s);
+  if (need === "suit") play.s = SUITS[opt.s] ? opt.s : (s.trump.suit || "R");
+  if (need === "shape") play.as = opt.as === "N" ? "N" : "Z";
+  s.hands[pid] = hand.filter(c => c !== card);
+  s.trick.push(play);
+  const n = s.order.length;
+  if (s.trick.length < n) { s.turn = (s.turn + 1) % n; return; }
+  const res = resolveTrick(s.trick, s);
+  const w = res.winner === null ? null : s.trick[res.winner].p;
+  if (w) s.tricksWon[w] = (s.tricksWon[w] || 0) + 1;
+  s.trickWinner = w; s.nextLead = s.trick[res.lead].p;
+  // Effects after the trick, in the official order: Jongleur, then Wolke, then Hexe
+  const fx = res.E.map(e => e.fx), cardsLeft = s.hands[s.order[0]].length > 0;
+  s.fx = [];
+  if (fx.includes("J") && cardsLeft) s.fx.push("pass");
+  if (fx.includes("C") && w) s.fx.push("cloud");
+  const hexIdx = fx.indexOf("H");
+  if (hexIdx >= 0 && cardsLeft) { s.fx.push("witch"); s.fxWitch = s.trick[hexIdx].p; }
+  s.phase = "trickEnd";
+}
+function applyAdvance(s, trickNo) {
+  if (s.phase !== "trickEnd" || s.trickNo !== trickNo) return false;
+  if (s.fx.length) { s.phase = s.fx[0]; s.passes = {}; return; }
+  finishTrick(s);
+}
+function nextEffect(s) {
+  s.fx = s.fx.slice(1);
+  if (s.fx.length) { s.phase = s.fx[0]; s.passes = {}; }
+  else finishTrick(s);
+}
+function finishTrick(s) {
+  s.lastTrick = { cards: s.trick, winner: s.trickWinner || null };
+  s.trick = []; s.trickNo++; s.fx = []; s.passes = {}; s.fxWitch = null;
+  if (s.order.every(p => !s.hands[p].length)) scoreRound(s);
+  else { s.phase = "playing"; s.turn = s.order.indexOf(s.nextLead); }
+}
+// Jongleur: everyone picks a card; when all have, each passes it to the left neighbour
+function applyPass(s, pid, card) {
+  if (s.phase !== "pass" || s.passes[pid] || !s.hands[pid].includes(card)) return false;
+  s.passes[pid] = card;
+  if (!s.order.every(p => s.passes[p])) return;
+  const n = s.order.length, give = { ...s.passes };
+  s.order.forEach(p => { s.hands[p] = s.hands[p].filter(c => c !== give[p]); });
+  s.order.forEach((p, i) => { s.hands[s.order[(i + 1) % n]].push(give[p]); });
+  nextEffect(s);
+}
+// Wolke: the trick winner moves their bid one up or down
+function applyCloud(s, pid, d) {
+  if (s.phase !== "cloud" || s.trickWinner !== pid || (d !== 1 && d !== -1)) return false;
+  const b = (s.bids[pid] || 0) + d;
+  if (b < 0) return false;
+  s.bids[pid] = b;
+  nextEffect(s);
+}
+// Hexe: swap one hand card for one card from the trick (not a Hexe); null = don't swap
+function applyWitch(s, pid, handCard, trickIdx) {
+  if (s.phase !== "witch" || s.fxWitch !== pid) return false;
+  if (handCard !== null) {
+    const t = s.trick[trickIdx];
+    if (!t || isHexe(t, s) || !s.hands[pid].includes(handCard)) return false;
+    s.hands[pid] = s.hands[pid].filter(c => c !== handCard).concat(t.c);
+    s.trick[trickIdx] = { p: pid, c: handCard, dead: true };
+  }
+  nextEffect(s);
+}
+function scoreRound(s) {
+  const res = {};
+  for (const p of s.order) {
+    const b = s.bids[p], w = s.tricksWon[p] || 0;
+    const pts = b === w ? 20 + 10 * w : -10 * Math.abs(b - w);
+    s.scores[p] = (s.scores[p] || 0) + pts;
+    res[p] = { b, w, pts };
+  }
+  s.history.push({ round: s.round, res });
+  s.ready = {};
+  s.phase = s.round >= maxRounds(s.order.length) ? "gameEnd" : "roundEnd";
+}
+function applyReady(s, pid) {
+  if (s.phase !== "roundEnd") return false;
+  s.ready[pid] = true;
+  if (s.order.every(p => s.ready[p])) { s.round++; s.dealer = (s.dealer + 1) % s.order.length; deal(s); }
+}
+function toLobby(s) {
+  const settings = s.settings || {};
+  for (const k of Object.keys(s)) delete s[k];
+  s.phase = "lobby"; s.settings = settings;
+}
+const isBlind = s => !!s.settings.blind && s.round === 1;
+// A Hexe can't take a Hexe out of the trick — that includes a Vampir copying one
+const isHexe = (p, s) => !p.dead && eff(p, s).k === "H";
+
+/* Long-press info for Zauberer, Narr and the special cards: what it beats, what beats it, extras */
+const CARD_INFO = {
+  Z:  { name:"Zauberer", icon:"Z",
+        beats:["alle Farbkarten, auch Trumpf", "Narren, Fee und Hexe", "jeden später gespielten Zauberer"],
+        loses:["den Drachen", "einen Zauberer, der vorher im Stich lag"],
+        perks:["Darf immer gespielt werden, auch wenn du bedienen könntest", "Spielst du ihn aus, darf jeder beliebige Karten legen", "Als Trumpfkarte: Der Geber wählt Trumpf"] },
+  N:  { name:"Narr", icon:"N",
+        beats:["die Fee und die Hexe", "spätere Narren, wenn nur Narren im Stich liegen"],
+        loses:["alle Farbkarten", "Zauberer und Drache"],
+        perks:["Darf immer gespielt werden — der sichere Weg, einen Stich nicht zu bekommen", "Spielst du ihn aus, bestimmt die nächste Farbkarte die Farbe", "Als Trumpfkarte: kein Trumpf"] },
+  XD: { name:"Drache", icon:"🐉",
+        beats:["alles — auch jeden Zauberer"],
+        loses:["die Fee, wenn sie im selben Stich liegt"],
+        perks:["Darf immer gespielt werden", "Spielst du ihn aus, darf jeder beliebige Karten legen", "Mit einer Bombe im Stich bekommt trotzdem niemand den Stich", "Als Trumpfkarte: Der Geber wählt Trumpf"] },
+  XF: { name:"Fee", icon:"🧚",
+        beats:["den Drachen — liegt er im Stich, gewinnt die Fee", "sonst nur die Hexe"],
+        loses:["alles andere, sogar Narren"],
+        perks:["Darf immer gespielt werden — perfekt, um keinen Stich zu machen", "Die Antwort auf den Drachen", "Als Trumpfkarte: kein Trumpf"] },
+  XB: { name:"Bombe", icon:"💣",
+        beats:["— niemand gewinnt einen Stich mit Bombe"],
+        loses:["—"],
+        perks:["Der Stich zählt für niemanden", "Wer die höchste Karte gelegt hat, spielt trotzdem aus", "Hebt die Wolke auf: keine Änderung der Ansage", "Als Trumpfkarte: kein Trumpf"] },
+  XW: { name:"Werwolf", icon:"🐺",
+        beats:["— wirkt beim Austeilen, nicht im Stich"],
+        loses:["— liegt er doch im Stich, zählt er wie ein Narr"],
+        perks:["Wer ihn bekommt, tauscht ihn sofort gegen die Trumpfkarte", "Du bestimmst Trumpf — oder dass es keinen gibt", "Wird er als Trumpfkarte aufgedeckt, entscheidet die nächste Karte"] },
+  XJ: { name:"Jongleur", icon:"🤹",
+        beats:["Karten 1–7 der gewählten Farbe", "andere Farben, wenn deine Farbe Trumpf ist oder ausgespielt wurde", "Narren, Fee und Hexe"],
+        loses:["Karten 8–13 der gewählten Farbe", "Trumpf (wenn deine Farbe kein Trumpf ist)", "Zauberer und Drache"],
+        perks:["Zählt 7½ in einer Farbe deiner Wahl", "Danach gibt jeder eine Handkarte an den linken Nachbarn", "Spielst du ihn aus, muss die gewählte Farbe bedient werden"] },
+  XC: { name:"Wolke", icon:"☁️",
+        beats:["Karten 1–9 der gewählten Farbe", "andere Farben, wenn deine Farbe Trumpf ist oder ausgespielt wurde", "Narren, Fee und Hexe"],
+        loses:["Karten 10–13 der gewählten Farbe", "Trumpf (wenn deine Farbe kein Trumpf ist)", "Zauberer und Drache"],
+        perks:["Zählt 9¾ in einer Farbe deiner Wahl", "Wer den Stich gewinnt, muss seine Ansage um +1 oder −1 ändern", "Mit einer Bombe im Stich entfällt das", "Als Trumpfkarte: Der Geber wählt Trumpf"] },
+  XS: { name:"Gestaltwandler", icon:"🎭",
+        beats:["als Zauberer: wie ein Zauberer", "als Narr: Fee und Hexe"],
+        loses:["als Zauberer: Drache und frühere Zauberer", "als Narr: fast alles"],
+        perks:["Du entscheidest beim Ausspielen: Zauberer oder Narr", "Darf immer gespielt werden", "Als Trumpfkarte: Der Geber wählt Trumpf"] },
+  XV: { name:"Vampir", icon:"🧛",
+        beats:["genau das, was die kopierte Karte schlägt"],
+        loses:["genau das, wogegen die kopierte Karte verliert"],
+        perks:["Kopiert die aufgedeckte Trumpfkarte samt Fähigkeiten", "Darf immer gespielt werden — auch wenn Trumpf ausgespielt wurde", "Liegt der Werwolf als Trumpfkarte, wird die nächste Karte aufgedeckt: Sie gilt ab sofort als Trumpf und wird kopiert", "Als Trumpfkarte: Der Geber wählt Trumpf"] },
+  XH: { name:"Hexe", icon:"🧙",
+        beats:["nichts — sie ist die niedrigste Karte"],
+        loses:["alles, auch Narr und Fee"],
+        perks:["Nach dem Stich darfst du eine Handkarte gegen eine Karte aus dem Stich tauschen (keine Hexe)", "Die getauschte Karte im Stich hat keine Wirkung mehr", "Wirkt nach allen anderen Sonderkarten", "Spielst du sie aus, bestimmt die nächste Farbkarte die Farbe", "Als Trumpfkarte: kein Trumpf"] },
+};
+const infoKey = c => !c || c === "?" ? null : isZ(c) ? "Z" : isN(c) ? "N" : CARD_INFO[c] ? c : null;
+
+/* =========================================================
+   CONNECTION
+========================================================= */
+const $ = sel => document.querySelector(sel);
+const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const store = {
+  get(k) { try { return JSON.parse(sessionStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k) { try { sessionStorage.removeItem(k); } catch {} }
+};
+let mp = null, room = null, selected = null, selectedTrick = null, advanceTimer = null;
+
+function getMp() { return mp ||= Multiplayer.create("wizard", { maxPlayers: 6 }); }
+const me = () => getMp().me;
+
+// Run a rule function inside a Firebase transaction so two phones can't act at once
+function act(fn) {
+  return getMp().transaction("state", s => {
+    if (!s) return s;
+    norm(s);
+    return fn(s) === false ? undefined : s;
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+}
+
+function myName() {
+  const n = $("#nameInput").value.trim();
+  if (!n) { $("#startError").textContent = "Bitte zuerst einen Namen eingeben."; $("#nameInput").focus(); return null; }
+  try { localStorage.setItem("wz-name", n); } catch {}
+  return n;
+}
+
+async function enterRoom(code, name) {
+  store.set("wz-session", { code, name });
+  history.replaceState(null, "", "?r=" + code);
+  getMp().onChange(onRoom);
+}
+
+const DEFAULT_SETTINGS = { noEven: false, blind: true, specials: Object.fromEntries(SPECIAL_IDS.map(x => [x, false])) };
+$("#createBtn").addEventListener("click", async () => {
+  const name = myName(); if (!name) return;
+  $("#createBtn").disabled = true;
+  try { const code = await getMp().host(name, { phase: "lobby", settings: DEFAULT_SETTINGS }); await enterRoom(code, name); }
+  catch (e) { $("#startError").textContent = "Raum konnte nicht erstellt werden. Internet da?"; console.error(e); }
+  $("#createBtn").disabled = false;
+});
+$("#joinBtn").addEventListener("click", () => join($("#codeInput").value));
+$("#codeInput").addEventListener("input", e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); });
+$("#codeInput").addEventListener("keydown", e => { if (e.key === "Enter") join(e.target.value); });
+
+async function join(code) {
+  const name = myName(); if (!name) return;
+  if (String(code).trim().length < 4) { $("#startError").textContent = "Code prüfen."; return; }
+  $("#joinBtn").disabled = true;
+  try { await getMp().join(code, name); await enterRoom(getMp().code, name); }
+  catch (e) { $("#startError").textContent = e.message || "Beitritt fehlgeschlagen."; }
+  $("#joinBtn").disabled = false;
+}
+
+async function leaveRoom() {
+  await removeBots();
+  store.del("wz-session");
+  history.replaceState(null, "", location.pathname);
+  room = null;
+  await getMp().leave();
+  $("#awayOverlay").classList.remove("show");
+  $("#roomMeta").textContent = "Online · 3–6 Spieler";
+  showScreen("screen-start");
+}
+$("#leaveLobbyBtn").addEventListener("click", leaveRoom);
+$("#leaveGameBtn").addEventListener("click", () => { if (confirm("Wirklich verlassen? Die Partie kann dann nicht weitergehen.")) leaveRoom(); });
+
+$("#shareBtn").addEventListener("click", async () => {
+  const url = location.origin + location.pathname + "?r=" + getMp().code;
+  const text = `Spiel Wizard mit mir! Raumcode: ${getMp().code}`;
+  try {
+    if (navigator.share) await navigator.share({ title: "Wizard", text, url });
+    else { await navigator.clipboard.writeText(url); $("#shareBtn").textContent = "Link kopiert ✓"; setTimeout(() => $("#shareBtn").textContent = "Einladung teilen", 1800); }
+  } catch {}
+});
+
+// Lobby settings (host only). Read the new value before act(): act() triggers a re-render
+// that would otherwise reset the control before the transaction reads it.
+function setSetting(fn) { return act(s => { if (s.phase !== "lobby") return false; fn(s.settings); }); }
+$("#optNoEven").addEventListener("change", e => { const v = e.target.checked; setSetting(st => { st.noEven = v; }); });
+$("#optBlind").addEventListener("change", e => { const v = e.target.checked; setSetting(st => { st.blind = v; }); });
+$("#specialAll").addEventListener("click", () => {
+  const on = !SPECIAL_IDS.every(x => room?.state?.settings?.specials?.[x]);
+  setSetting(st => { st.specials = Object.fromEntries(SPECIAL_IDS.map(x => [x, on])); });
+});
+$("#specialChips").innerHTML = SPECIAL_IDS.map(x =>
+  `<button class="chip" data-x="${x}" title="${esc(SPECIALS[x].text)}">${SPECIALS[x].icon} ${SPECIALS[x].name}</button>`).join("");
+$("#specialChips").querySelectorAll("[data-x]").forEach(b => b.addEventListener("click", () => {
+  const x = b.dataset.x, v = !room?.state?.settings?.specials?.[x];
+  setSetting(st => { st.specials = { ...(st.specials || {}), [x]: v }; });
+}));
+$("#specialRules").innerHTML = SPECIAL_IDS.map(x => `<li><b>${SPECIALS[x].icon} ${SPECIALS[x].name}:</b> ${SPECIALS[x].text}</li>`).join("");
+
+$("#startBtn").addEventListener("click", () => act(s => {
+  if (s.phase !== "lobby") return false;
+  const present = Object.entries(room.players || {}).sort((a, b) => (a[1].joinedAt || 0) - (b[1].joinedAt || 0)).map(([id]) => id);
+  if (present.length < 3 || present.length > 6) return false;
+  startGame(s, present, Object.fromEntries(present.map(id => [id, room.players[id].name])));
+}));
+$("#abortBtn").addEventListener("click", () => act(s => { toLobby(s); }));
+
+/* =========================================================
+   RENDER
+========================================================= */
+const nameOf = id => esc(room?.players?.[id]?.name || room?.state?.names?.[id] || "?");
+
+function cardHTML(c, cls = "", extra = "") {
+  if (!c) return "";
+  if (c === "?") return `<div class="card back ${cls}" data-c="?" title="Verdeckt">?</div>`;
+  if (isZ(c)) return `<div class="card z ${cls}" data-v="Z" data-c="${c}" title="Zauberer">Z${extra}</div>`;
+  if (isN(c)) return `<div class="card n ${cls}" data-v="N" data-c="${c}" title="Narr">N${extra}</div>`;
+  if (isX(c)) return `<div class="card x x-${c} ${cls}" data-c="${c}" title="${esc(SPECIALS[c].name + ": " + SPECIALS[c].text)}"><span class="ic">${SPECIALS[c].icon}</span><span class="nm">${SPECIALS[c].name}</span>${extra}</div>`;
+  return `<div class="card s-${suitOf(c)} ${cls}" data-v="${valOf(c)}" data-c="${c}" title="${SUITS[suitOf(c)]} ${valOf(c)}">${valOf(c)}${extra}</div>`;
+}
+// Small note under a played special card: chosen suit, shape or copied card
+function playNote(p, s) {
+  if (p.dead) return "getauscht";
+  const parts = [];
+  if (p.c === "XV" && p.v) parts.push("als " + (isX(p.v) ? SPECIALS[p.v].name : isZ(p.v) ? "Zauberer" : isN(p.v) ? "Narr" : SUITS[p.v[0]] + " " + valOf(p.v)));
+  if (p.s) parts.push(SUITS[p.s]);
+  if (p.as) parts.push(p.as === "Z" ? "Zauberer" : "Narr");
+  return parts.join(" · ");
+}
+
+function onRoom(r) {
+  if (!r) { leaveRoom(); $("#startError").textContent = "Der Raum wurde geschlossen."; return; }
+  room = r;
+  const s = norm(r.state || { phase: "lobby" });
+  if (admin && $("#autoMe").checked) { autoMe.mp = getMp(); autoMe.id = me(); botThink(autoMe, r); }
+  $("#roomMeta").textContent = "Raum " + r.code;
+  if (s.phase === "lobby") return renderLobby(r, s);
+  if (s.phase === "roundEnd" || s.phase === "gameEnd") renderScore(r, s);
+  else renderGame(r, s);
+  renderAway(r, s);
+  if (s.phase === "trickEnd") scheduleAdvance(s.trickNo);
+}
+
+function renderLobby(r, s) {
+  showScreen("screen-lobby");
+  $("#awayOverlay").classList.remove("show");
+  $("#lobbyCode").textContent = r.code;
+  const players = Object.entries(r.players || {}).sort((a, b) => (a[1].joinedAt || 0) - (b[1].joinedAt || 0));
+  const host = Multiplayer.hostOf(r);
+  $("#lobbyCount").textContent = `${players.length} / 6`;
+  $("#lobbyPlayers").innerHTML = players.map(([id, p]) =>
+    `<li>${esc(p.name)} <small>${id === host ? "Gastgeber" : ""}${id === me() ? (id === host ? " · du" : "du") : ""}</small></li>`).join("");
+  const isHost = host === me();
+  const st = s.settings;
+  $("#optNoEven").checked = !!st.noEven; $("#optNoEven").disabled = !isHost;
+  $("#optBlind").checked = !!st.blind;   $("#optBlind").disabled = !isHost;
+  const onCount = SPECIAL_IDS.filter(x => st.specials[x]).length;
+  $("#specialAll").textContent = onCount === SPECIAL_IDS.length ? "Alle aus" : "Alle an";
+  $("#specialAll").disabled = !isHost;
+  $("#specialCount").textContent = onCount ? `${onCount} von ${SPECIAL_IDS.length}` : "aus";
+  $("#specialChips").querySelectorAll("[data-x]").forEach(b => { b.classList.toggle("on", !!st.specials[b.dataset.x]); b.disabled = !isHost; });
+  $("#startBtn").disabled = !isHost || players.length < 3;
+  $("#startBtn").style.display = isHost ? "" : "none";
+  $("#lobbyNote").textContent = players.length < 3
+    ? `Noch ${3 - players.length} Mitspieler nötig — teile den Code.`
+    : isHost ? `${players.length} Spieler · ${maxRounds(players.length)} Runden` : "Warte, bis der Gastgeber startet …";
+}
+
+function suitButtons(attr, extra = "") {
+  return `<div class="suits">${Object.entries(SUITS).map(([k, v]) => `<button class="btn" ${attr}="${k}" style="background:var(--s-${k})">${v}</button>`).join("")}${extra}</div>`;
+}
+
+function renderGame(r, s) {
+  showScreen("screen-game");
+  const n = s.order.length, turnId = s.order[s.turn], mine = me(), blind = isBlind(s);
+  $("#roundLbl").innerHTML = `Runde ${s.round}<small>von ${maxRounds(n)}</small>`;
+  const t = s.trump || {};
+  const pending = s.phase === "trumpPick" || s.phase === "werwolf";
+  $("#trumpBox").innerHTML = (t.card ? cardHTML(t.card, "tiny") : "") +
+    `<span>Trumpf: <b>${t.suit ? SUITS[t.suit] : (pending ? "wird gewählt" : "keiner")}</b></span>`;
+
+  // Seats in table order; in the blind round everyone else's card is shown on their seat
+  const starter = (s.dealer + 1) % n;
+  $("#seats").innerHTML = s.order.map((id, i) => {
+    const bid = s.bids[id];
+    const away = !r.players?.[id];
+    const active = ["bidding", "playing", "trumpPick", "werwolf"].includes(s.phase) && id === turnId
+      || (s.phase === "pass" && !s.passes[id]) || (s.phase === "cloud" && id === s.trickWinner) || (s.phase === "witch" && id === s.fxWitch);
+    const peek = blind && id !== mine && s.hands[id]?.length ? `<div class="peek">${s.hands[id].map(c => cardHTML(c, "tiny")).join("")}</div>` : "";
+    return `<div class="seat ${active ? "turn" : ""} ${id === mine ? "me" : ""} ${away ? "away" : ""}">
+      <div class="top"><div class="name">${nameOf(id)}</div><div class="score">${s.scores[id] || 0}</div></div>
+      <div class="meta"><span>Ansage <b>${bid ?? "–"}</b></span><span>Stiche <b>${s.tricksWon[id] || 0}</b></span>${i === s.dealer ? '<span class="tag">Geber</span>' : ""}${i === starter ? '<span class="tag start">beginnt</span>' : ""}</div>
+      ${peek}
+    </div>`;
+  }).join("");
+
+  // Table: current trick (or the finished one while its effects resolve)
+  const done = ["trickEnd", "pass", "cloud", "witch"].includes(s.phase);
+  const winnerIdx = done ? s.trick.findIndex(p => p.p === s.trickWinner && !p.dead) : -1;
+  const pickTrick = s.phase === "witch" && s.fxWitch === mine;
+  if (selectedTrick !== null && (!pickTrick || !s.trick[selectedTrick] || isHexe(s.trick[selectedTrick], s))) selectedTrick = null;
+  $("#trick").innerHTML = s.trick.map((p, i) => {
+    const note = playNote(p, s);
+    const cls = (pickTrick && !isHexe(p, s) ? "ok" : "") + (i === selectedTrick ? " sel" : "") + (p.dead ? " dead" : "");
+    return `<div class="play ${i === winnerIdx ? "win" : ""}" data-i="${i}">${cardHTML(p.c, "big " + cls)}<span>${nameOf(p.p)}</span>${note ? `<em>${esc(note)}</em>` : ""}</div>`;
+  }).join("");
+  if (pickTrick) $("#trick").querySelectorAll(".play").forEach(el => {
+    if (isHexe(s.trick[+el.dataset.i], s)) return;
+    el.onclick = () => { selectedTrick = +el.dataset.i; renderGame(room, norm(room.state)); };
+  });
+
+  const who = id => id === mine ? "Du" : nameOf(id);
+  let status = "";
+  if (s.phase === "werwolf") status = turnId === mine ? "🐺 <b>Du hast den Werwolf!</b> Tausch ihn gegen die Trumpfkarte und bestimme Trumpf." : `🐺 <b>${nameOf(turnId)}</b> hat den Werwolf und bestimmt Trumpf …`;
+  else if (s.phase === "trumpPick") status = turnId === mine ? "Eine Sonderkarte liegt als Trumpf: <b>Du wählst Trumpf.</b>" : `<b>${nameOf(turnId)}</b> wählt Trumpf …`;
+  else if (s.phase === "bidding") status = (blind ? "Blindrunde: Du siehst nur die Karten der anderen. " : "") +
+    (turnId === mine ? "<b>Deine Ansage:</b> Wie viele Stiche holst du?" : `<b>${nameOf(turnId)}</b> sagt an …`);
+  else if (s.phase === "playing") status = s.trick.length ? (turnId === mine ? "<b>Du bist dran.</b>" : `<b>${nameOf(turnId)}</b> ist dran …`)
+    : (turnId === mine ? "<b>Du spielst aus.</b>" : `<b>${nameOf(turnId)}</b> spielt aus …`);
+  else if (s.phase === "trickEnd") status = s.trickWinner ? (s.trickWinner === mine ? "<b>Dein Stich!</b>" : `Stich an <b>${nameOf(s.trickWinner)}</b>`)
+    : `💣 <b>Bombe:</b> Niemand bekommt den Stich. ${who(s.nextLead)} ${s.nextLead === mine ? "spielst" : "spielt"} aus.`;
+  else if (s.phase === "pass") status = "🤹 <b>Jongleur:</b> " + (s.passes[mine] ? "Warte auf die anderen …" : "Wähle eine Karte, die du nach links weitergibst.");
+  else if (s.phase === "cloud") status = "☁️ <b>Wolke:</b> " + (s.trickWinner === mine ? "Ändere deine Ansage um +1 oder −1." : `${nameOf(s.trickWinner)} ändert die Ansage …`);
+  else if (s.phase === "witch") status = "🧙 <b>Hexe:</b> " + (s.fxWitch === mine ? "Tausche eine Handkarte gegen eine Karte aus dem Stich — oder lass es." : `${nameOf(s.fxWitch)} darf tauschen …`);
+  $("#status").innerHTML = status;
+
+  // Hand
+  const realHand = sortHand(s.hands[mine] || [], t.suit);
+  const myPlay = s.phase === "playing" && turnId === mine;
+  const myPass = s.phase === "pass" && !s.passes[mine];
+  const myWitch = s.phase === "witch" && s.fxWitch === mine;
+  const shown = blind ? realHand.map(() => "?") : realHand;
+  if (selected && !(blind ? selected === "?" : realHand.includes(selected))) selected = null;
+  if (!myPlay && !myPass && !myWitch) selected = null;
+  const handEl = $("#hand");
+  handEl.classList.toggle("active", myPlay || myPass || myWitch);
+  handEl.innerHTML = shown.map((c, i) => {
+    const ok = myPlay ? (blind || canPlay(realHand, c, s.trick, s)) : (myPass || myWitch);
+    return cardHTML(c, (handEl.classList.contains("active") ? (ok ? "ok" : "no") : "") + (c === selected ? " sel" : ""));
+  }).join("") || `<span class="hint">Keine Karten</span>`;
+  handEl.querySelectorAll(".card.ok").forEach(el => el.onclick = () => {
+    const c = el.dataset.c;
+    if (myPlay && selected === c && !(choiceFor(blind ? realHand[0] : c, s) && !blind)) return playSelected(s, realHand);
+    selected = c; renderGame(room, norm(room.state));
+  });
+
+  // Panel: whatever this phase asks of me
+  const panel = $("#panel");
+  let html = "";
+  if (s.phase === "trumpPick" && turnId === mine) html = suitButtons("data-suit");
+  else if (s.phase === "werwolf" && turnId === mine) html = suitButtons("data-wolf", `<button class="btn ghost" data-wolf="none">Kein Trumpf</button>`);
+  else if (s.phase === "bidding" && turnId === mine) {
+    const f = forbiddenBid(s);
+    html = `<div class="bids">${Array.from({ length: s.round + 1 }, (_, i) =>
+      `<button class="btn ${i === f ? "" : "ghost"}" data-bid="${i}" ${i === f ? "disabled title='Ansagen dürfen nicht aufgehen'" : ""}>${i}</button>`).join("")}</div>` +
+      (f !== null ? `<div class="hint" style="margin-top:8px">${f} ist gesperrt — die Ansagen dürfen nicht aufgehen.</div>` : "");
+  } else if (myPlay && selected) {
+    const card = blind ? realHand[0] : selected;
+    const need = blind ? null : choiceFor(card, s);
+    if (need === "suit") html = `<div class="hint">${SPECIALS[card === "XV" ? t.card : card]?.name || ""} spielen als:</div>` + suitButtons("data-play-suit");
+    else if (need === "shape") html = `<div class="suits"><button class="btn" data-play-as="Z">Als Zauberer</button><button class="btn ghost" data-play-as="N">Als Narr</button></div>`;
+    else html = `<button class="btn accent block" data-play="1">${blind ? "Unbekannte Karte ausspielen" : "Ausspielen"}</button>`;
+  } else if (myPass && selected) html = `<button class="btn accent block" data-pass="1">Karte weitergeben</button>`;
+  else if (s.phase === "cloud" && s.trickWinner === mine) {
+    const b = s.bids[mine] || 0;
+    html = `<div class="suits"><button class="btn" data-cloud="1">+1 (auf ${b + 1})</button><button class="btn" data-cloud="-1" ${b === 0 ? "disabled" : ""}>−1 (auf ${Math.max(0, b - 1)})</button></div>`;
+  } else if (myWitch) html = `<div class="suits"><button class="btn accent" data-witch="swap" ${selected && selectedTrick !== null ? "" : "disabled"}>Tauschen</button><button class="btn ghost" data-witch="skip">Nicht tauschen</button></div>
+      <div class="hint" style="margin-top:6px">Erst eine Karte im Stich, dann eine deiner Karten antippen.</div>`;
+  panel.innerHTML = html;
+  panel.querySelectorAll("[data-suit]").forEach(b => b.onclick = () => act(st => applyTrump(st, mine, b.dataset.suit)));
+  panel.querySelectorAll("[data-wolf]").forEach(b => b.onclick = () => act(st => applyWerwolf(st, mine, b.dataset.wolf === "none" ? null : b.dataset.wolf)));
+  panel.querySelectorAll("[data-bid]").forEach(b => b.onclick = () => act(st => applyBid(st, mine, +b.dataset.bid)));
+  panel.querySelectorAll("[data-play]").forEach(b => b.onclick = () => playSelected(s, realHand));
+  panel.querySelectorAll("[data-play-suit]").forEach(b => b.onclick = () => playSelected(s, realHand, { s: b.dataset.playSuit }));
+  panel.querySelectorAll("[data-play-as]").forEach(b => b.onclick = () => playSelected(s, realHand, { as: b.dataset.playAs }));
+  panel.querySelectorAll("[data-pass]").forEach(b => b.onclick = () => { const c = selected; selected = null; act(st => applyPass(st, mine, c)); });
+  panel.querySelectorAll("[data-cloud]").forEach(b => b.onclick = () => act(st => applyCloud(st, mine, +b.dataset.cloud)));
+  panel.querySelectorAll("[data-witch]").forEach(b => b.onclick = () => {
+    const swap = b.dataset.witch === "swap", c = selected, i = selectedTrick;
+    selected = null; selectedTrick = null;
+    act(st => applyWitch(st, mine, swap ? c : null, swap ? i : null));
+  });
+
+  const won = s.tricksWon[mine] || 0;
+  $("#myInfo").textContent = s.bids[mine] !== undefined ? `Ansage ${s.bids[mine]} · ${won} ${won === 1 ? "Stich" : "Stiche"}` : "";
+  $("#hint").textContent = myPlay ? (selected ? "" : (blind ? "Tippe deine verdeckte Karte an" : "Karte antippen, dann nochmal zum Ausspielen"))
+    : myPass && !selected ? "Karte zum Weitergeben antippen"
+    : realHand.some(infoKey) && !blind ? "Sonderkarte lange drücken für Infos" : "";
+}
+function playSelected(s, realHand, opt = {}) {
+  const card = isBlind(s) ? realHand[0] : selected;
+  selected = null;
+  act(st => applyPlay(st, me(), card, opt));
+}
+
+function scheduleAdvance(trickNo) {
+  clearTimeout(advanceTimer);
+  advanceTimer = setTimeout(() => act(st => applyAdvance(st, trickNo)), 1700);
+}
+
+function renderScore(r, s) {
+  showScreen("screen-score");
+  const ended = s.phase === "gameEnd";
+  const ranking = [...s.order].sort((a, b) => (s.scores[b] || 0) - (s.scores[a] || 0));
+  const last = s.history[s.history.length - 1];
+  $("#podium").innerHTML = ended
+    ? `<div class="crown">♛</div><div class="who">${nameOf(ranking[0])}</div><div class="pts">${s.scores[ranking[0]]} Punkte · Sieg</div>`
+    : `<div class="who" style="font-size:clamp(28px,7vw,44px)">Runde ${s.round} vorbei</div><div class="pts">${maxRounds(s.order.length) - s.round} Runden übrig</div>`;
+
+  if (ended) {
+    $("#scoreTitle").textContent = "Endstand";
+    const rounds = s.history.map(h => h.round);
+    $("#scoreTable").innerHTML = `<tr><th>Spieler</th><th>Punkte</th>${rounds.map(n => `<th>R${n}</th>`).join("")}</tr>` +
+      ranking.map((p, i) => `<tr class="${i === 0 ? "lead" : ""}"><td>${i + 1}. ${nameOf(p)}</td><td><b>${s.scores[p]}</b></td>${
+        s.history.map(h => { const x = h.res[p]; return `<td class="${x.pts > 0 ? "pos" : "neg"}">${x.pts > 0 ? "+" : ""}${x.pts}</td>`; }).join("")}</tr>`).join("");
+    const isHost = Multiplayer.hostOf(r) === me();
+    $("#scoreActions").innerHTML = (isHost ? `<button class="btn accent block" id="againBtn">Nochmal spielen</button>` : `<div class="note" style="text-align:center">Der Gastgeber kann eine neue Partie starten.</div>`) +
+      `<button class="btn ghost block" id="leaveBtn">Raum verlassen</button>`;
+    if (isHost) $("#againBtn").onclick = () => act(st => { toLobby(st); });
+  } else {
+    $("#scoreTitle").textContent = "Diese Runde";
+    $("#scoreTable").innerHTML = `<tr><th>Spieler</th><th>Ansage</th><th>Stiche</th><th>Runde</th><th>Gesamt</th></tr>` +
+      ranking.map((p, i) => { const x = last.res[p]; return `<tr class="${i === 0 ? "lead" : ""}"><td>${nameOf(p)}</td><td>${x.b}</td><td>${x.w}</td>
+        <td class="${x.pts > 0 ? "pos" : "neg"}">${x.pts > 0 ? "+" : ""}${x.pts}</td><td><b>${s.scores[p]}</b></td></tr>`; }).join("");
+    const waiting = s.order.filter(p => !s.ready[p]);
+    const iAmReady = !!s.ready[me()];
+    $("#scoreActions").innerHTML = `<button class="btn accent block" id="readyBtn" ${iAmReady ? "disabled" : ""}>${iAmReady ? "Bereit ✓" : "Weiter zur nächsten Runde"}</button>
+      <div class="note" style="text-align:center">${waiting.length ? "Warte auf: " + waiting.map(nameOf).join(", ") : ""}</div>
+      <button class="btn ghost block" id="leaveBtn">Raum verlassen</button>`;
+    $("#readyBtn").onclick = () => act(st => applyReady(st, me()));
+  }
+  $("#leaveBtn").onclick = () => { if (ended || confirm("Wirklich verlassen? Die Partie kann dann nicht weitergehen.")) leaveRoom(); };
+}
+
+function renderAway(r, s) {
+  const away = s.order.filter(p => !r.players?.[p]);
+  const show = away.length && s.phase !== "gameEnd";
+  $("#awayOverlay").classList.toggle("show", !!show);
+  if (show) $("#awayText").innerHTML = `${away.map(nameOf).join(", ")} ${away.length > 1 ? "sind" : "ist"} nicht mehr verbunden. Sobald die Seite dort wieder offen ist, geht es weiter.`;
+}
+
+/* =========================================================
+   CARD INFO — long-press (touch) or right-click (mouse) on Zauberer, Narr or a special card
+========================================================= */
+function cardInfoHTML(c) {
+  const k = infoKey(c), info = CARD_INFO[k];
+  const li = a => a.map(x => `<li>${esc(x)}</li>`).join("");
+  let now = "";
+  const st = room?.state;
+  if (k === "XV" && st?.trump?.card) {
+    const t = st.trump.card, ik = infoKey(t);
+    now = `<div class="now">Gerade kopiert der Vampir: <b>${ik ? CARD_INFO[ik].name : SUITS[t[0]] + " " + valOf(t)}</b></div>`;
+  }
+  if (st?.trump?.suit && (k === "XJ" || k === "XC")) now = `<div class="now">Trumpf ist gerade <b>${SUITS[st.trump.suit]}</b> — wählst du diese Farbe, ist die Karte ein Trumpf.</div>`;
+  return `<button class="close" aria-label="Schließen">×</button>
+    <h4><span class="ic">${info.icon}</span>${info.name}</h4>
+    <div class="sec good">Schlägt</div><ul>${li(info.beats)}</ul>
+    <div class="sec bad">Verliert gegen</div><ul>${li(info.loses)}</ul>
+    <div class="sec perk">Besonderheiten</div><ul>${li(info.perks)}</ul>${now}`;
+}
+const infoBox = $("#cardInfo");
+function showCardInfo(c, el) {
+  if (!infoKey(c)) return;
+  infoBox.innerHTML = cardInfoHTML(c);
+  infoBox.classList.add("show");
+  // Place it above the card if there is room, otherwise below; keep it on screen
+  const r = el.getBoundingClientRect(), w = infoBox.offsetWidth, h = infoBox.offsetHeight;
+  const left = Math.min(Math.max(12, r.left + r.width / 2 - w / 2), innerWidth - w - 12);
+  const top = r.top - h - 12 > 12 ? r.top - h - 12 : Math.min(r.bottom + 12, innerHeight - h - 12);
+  infoBox.style.left = left + "px"; infoBox.style.top = Math.max(12, top) + "px";
+  navigator.vibrate?.(15);
+}
+function hideCardInfo() { infoBox.classList.remove("show"); }
+
+const infoTarget = e => {
+  const el = e.target.closest?.(".card[data-c], .chip[data-x]");
+  if (!el) return null;
+  const c = el.dataset.c || el.dataset.x;
+  return infoKey(c) ? { el, c } : null;
+};
+let pressTimer = null, pressStart = null, suppressClick = false;
+document.addEventListener("pointerdown", e => {
+  if (infoBox.classList.contains("show") && !infoBox.contains(e.target)) { hideCardInfo(); suppressClick = true; return; }
+  const t = infoTarget(e);
+  if (!t || e.button > 0) return;
+  pressStart = { x: e.clientX, y: e.clientY };
+  clearTimeout(pressTimer);
+  pressTimer = setTimeout(() => { suppressClick = true; showCardInfo(t.c, t.el); }, 450);
+});
+const cancelPress = () => { clearTimeout(pressTimer); pressTimer = null; };
+document.addEventListener("pointerup", cancelPress);
+document.addEventListener("pointercancel", cancelPress);
+document.addEventListener("pointermove", e => {
+  if (pressStart && Math.hypot(e.clientX - pressStart.x, e.clientY - pressStart.y) > 10) cancelPress();
+});
+// The tap that ends a long press must not also select or play the card
+document.addEventListener("click", e => {
+  if (e.target.closest?.(".card-info .close")) { hideCardInfo(); return; }
+  if (suppressClick) { suppressClick = false; e.preventDefault(); e.stopPropagation(); }
+}, true);
+// Mouse: right-click opens the info; also stops the phone's own long-press menu
+document.addEventListener("contextmenu", e => {
+  const t = infoTarget(e);
+  if (!t) return;
+  e.preventDefault();
+  cancelPress();
+  showCardInfo(t.c, t.el);
+});
+window.addEventListener("scroll", hideCardInfo, { passive: true });
+document.addEventListener("keydown", e => { if (e.key === "Escape") hideCardInfo(); });
+
+/* =========================================================
+   ADMIN MODE — secret: tap the "Wizard" title 5× (or open ?admin)
+   Bots join as real players from this page and play by themselves.
+========================================================= */
+let admin = false;
+try { admin = localStorage.getItem("wz-admin") === "1" || new URLSearchParams(location.search).has("admin"); } catch {}
+function setAdmin(on) {
+  admin = on;
+  document.body.classList.toggle("admin", on);
+  try { localStorage.setItem("wz-admin", on ? "1" : "0"); } catch {}
+  $("#roomMeta").textContent = on ? "Admin-Modus an" : (getMp().code ? "Raum " + getMp().code : "Online · 3–6 Spieler");
+  if (room) onRoom(room);
+}
+setAdmin(admin);
+let taps = [];
+document.querySelector(".mast .brand").addEventListener("click", () => {
+  const now = Date.now();
+  taps = taps.filter(t => now - t < 2500).concat(now);
+  if (taps.length >= 5) { taps = []; setAdmin(!admin); }
+});
+
+const autoMe = { key: "" };   // "Autoplay" lets the bot logic play your own seat
+const BOT_NAMES = ["Merlin", "Gandalf", "Morgana", "Dumbledore", "Saruman", "Circe"];
+let bots = [];
+
+async function addBot() {
+  if (!getMp().code) return;
+  const players = Object.keys(room?.players || {});
+  if (players.length >= 6) return;
+  const used = new Set(Object.values(room.players).map(p => p.name));
+  const name = "Bot " + (BOT_NAMES.find(n => !used.has("Bot " + n)) || bots.length + 1);
+  const app = "bot-" + Math.random().toString(36).slice(2, 8);
+  await spawnBot(getMp().code, app, name);
+  saveBots();
+}
+// Each bot has its own Firebase app, so it signs in separately and gets its own player id
+async function spawnBot(code, app, name) {
+  const bmp = Multiplayer.create("wizard", { maxPlayers: 6, appName: app });
+  await bmp.join(code, name);
+  const bot = { id: bmp.me, app, name, mp: bmp, key: "" };
+  bmp.onChange(r => r && botThink(bot, r));
+  bots.push(bot);
+}
+async function removeBots() {
+  const list = bots; bots = [];
+  saveBots();
+  await Promise.all(list.map(b => b.mp.leave()));
+}
+function saveBots() { store.set("wz-bots", bots.map(b => ({ app: b.app, name: b.name }))); }
+async function restoreBots(code) {
+  for (const b of store.get("wz-bots") || []) { if (b.app) try { await spawnBot(code, b.app, b.name); } catch {} }
+}
+$("#addBotBtn").addEventListener("click", addBot);
+$("#removeBotsBtn").addEventListener("click", removeBots);
+
+// Simple but sensible play: bid on strong cards, chase tricks only while short of the bid
+function botPower(c, s) {
+  const t = s.trump.suit, ls = leadSuit(s.trick, s);
+  const e = c === "XV" ? baseEff(s.trump.card, { s: t || "R", as: "Z" }) : baseEff(c, { s: t || "R", as: "Z" });
+  if (e.k === "D") return 120;
+  if (e.k === "Z") return 100;
+  if (e.k === "C") return (e.suit === t ? 50 : e.suit === ls ? 25 : 0) + e.val;
+  return { N: -1, B: -2, F: -3, H: -4 }[e.k] ?? -1;
+}
+function botMove(bot, s) {
+  const id = bot.id, turnId = s.order?.[s.turn], hand = s.hands[id] || [];
+  const bestSuit = () => "RBGY".split("").sort((a, b) => hand.filter(c => suitOf(c) === b).length - hand.filter(c => suitOf(c) === a).length)[0];
+  if (s.phase === "trumpPick" && s.order[s.dealer] === id) { const k = bestSuit(); return st => applyTrump(st, id, k); }
+  if (s.phase === "werwolf" && turnId === id) { const k = bestSuit(); return st => applyWerwolf(st, id, k); }
+  if (s.phase === "bidding" && turnId === id) {
+    // Count likely winners: Zauberer, Drache, trumps from 9 up, and other 13s
+    let bid = hand.filter(c => { const p = botPower(c, s); return p >= 59 || (isColor(c) && suitOf(c) !== s.trump.suit && valOf(c) === 13); }).length;
+    bid = Math.min(bid, s.round);
+    if (bid === forbiddenBid(s)) bid = bid > 0 ? bid - 1 : bid + 1;
+    return st => applyBid(st, id, bid);
+  }
+  if (s.phase === "playing" && turnId === id) {
+    const legal = hand.filter(c => canPlay(hand, c, s.trick, s)).sort((a, b) => botPower(a, s) - botPower(b, s));
+    const want = (s.bids[id] || 0) > (s.tricksWon[id] || 0);
+    const card = want ? legal[legal.length - 1] : legal[0];
+    const opt = { s: s.trump.suit || bestSuit() || "R", as: want ? "Z" : "N" };
+    return st => applyPlay(st, id, card, opt);
+  }
+  if (s.phase === "pass" && !s.passes[id] && hand.length) {
+    const c = [...hand].sort((a, b) => botPower(a, s) - botPower(b, s))[0];
+    return st => applyPass(st, id, c);
+  }
+  if (s.phase === "cloud" && s.trickWinner === id) {
+    const d = (s.tricksWon[id] || 0) > (s.bids[id] || 0) || !s.bids[id] ? 1 : -1;
+    return st => applyCloud(st, id, d);
+  }
+  if (s.phase === "witch" && s.fxWitch === id) return st => applyWitch(st, id, null, null);   // bots never swap
+  if (s.phase === "roundEnd" && !s.ready[id]) return st => applyReady(st, id);
+  return null;
+}
+function botThink(bot, r) {
+  const s = norm(JSON.parse(JSON.stringify(r.state || {})));
+  if (!botMove(bot, s)) return;
+  // One decision per situation, with a short human-ish pause
+  const key = [s.phase, s.round, s.turn, s.trickNo, s.trick.length, s.fx.length, Object.keys(s.passes).length].join(":");
+  if (bot.key === key) return;
+  bot.key = key;
+  setTimeout(() => {
+    bot.mp.transaction("state", st => {
+      if (!st) return st;
+      norm(st);
+      const fn = botMove(bot, st);                     // decide on the fresh state
+      return fn && fn(st) !== false ? st : undefined;
+    });
+  }, 500 + Math.random() * 600);
+}
+
+/* =========================================================
+   START-UP
+========================================================= */
+try { $("#nameInput").value = localStorage.getItem("wz-name") || ""; } catch {}
+const urlCode = new URLSearchParams(location.search).get("r");
+if (urlCode) $("#codeInput").value = urlCode.toUpperCase();
+
+// Back after a reload or a lost connection: rejoin the same room automatically
+(async () => {
+  const sess = store.get("wz-session");
+  if (!sess) return;
+  try { await getMp().join(sess.code, sess.name); await enterRoom(getMp().code, sess.name); await restoreBots(sess.code); }
+  catch { store.del("wz-session"); }
+})();
+</script>
+</body>
+</html>
