@@ -553,6 +553,15 @@
   .check input { width:24px; height:24px; flex:none; accent-color:var(--gold); }
 
   .modal-backdrop { background:rgba(0,0,0,.65); }
+
+  /* Host bewertet: richtig / falsch */
+  .q-judge { display:flex; gap:10px; margin-bottom:14px; }
+  .q-judge .btn { flex:1; width:auto; --c:#6B5A5D; color:#fff; }
+  .q-judge .btn.on[data-res="ok"]  { --c:#3FCF6E; color:var(--dark); }
+  .q-judge .btn.on[data-res="bad"] { --c:#FF7A7A; color:var(--dark); }
+  .recap-res { display:inline-block; margin-left:8px; padding:2px 10px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; vertical-align:middle; color:var(--dark); }
+  .recap-res.ok { background:#3FCF6E; }
+  .recap-res.bad { background:#FF7A7A; }
   .winner-screen .crown { color:var(--gold); }
   @keyframes glow { 50% { text-shadow:0 0 28px rgba(255,216,107,.7); } }
 </style>
@@ -661,6 +670,10 @@
       <div class="q-answer" id="qAnswer">
         <span class="lbl">Antwort</span>
         <span id="qAnswerText">—</span>
+      </div>
+      <div class="q-judge">
+        <button class="btn" data-res="ok">&#10003; Richtig</button>
+        <button class="btn" data-res="bad">&#10007; Falsch</button>
       </div>
       <div class="q-actions">
         <button class="btn" id="revealBtn">Antwort aufdecken</button>
@@ -5027,7 +5040,7 @@ function startRound() {
   // damit die Zusammenfassung unter dem Voting-Screen leicht nachvollziehbar ist.
   const order = alive.map(p => p.name);
   state.roundLog = queue
-    .map(item => ({player:item.player, diff:item.diff, q:item.q.q, a:item.q.a}))
+    .map(item => item.log = {player:item.player, diff:item.diff, q:item.q.q, a:item.q.a, res:null})
     .sort((a, b) => order.indexOf(a.player) - order.indexOf(b.player));
 
   nextQuestion();
@@ -5049,8 +5062,9 @@ function nextQuestion() {
   $("#qText").textContent = state.currentQ.q.q;
   $("#qAnswerText").textContent = state.currentQ.q.a;
   $("#qAnswer").classList.remove("show");
-  $("#revealBtn").style.display = "inline-flex";
+  $("#revealBtn").textContent = "Antwort aufdecken";
   $("#nextQBtn").style.display = "none";
+  renderJudge();
   renderStats("statsBar");
   const card = document.querySelector("#screen-game .card");
   card.classList.remove("q-anim");
@@ -5061,9 +5075,11 @@ function nextQuestion() {
 $("#revealBtn").addEventListener("click", () => {
   const card = document.querySelector("#screen-game .card");
   const from = card.offsetHeight;
-  $("#qAnswer").classList.add("show");
-  $("#revealBtn").style.display = "none";
+  // Host kann beliebig auf- und zudecken; Weiter bleibt nach dem ersten Aufdecken sichtbar
+  const open = $("#qAnswer").classList.toggle("show");
+  $("#revealBtn").textContent = open ? "Antwort zudecken" : "Antwort aufdecken";
   $("#nextQBtn").style.display = "inline-flex";
+  if (!open) return;
   // Kasten federt auf die neue Höhe, leuchtet golden auf, die Antwort springt hinein
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const spring = "cubic-bezier(.34,1.56,.64,1)";
@@ -5082,6 +5098,15 @@ $("#revealBtn").addEventListener("click", () => {
 });
 $("#nextQBtn").addEventListener("click", nextQuestion);
 
+function renderJudge() {
+  document.querySelectorAll(".q-judge .btn").forEach(b => b.classList.toggle("on", state.currentQ.log.res === b.dataset.res));
+}
+document.querySelectorAll(".q-judge .btn").forEach(b => b.addEventListener("click", () => {
+  const log = state.currentQ.log;
+  log.res = log.res === b.dataset.res ? null : b.dataset.res; // nochmal tippen hebt die Wahl auf
+  renderJudge();
+}));
+
 /* ————————————— VOTE ————————————— */
 function renderRoundRecap() {
   const wrap = $("#roundRecap");
@@ -5089,7 +5114,7 @@ function renderRoundRecap() {
   const log = state.roundLog || [];
   wrap.innerHTML = log.map(item => `
     <div class="recap-item">
-      <div class="recap-player">${escape(item.player)}</div>
+      <div class="recap-player">${escape(item.player)}${item.res ? `<span class="recap-res ${item.res}">${item.res === "ok" ? "&#10003; Richtig" : "&#10007; Falsch"}</span>` : ""}</div>
       <div class="recap-q">${escape(item.q)}</div>
       <div class="recap-a">Antwort: <span>${escape(item.a)}</span></div>
     </div>
