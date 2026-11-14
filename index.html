@@ -17,77 +17,123 @@
 <style>
   :root {
     --felt: #0B3B2A; --gold: #E8B83A; --gold-hi: #FFD86B; --red: #8E1622;
-    --ink: #16161A; --cell: 170px;
+    --ink: #16161A; --dark: #1A0A0D; --cell: 170px;
   }
   * { box-sizing: border-box; }
   body {
-    margin: 0; background: var(--felt); color: #fff;
-    font-family: 'Outfit', system-ui, sans-serif;
+    margin: 0; color: #fff; font-family: 'Outfit', system-ui, sans-serif;
     -webkit-tap-highlight-color: transparent;
+    /* Filz: Lichtkegel + Fasern aus SVG-Rauschen */
+    background-color: var(--felt);
+    background-image:
+      radial-gradient(ellipse at 50% 25%, rgba(255,255,255,.09), transparent 65%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  .wrap {
-    max-width: 480px; min-height: 100dvh; margin: 0 auto; padding: 0 14px;
-    display: flex; flex-direction: column;
-  }
+  .wrap { max-width: 440px; min-height: 100dvh; margin: 0 auto; padding: 0 10px 32px; }
   .display { font-family: 'Limelight', Georgia, serif; font-weight: 400; letter-spacing: .04em; }
 
   header {
-    height: 64px; display: flex; align-items: center; justify-content: center; gap: 12px;
-    color: var(--gold); font-size: 24px;
+    height: 56px; display: flex; align-items: center; justify-content: center; gap: 12px;
+    color: var(--gold); font-size: 22px;
   }
   header svg { width: 14px; height: 14px; flex: none; }
 
   /* AUTOMAT */
+  .stage { position: relative; margin: 62px 44px 0 0; }
   .machine {
-    display: flex; flex-direction: column; gap: 14px; padding: 16px;
+    display: flex; flex-direction: column; gap: 12px; padding: 16px;
     background: var(--red); border: 3px solid var(--gold);
     border-radius: 28px 28px 20px 20px; box-shadow: 0 8px 0 #062318;
   }
-  .sign { background: #1A0A0D; border-radius: 12px; padding: 8px 12px 10px; }
+  .machine[data-mode="games"] .slot-only, .machine[data-mode="slot"] .games-only { display: none; }
+
+  .sign { background: var(--dark); border-radius: 12px; padding: 8px 12px 10px; }
   .bulbs {
-    height: 10px; margin-bottom: 6px;
+    height: 10px; margin-bottom: 4px;
     background: radial-gradient(circle, var(--gold-hi) 3px, transparent 4px) center / 18px 10px;
   }
-  .sign h1 { margin: 0; text-align: center; font-size: 22px; color: var(--gold-hi); }
-  .window { display: flex; gap: 8px; padding: 8px; background: #111; border-radius: 12px; }
+  .sign h1 {
+    margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-size: 28px; color: var(--gold-hi);
+  }
+  .sign h1 svg { width: 38px; height: 38px; }
+
+  .window { padding: 8px; background: #111; border-radius: 12px; }
+  .games, .slot { display: flex; gap: 8px; }
   .reel { flex: 1; min-width: 0; height: var(--cell); overflow: hidden; border-radius: 8px; }
   .cell {
-    height: var(--cell); padding: 12px 6px; text-align: center; text-decoration: none;
+    height: var(--cell); padding: 12px 4px; text-align: center; text-decoration: none;
     display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-    font-size: 14px; font-weight: 700; line-height: 1.15;
+    font-size: 13px; font-weight: 700; line-height: 1.15; hyphens: auto;
   }
-  .cell svg { width: 64px; height: 64px; }
+  .cell svg { width: 56px; height: 56px; }
   .cell span { min-height: 3.45em; display: flex; align-items: center; }
-  #spin {
-    height: 64px; margin-bottom: 6px; border: 0; border-radius: 32px; cursor: pointer;
-    background: var(--gold); color: #1A0A0D; box-shadow: 0 6px 0 #8F6A0C;
-    font-size: 28px; letter-spacing: .06em;
-    transition: transform .08s, box-shadow .08s;
-  }
-  #spin:active, #spin:disabled { transform: translateY(4px); box-shadow: 0 2px 0 #8F6A0C; }
-  .hint { margin: 0; text-align: center; font-size: 13px; line-height: 1.4; color: #FFE9EC; }
 
-  /* ALLE SPIELE */
-  .all-title {
-    display: flex; align-items: center; gap: 10px; margin: 34px 0 14px;
-    color: var(--gold); font-size: 18px; letter-spacing: .06em;
+  /* Automatenspiel: eine Walze + drei Gewinnleitern */
+  .slot .reel { flex: none; width: 80px; }
+  .sym { height: var(--cell); display: flex; align-items: center; justify-content: center; background: #fff; }
+  .sym.bust { background: var(--ink); }
+  .sym svg { width: 58px; height: 58px; }
+  .ladders { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .ladder { display: flex; flex-direction: column; gap: 3px; }
+  .ladder svg { width: 22px; height: 22px; margin: 0 auto 1px; }
+  .step {
+    flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 3px;
+    background: #2A2A2A; color: #A3A3A3; font-size: 11px; font-weight: 700;
   }
-  .all-title::before, .all-title::after { content: ""; flex: 1; height: 1px; background: var(--gold); }
-  .all { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .card {
-    min-height: 72px; padding: 10px; border-radius: 12px; background: #fff; color: var(--ink);
-    display: flex; align-items: center; gap: 10px; text-decoration: none;
-    font-size: 15px; font-weight: 700; line-height: 1.15;
+  .step.lit { background: var(--c); color: var(--ink); }
+
+  .led { display: flex; gap: 8px; }
+  .led div {
+    flex: 1; padding: 5px 10px 6px; border-radius: 8px; background: var(--dark);
+    font-size: 10px; font-weight: 700; letter-spacing: .14em; color: #D9B9BD;
   }
-  .chip {
-    flex: none; width: 48px; height: 48px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+  .led b { display: block; font-size: 20px; letter-spacing: 0; color: #FFB000; font-variant-numeric: tabular-nums; }
+
+  /* Leuchttasten */
+  .btns { display: flex; gap: 8px; }
+  .mbtn {
+    flex: 1; height: 56px; padding: 0; cursor: pointer;
+    border: 3px solid var(--dark); border-radius: 10px;
+    background: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,.65), transparent 62%), var(--c);
+    box-shadow: inset 0 -6px 0 rgba(0,0,0,.25), 0 4px 0 var(--dark);
+    color: var(--dark); font: 700 14px 'Outfit', sans-serif; letter-spacing: .1em;
+    transition: transform .08s, box-shadow .08s, filter .2s;
   }
-  .chip svg { width: 28px; height: 28px; }
-  .cell:active, .card:active { filter: brightness(.9); }
+  .mbtn:active { transform: translateY(3px); box-shadow: inset 0 -3px 0 rgba(0,0,0,.25), 0 1px 0 var(--dark); }
+  .mbtn:disabled { filter: saturate(.25) brightness(.65); cursor: default; }
+  .hint { margin: 0; min-height: 2.8em; text-align: center; font-size: 13px; line-height: 1.4; color: #FFE9EC; }
+
+  /* HEBEL */
+  .lever {
+    position: absolute; right: -44px; top: 118px; width: 44px; height: 210px;
+    padding: 0; border: 0; background: none; cursor: pointer;
+  }
+  .lever i { position: absolute; display: block; }
+  .lever .mount { left: 0; bottom: 34px; width: 30px; height: 50px; border-radius: 0 10px 10px 0; background: linear-gradient(#FFD86B, #B98A17); border: 2px solid #6B4E08; border-left: 0; }
+  .lever .stick { left: 17px; bottom: 60px; width: 8px; height: 126px; border-radius: 4px; background: linear-gradient(90deg, #777, #F2F2F2 45%, #777); transform-origin: bottom; }
+  .lever .knob { left: 4px; top: 6px; width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FF9AA5, #D32338 55%, #6D0D16); box-shadow: 0 3px 0 rgba(0,0,0,.3); }
+  .lever .price { left: 0; right: 0; bottom: 6px; font-style: normal; font-size: 11px; font-weight: 700; color: var(--gold-hi); text-align: center; }
+  .lever.pull .knob { animation: knob .7s ease-out; }
+  .lever.pull .stick { animation: stick .7s ease-out; }
+  @keyframes knob  { 30% { transform: translateY(112px); } }
+  @keyframes stick { 30% { transform: scaleY(.12); } }
+
+  /* ASCHENBECHER */
+  .ashtray { position: absolute; left: 22px; bottom: calc(100% - 9px); width: 120px; overflow: visible; pointer-events: none; }
+  .smoke { fill: none; stroke: rgba(255,255,255,.55); stroke-width: 3; stroke-linecap: round; filter: blur(1.6px); opacity: 0; animation: smoke 4.5s linear infinite; }
+  .smoke + .smoke { animation-delay: 2.2s; }
+  @keyframes smoke {
+    0%   { opacity: 0;  transform: translate(0, 10px); }
+    25%  { opacity: .7; }
+    100% { opacity: 0;  transform: translate(6px, -22px); }
+  }
+  .ember { animation: ember 1.8s ease-in-out infinite alternate; }
+  @keyframes ember { to { fill: #FFB347; } }
+
+  .cell:active { filter: brightness(.9); }
   a:focus-visible, button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-
-  footer { margin-top: auto; padding: 28px 0 20px; text-align: center; font-size: 12px; color: #CFE3D9; }
+  @media (prefers-reduced-motion: reduce) { .smoke, .ember, .lever.pull i { animation: none; } .smoke { opacity: .5; } }
 </style>
 </head>
 <body>
@@ -99,28 +145,90 @@
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 0l7 7-7 7-7-7z" fill="currentColor"/></svg>
   </header>
 
-  <section class="machine" aria-label="Spielautomat">
-    <div class="sign">
-      <div class="bulbs" aria-hidden="true"></div>
-      <h1 class="display">WAS SPIELEN WIR?</h1>
-    </div>
-    <div class="window">
-      <div class="reel"><div class="strip"></div></div>
-      <div class="reel"><div class="strip"></div></div>
-      <div class="reel"><div class="strip"></div></div>
-    </div>
-    <button id="spin" class="display" type="button">DREHEN</button>
-    <p class="hint">Tippe auf ein Spiel, um es zu starten. Oder dreh und lass den Automaten entscheiden.</p>
-  </section>
+  <div class="stage">
 
-  <h2 class="all-title display">ALLE SPIELE</h2>
-  <nav class="all" aria-label="Alle Spiele"></nav>
+    <svg class="ashtray" viewBox="0 0 120 70" aria-hidden="true">
+      <path class="smoke" d="M50 34c-9-8 8-13 0-22s7-13 1-22"/>
+      <path class="smoke" d="M53 34c8-9-7-12 1-21s-6-14 0-23"/>
+      <path d="M22 48h70l-7 18H29z" fill="#33424B"/>
+      <ellipse cx="57" cy="48" rx="35" ry="6.5" fill="#7C909B"/>
+      <ellipse cx="57" cy="48.5" rx="29" ry="4.2" fill="#1B2329"/>
+      <g transform="rotate(-11 60 42)">
+        <rect x="52" y="39" width="56" height="7" rx="3.5" fill="#F4F1EA"/>
+        <rect x="90" y="39" width="18" height="7" rx="3.5" fill="#D98A3A"/>
+        <rect x="46" y="39" width="8" height="7" rx="3" fill="#8D8D8D"/>
+        <rect class="ember" x="52" y="39" width="4" height="7" fill="#FF4A1C"/>
+      </g>
+    </svg>
 
-  <footer>Gemacht aus Langeweile · und mit KI</footer>
+    <section class="machine" data-mode="games" aria-label="Spielautomat">
+      <div class="sign">
+        <div class="bulbs" aria-hidden="true"></div>
+        <h1 class="display">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <g stroke="#FFD86B" stroke-width="5" stroke-linecap="round"><path d="M32 3v8M32 53v8M3 32h8M53 32h8M11.5 11.5l5.7 5.7M46.8 46.8l5.7 5.7M11.5 52.5l5.7-5.7M46.8 17.2l5.7-5.7"/></g>
+            <circle cx="32" cy="32" r="16" fill="#FFD86B"/>
+            <path d="M19 27h26v3a5.5 5.5 0 0 1-11 0h-4a5.5 5.5 0 0 1-11 0z" fill="#1A0A0D"/>
+            <path d="M25 39c4 4 10 4 14 0" stroke="#1A0A0D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </svg>
+          MAIKUR
+        </h1>
+      </div>
+
+      <div class="window">
+        <div class="games games-only">
+          <div class="reel"><div class="strip"></div></div>
+          <div class="reel"><div class="strip"></div></div>
+          <div class="reel"><div class="strip"></div></div>
+        </div>
+        <div class="slot slot-only">
+          <div class="reel"><div class="strip" id="sreel"></div></div>
+          <div class="ladders" id="ladders"></div>
+        </div>
+      </div>
+
+      <div class="led">
+        <div>GUTHABEN<b id="credit"></b></div>
+        <div>TOPF<b id="pot"></b></div>
+      </div>
+
+      <div class="btns">
+        <button class="mbtn games-only" id="spin"  type="button" style="--c:#FFC531">DREHEN</button>
+        <button class="mbtn slot-only"  id="take"  type="button" style="--c:#5BD67A">NEHMEN</button>
+        <button class="mbtn slot-only"  id="start" type="button" style="--c:#FFC531">START</button>
+        <button class="mbtn slot-only"  id="back"  type="button" style="--c:#7DC0FF">SPIELE</button>
+      </div>
+
+      <p class="hint" id="hint" aria-live="polite"></p>
+    </section>
+
+    <button class="lever" id="lever" type="button" aria-label="Am Hebel ziehen, 20 Cent Spielgeld">
+      <i class="mount"></i><i class="stick"></i><i class="knob"></i><i class="price">20 CT</i>
+    </button>
+  </div>
 </div>
 
 <script>
-  // n: Name, p: Datei, bg/fg: Schachtelfarben, d: Symbol (ein SVG-Pfad, viewBox 64)
+  const $ = id => document.getElementById(id);
+  const machine = document.querySelector('.machine');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let busy = false;
+  const say = t => $('hint').textContent = t;
+
+  // Lässt eine Walze durch `cells` (HTML je Feld) rollen; am Ende steht nur noch das letzte Feld da.
+  function roll(s, cells, ms) {
+    const settle = () => { s.style.transition = 'none'; s.style.transform = ''; s.innerHTML = cells.at(-1); };
+    if (calm) { settle(); return Promise.resolve(); }
+    s.style.transition = 'none'; s.style.transform = '';
+    s.innerHTML = cells.join('');
+    s.offsetHeight; // Startposition festschreiben, sonst startet die Transition nicht
+    s.style.transition = `transform ${ms}ms cubic-bezier(.15,.8,.25,1)`;
+    s.style.transform = `translateY(-${(cells.length - 1) * 100 / cells.length}%)`;
+    return new Promise(done => setTimeout(() => { settle(); done(); }, ms + 40));
+  }
+
+  /* ———— SPIELE-WALZEN ———— */
+  // n: Name, p: Datei, bg/fg: Farben, d: Symbol (ein SVG-Pfad, viewBox 64)
   const G = [
     { n: 'Der Dümmste fliegt',  p: 'derduemmstefliegt.html', bg: '#2B4BFF', fg: '#FFFFFF', d: 'M4 30l56-22-20 48-9-19z' },
     { n: 'Zündschnur',          p: 'zuendschnur.html',       bg: '#C8371D', fg: '#FFFFFF', d: 'M10 38a18 18 0 1 0 36 0a18 18 0 1 0-36 0zM38 22l8-10 4 4-8 10zM54 0l2 5 5 2-5 2-2 5-2-5-5-2 5-2z' },
@@ -133,51 +241,108 @@
     { n: 'Schere Stein Papier', p: 'RPS.html',               bg: '#1C7A3A', fg: '#FFFFFF', d: 'M4 46a11 11 0 1 0 22 0a11 11 0 1 0-22 0zM32 28h18v28H32zM36 4l5-2 6 18-5 2zM58 4l-5-2-6 18 5 2z' },
     { n: 'ZeitZähler',          p: 'ZeitZaehler.html',       bg: '#FF8F2B', fg: '#16161A', d: 'M14 6h36v5H14zM14 53h36v5H14zM18 13h28L32 31zM32 33l14 18H18z' }
   ];
+  const cell = g => `<a class="cell" href="${g.p}" style="background:${g.bg};color:${g.fg}"><svg viewBox="0 0 64 64" aria-hidden="true"><path fill="${g.fg}" fill-rule="evenodd" d="${g.d}"/></svg><span>${g.n}</span></a>`;
 
-  const icon = g => `<svg viewBox="0 0 64 64" aria-hidden="true"><path fill="${g.fg}" fill-rule="evenodd" d="${g.d}"/></svg>`;
-  const cell = g => `<a class="cell" href="${g.p}" style="background:${g.bg};color:${g.fg}">${icon(g)}<span>${g.n}</span></a>`;
+  const strips = [...document.querySelectorAll('.games .strip')];
+  const rand = n => Math.floor(Math.random() * n);
+  const pick3 = () => { const pool = G.map((_, i) => i), out = []; while (out.length < 3) out.push(pool.splice(rand(pool.length), 1)[0]); return out; };
 
-  document.querySelector('.all').innerHTML = G.map(g =>
-    `<a class="card" href="${g.p}"><span class="chip" style="background:${g.bg}">${icon(g)}</span>${g.n}</a>`).join('');
-
-  const strips = [...document.querySelectorAll('.strip')];
-  const spinBtn = document.getElementById('spin');
-  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const rand = () => Math.floor(Math.random() * G.length);
-  const pick3 = () => { const pool = G.map((_, i) => i), out = []; while (out.length < 3) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]); return out; };
-
-  let shown = pick3(), busy = false, holdUntil = 0;
+  let shown = pick3(), holdUntil = 0;
   strips.forEach((s, i) => s.innerHTML = cell(G[shown[i]]));
-
-  // Lässt eine Walze durch `path` (Spiel-Indizes) rollen; am Ende steht nur noch das letzte Spiel da.
-  function roll(s, path, ms) {
-    const settle = () => { s.style.transition = 'none'; s.style.transform = ''; s.innerHTML = cell(G[path.at(-1)]); };
-    if (calm) { settle(); return Promise.resolve(); }
-    s.innerHTML = path.map(k => cell(G[k])).join('');
-    s.offsetHeight; // Startposition festschreiben, sonst startet die Transition nicht
-    s.style.transition = `transform ${ms}ms cubic-bezier(.15,.8,.25,1)`;
-    s.style.transform = `translateY(-${(path.length - 1) * 100 / path.length}%)`;
-    return new Promise(done => setTimeout(() => { settle(); done(); }, ms + 40));
-  }
 
   async function show(next, big) {
     if (busy) return;
-    busy = true; spinBtn.disabled = big;
+    busy = true; $('spin').disabled = big;
     await Promise.all(next.map((target, i) => {
       const path = [shown[i]];
-      if (big) for (let j = 0; j < 10 + i * 5; j++) path.push(rand());
+      if (big) for (let j = 0; j < 10 + i * 5; j++) path.push(rand(G.length));
       path.push(target);
-      return roll(strips[i], path, big ? 1100 + i * 450 : 450);
+      return roll(strips[i], path.map(k => cell(G[k])), big ? 1100 + i * 450 : 450);
     }));
-    shown = next; busy = false; spinBtn.disabled = false;
+    shown = next; busy = false; $('spin').disabled = false;
+  }
+  $('spin').addEventListener('click', () => { holdUntil = Date.now() + 8000; show(pick3(), true); });
+
+  // Walzen wechseln von selbst durch, außer kurz nach einem Dreh, im Automatenspiel oder bei reduzierter Bewegung.
+  if (!calm) setInterval(() => {
+    if (machine.dataset.mode === 'games' && !document.hidden && Date.now() > holdUntil) show(shown.map(k => (k + 1) % G.length), false);
+  }, 3500);
+
+  /* ———— AUTOMATENSPIEL (nur Spielgeld, Beträge in Cent) ————
+     Jeder Dreh kostet 20 Cent und zeigt ein Symbol. Kirsche, Glocke und Stern klettern je eine
+     Gewinnleiter hoch, der Topf ist die Summe der erreichten Stufen. Der Blitz leert den Topf.
+     Chancen so gewählt, dass je nach Risiko etwa 80–110 % zurückkommen. */
+  const BET = 20, START = 4000;
+  const S = [
+    { c: '#FF8493', p: .36, steps: [20, 40, 80, 120, 200, 400],     svg: '<circle cx="20" cy="46" r="11" fill="#E0263C"/><circle cx="44" cy="42" r="11" fill="#E0263C"/><path d="M20 36C22 20 34 12 46 8M44 32c0-10 1-18 2-24" stroke="#1C7A3A" stroke-width="4" fill="none" stroke-linecap="round"/>' },
+    { c: '#FFD86B', p: .27, steps: [30, 60, 120, 240, 500, 1000],   svg: '<path d="M32 8c-11 0-16 9-16 20v10l-6 8h44l-6-8V28c0-11-5-20-16-20z" fill="#E8B83A"/><circle cx="32" cy="52" r="5" fill="#8F6A0C"/>' },
+    { c: '#9DB0FF', p: .17, steps: [50, 100, 200, 500, 1000, 2500], svg: '<path d="M32 4l8.2 17.6 19.3 2.4-14.2 13.2 3.7 19L32 46.8 15 56.2l3.7-19L4.5 24l19.3-2.4z" fill="#2B4BFF"/>' }
+  ];
+  const BOLT = '<path d="M36 4L12 36h16l-4 24 26-34H34z" fill="#FFC531"/>';
+  const svg = i => `<svg viewBox="0 0 64 64" aria-hidden="true">${i < 3 ? S[i].svg : BOLT}</svg>`;
+  const sym = i => `<div class="sym${i === 3 ? ' bust' : ''}">${svg(i)}</div>`;
+  const euro = c => (c / 100).toFixed(2).replace('.', ',') + ' €';
+  const short = c => c % 100 ? (c / 100).toFixed(2).replace('.', ',') : c / 100;
+
+  let credit = START, lad = [0, 0, 0], last = 0;
+  try { const v = localStorage.getItem('maikur'); if (v !== null && +v >= 0) credit = +v; } catch {}
+  const pot = () => lad.reduce((sum, l, i) => sum + (l ? S[i].steps[l - 1] : 0), 0);
+
+  function draw() {
+    $('credit').textContent = euro(credit);
+    $('pot').textContent = euro(pot());
+    $('take').disabled = busy || !pot();
+    $('start').disabled = busy;
+    $('ladders').innerHTML = S.map((s, i) => `<div class="ladder" style="--c:${s.c}">${svg(i)}${
+      s.steps.map((v, k) => `<div class="step${lad[i] > k ? ' lit' : ''}">${short(v)}</div>`).reverse().join('')}</div>`).join('');
+    try { localStorage.setItem('maikur', credit); } catch {}
   }
 
-  spinBtn.addEventListener('click', () => { holdUntil = Date.now() + 8000; show(pick3(), true); });
+  function setMode(m) {
+    machine.dataset.mode = m;
+    say(m === 'games'
+      ? 'Tippe auf ein Spiel, um es zu starten. Oder zieh am Hebel: 20 Cent pro Dreh, nur Spielgeld.'
+      : 'Jedes Symbol klettert seine Leiter hoch. Nimm den Topf, bevor der Blitz kommt.');
+  }
 
-  // Walzen wechseln von selbst durch, außer kurz nach einem Dreh oder bei reduzierter Bewegung.
-  if (!calm) setInterval(() => {
-    if (!document.hidden && Date.now() > holdUntil) show(shown.map(k => (k + 1) % G.length), false);
-  }, 3500);
+  async function pull() {
+    if (busy) return;
+    if (machine.dataset.mode !== 'slot') setMode('slot');
+    if (credit < BET) {
+      if (pot()) return say('Guthaben leer. Nimm erst den Topf!');
+      credit = START; draw();
+      return say('Pleite! Es gibt neue 40 € Spielgeld.');
+    }
+    busy = true; credit -= BET; draw();
+    const r = Math.random(), i = r < S[0].p ? 0 : r < S[0].p + S[1].p ? 1 : r < S[0].p + S[1].p + S[2].p ? 2 : 3;
+    const path = [last]; for (let j = 0; j < 14; j++) path.push(rand(4)); path.push(i);
+    await roll($('sreel'), path.map(sym), 1300);
+    last = i;
+    if (i === 3) {
+      const lost = pot(); lad = [0, 0, 0];
+      say(lost ? `Blitz! ${euro(lost)} aus dem Topf sind weg.` : 'Blitz! Zum Glück war der Topf leer.');
+    } else if (++lad[i] === S[i].steps.length) {
+      const win = S[i].steps.at(-1); credit += win; lad[i] = 0;
+      say(`Leiter voll! ${euro(win)} gewonnen.`);
+    } else {
+      say(`Im Topf: ${euro(pot())}. Nehmen oder weiterdrehen?`);
+    }
+    busy = false; draw();
+  }
+
+  $('lever').addEventListener('click', () => {
+    const l = $('lever'); l.classList.remove('pull'); l.offsetWidth; l.classList.add('pull');
+    pull();
+  });
+  $('start').addEventListener('click', pull);
+  $('take').addEventListener('click', () => {
+    const win = pot(); credit += win; lad = [0, 0, 0]; draw();
+    say(`${euro(win)} genommen.`);
+  });
+  $('back').addEventListener('click', () => setMode('games'));
+
+  $('sreel').innerHTML = sym(0);
+  setMode('games'); draw();
 </script>
 </body>
 </html>
