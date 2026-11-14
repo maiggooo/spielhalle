@@ -4449,10 +4449,20 @@ $("#revealBtn").addEventListener("click", () => {
   $("#qAnswer").classList.add("show");
   $("#revealBtn").style.display = "none";
   $("#nextQBtn").style.display = "inline-flex";
-  // Kasten wächst schnell auf die neue Höhe, statt zu springen
+  // Kasten federt auf die neue Höhe, leuchtet golden auf, die Antwort springt hinein
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const spring = "cubic-bezier(.34,1.56,.64,1)";
     card.animate([{ height: from + "px", overflow: "hidden" }, { height: card.offsetHeight + "px", overflow: "hidden" }],
-                 { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" });
+                 { duration: 550, easing: spring });
+    card.animate([
+      { boxShadow: "0 6px 0 #062318, 0 0 0 0 rgba(255,216,107,0)" },
+      { boxShadow: "0 6px 0 #062318, 0 0 40px 8px rgba(255,216,107,.8)", offset: .3 },
+      { boxShadow: "0 6px 0 #062318, 0 0 0 0 rgba(255,216,107,0)" }
+    ], { duration: 900, easing: "ease-out" });
+    $("#qAnswer").animate([
+      { opacity: 0, transform: "translateY(-18px) scale(.85)" },
+      { opacity: 1, transform: "none" }
+    ], { duration: 500, delay: 120, easing: spring, fill: "backwards" });
   }
 });
 $("#nextQBtn").addEventListener("click", nextQuestion);
