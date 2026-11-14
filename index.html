@@ -131,7 +131,25 @@
   .ember { animation: ember 1.8s ease-in-out infinite alternate; }
   @keyframes ember { to { fill: #FFB347; } }
 
-  .cell:active { filter: brightness(.9); }
+  /* ALLE SPIELE */
+  .all-title {
+    display: flex; align-items: center; gap: 10px; margin: 34px 0 14px;
+    color: var(--gold); font-size: 18px; letter-spacing: .06em;
+  }
+  .all-title::before, .all-title::after { content: ""; flex: 1; height: 1px; background: var(--gold); }
+  .all { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card {
+    min-height: 72px; padding: 10px; border-radius: 12px; background: #fff; color: var(--ink);
+    display: flex; align-items: center; gap: 10px; text-decoration: none;
+    font-size: 15px; font-weight: 700; line-height: 1.15;
+  }
+  .chip {
+    flex: none; width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chip svg { width: 28px; height: 28px; }
+
+  .cell:active, .card:active { filter: brightness(.9); }
   a:focus-visible, button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { .smoke, .ember, .lever.pull i { animation: none; } .smoke { opacity: .5; } }
 </style>
@@ -206,6 +224,9 @@
       <i class="mount"></i><i class="stick"></i><i class="knob"></i><i class="price">20 CT</i>
     </button>
   </div>
+
+  <h2 class="all-title display">ALLE SPIELE</h2>
+  <nav class="all" aria-label="Alle Spiele"></nav>
 </div>
 
 <script>
@@ -241,7 +262,10 @@
     { n: 'Schere Stein Papier', p: 'RPS.html',               bg: '#1C7A3A', fg: '#FFFFFF', d: 'M4 46a11 11 0 1 0 22 0a11 11 0 1 0-22 0zM32 28h18v28H32zM36 4l5-2 6 18-5 2zM58 4l-5-2-6 18 5 2z' },
     { n: 'ZeitZähler',          p: 'ZeitZaehler.html',       bg: '#FF8F2B', fg: '#16161A', d: 'M14 6h36v5H14zM14 53h36v5H14zM18 13h28L32 31zM32 33l14 18H18z' }
   ];
-  const cell = g => `<a class="cell" href="${g.p}" style="background:${g.bg};color:${g.fg}"><svg viewBox="0 0 64 64" aria-hidden="true"><path fill="${g.fg}" fill-rule="evenodd" d="${g.d}"/></svg><span>${g.n}</span></a>`;
+  const icon = g => `<svg viewBox="0 0 64 64" aria-hidden="true"><path fill="${g.fg}" fill-rule="evenodd" d="${g.d}"/></svg>`;
+  const cell = g => `<a class="cell" href="${g.p}" style="background:${g.bg};color:${g.fg}">${icon(g)}<span>${g.n}</span></a>`;
+  document.querySelector('.all').innerHTML = G.map(g =>
+    `<a class="card" href="${g.p}"><span class="chip" style="background:${g.bg}">${icon(g)}</span>${g.n}</a>`).join('');
 
   const strips = [...document.querySelectorAll('.games .strip')];
   const rand = n => Math.floor(Math.random() * n);
