@@ -256,11 +256,7 @@
     { n: 'Stirnraten',          p: 'stirnraten.html',        bg: '#FF86BC', fg: '#16161A', d: 'M15 44a17 17 0 1 0 34 0a17 17 0 1 0-34 0zM18 6h28v18H18z' },
     { n: 'Wizard',              p: 'wizard.html',            bg: '#5B33C4', fg: '#FFC531', d: 'M34 4l13 37H17zM5 49a27 7 0 1 0 54 0a27 7 0 1 0-54 0z' },
     { n: 'Spyfall',             p: 'spyfall.html',           bg: '#1F2430', fg: '#FFC531', d: 'M18 26c0-11 6-17 14-17s14 6 14 17zM6 26h52v6H6zM14 46a8 8 0 1 0 16 0a8 8 0 1 0-16 0zM34 46a8 8 0 1 0 16 0a8 8 0 1 0-16 0z' },
-    { n: 'Werwölfe',            p: 'werwolf.html',           bg: '#17306B', fg: '#F4EDB8', d: 'M40 8a24 24 0 1 0 16 36a20 20 0 0 1-16-36z' },
-    { n: 'Chooser',             p: 'Chooser.html',           bg: '#19B5A5', fg: '#16161A', d: 'M6 32a26 26 0 1 0 52 0a26 26 0 1 0-52 0zM14 32a18 18 0 1 0 36 0a18 18 0 1 0-36 0zM24 32a8 8 0 1 0 16 0a8 8 0 1 0-16 0z' },
-    { n: 'Higher Lower',        p: 'HL.html',                bg: '#FFC531', fg: '#16161A', d: 'M20 6l14 16h-9v32H15V22H6zM44 58l14-16h-9V10H39v32h-9z' },
-    { n: 'Schere Stein Papier', p: 'RPS.html',               bg: '#1C7A3A', fg: '#FFFFFF', d: 'M4 46a11 11 0 1 0 22 0a11 11 0 1 0-22 0zM32 28h18v28H32zM36 4l5-2 6 18-5 2zM58 4l-5-2-6 18 5 2z' },
-    { n: 'ZeitZähler',          p: 'ZeitZaehler.html',       bg: '#FF8F2B', fg: '#16161A', d: 'M14 6h36v5H14zM14 53h36v5H14zM18 13h28L32 31zM32 33l14 18H18z' }
+    { n: 'Werwölfe',            p: 'werwolf.html',           bg: '#17306B', fg: '#F4EDB8', d: 'M40 8a24 24 0 1 0 16 36a20 20 0 0 1-16-36z' }
   ];
   const icon = g => `<svg viewBox="0 0 64 64" aria-hidden="true"><path fill="${g.fg}" fill-rule="evenodd" d="${g.d}"/></svg>`;
   const cell = g => `<a class="cell" href="${g.p}" style="background:${g.bg};color:${g.fg}">${icon(g)}<span>${g.n}</span></a>`;
