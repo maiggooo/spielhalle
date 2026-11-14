@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Der Zeit&amp;Zähler — Editorial Edition</title>
 <meta name="description" content="Wie lange musst du dich heute noch durchbeißen?">
-<meta name="theme-color" content="#f4efe6">
+<meta name="theme-color" content="#0B3B2A">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Maiko&#39;s Spiele &amp; Tools">
 <meta property="og:locale" content="de_DE">
@@ -20,7 +20,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
 <style>
   :root { --highlight:#f4d97a; --highlight-soft:#f9ecb8; --morning:#8a7d5a; }
@@ -43,19 +43,19 @@
     padding: 36px 0 30px; border-bottom: 1px solid var(--rule-soft); align-items: end;
   }
   .hero-title {
-    font-family: 'Fraunces', serif; font-weight: 600;
+    font-family: 'Outfit', sans-serif; font-weight: 600;
     font-size: clamp(42px, 6vw, 78px); line-height: .95;
     letter-spacing: -.03em; color: var(--ink);
   }
-  .hero-title em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .hero-title em {  color: var(--accent); font-weight: 400; }
   .hero-lede {
-    font-family: 'Fraunces', serif; font-size: 17px; line-height: 1.5;
+    font-family: 'Outfit', sans-serif; font-size: 17px; line-height: 1.5;
     color: var(--ink-soft); border-left: 2px solid var(--accent);
-    padding-left: 16px; font-style: italic;
+    padding-left: 16px; 
   }
   .sec-label {
     display: flex; align-items: center; gap: 14px;
-    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    font-family: 'Outfit', sans-serif; font-size: 10.5px;
     letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
     margin: 36px 0 16px;
   }
@@ -72,13 +72,13 @@
   }
   .time-cell:last-child { border-right: none; }
   .time-cell .cell-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    font-family: 'Outfit', sans-serif; font-size: 10px;
     letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
     display: flex; justify-content: space-between; align-items: center;
   }
   .time-cell .cell-label .badge { color: var(--accent); font-weight: 700; }
   .time-cell input[type="time"] {
-    font-family: 'Fraunces', serif; font-size: 40px; font-weight: 600;
+    font-family: 'Outfit', sans-serif; font-size: 40px; font-weight: 600;
     letter-spacing: -.01em; background: var(--paper); color: var(--ink);
     border: 1px solid var(--rule); padding: 8px 14px; width: 100%;
     outline: none; transition: border-color .18s ease, background .18s ease;
@@ -87,26 +87,26 @@
   html[data-theme="dark"] .time-cell input[type="time"] { color-scheme: dark; }
   .time-cell input[type="time"]:focus { border-color: var(--accent); background: var(--paper-2); }
   .time-cell .cell-hint {
-    font-family: 'Inter', sans-serif; font-size: 11.5px; color: var(--muted); font-style: italic;
+    font-family: 'Outfit', sans-serif; font-size: 11.5px; color: var(--muted); 
   }
   .now-headline {
     display: grid; grid-template-columns: auto 1fr auto;
     align-items: baseline; gap: 20px; padding: 28px 0 22px;
   }
   .now-time {
-    font-family: 'Fraunces', serif; font-weight: 600;
+    font-family: 'Outfit', sans-serif; font-weight: 600;
     font-size: clamp(56px, 8vw, 96px); letter-spacing: -.03em;
     line-height: 1; font-variant-numeric: tabular-nums; color: var(--ink);
   }
-  .now-time em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .now-time em {  color: var(--accent); font-weight: 400; }
   .now-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    font-family: 'Outfit', sans-serif; font-size: 10.5px;
     letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
     text-align: center; border-top: 1px solid var(--rule-soft);
     border-bottom: 1px solid var(--rule-soft); padding: 8px 0; margin-bottom: 8px;
   }
   .now-date {
-    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    font-family: 'Outfit', sans-serif; font-size: 10.5px;
     letter-spacing: .14em; text-transform: uppercase; color: var(--muted); text-align: right;
   }
   .progress-row {
@@ -116,21 +116,21 @@
   .side-stat { display: flex; flex-direction: column; gap: 4px; }
   .side-stat.right { text-align: right; align-items: flex-end; }
   .side-stat .stat-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px;
     letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
   }
   .side-stat .stat-value {
-    font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600;
+    font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 600;
     letter-spacing: -.01em; color: var(--ink);
     font-variant-numeric: tabular-nums; line-height: 1.05;
   }
-  .side-stat .stat-value em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .side-stat .stat-value em {  color: var(--accent); font-weight: 400; }
   .side-stat .stat-value .unit {
-    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
     letter-spacing: .1em; text-transform: lowercase; color: var(--muted);
     margin-left: 6px; font-style: normal;
   }
-  .side-stat .stat-sub { font-family: 'Inter', sans-serif; font-size: 11.5px; color: var(--muted); font-style: italic; }
+  .side-stat .stat-sub { font-family: 'Outfit', sans-serif; font-size: 11.5px; color: var(--muted);  }
   .bar-wrap { position: relative; }
   .bar-axis { position: relative; height: 24px; margin-bottom: 6px; }
   .bar { position: relative; height: 44px; background: var(--paper-2); border: 1px solid var(--rule); overflow: hidden; }
@@ -138,7 +138,7 @@
     position: absolute; top: 0; bottom: 0;
     background: var(--highlight); border-left: 1px solid var(--rule); border-right: 1px solid var(--rule);
     display: flex; align-items: center; justify-content: center;
-    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px;
     letter-spacing: .22em; text-transform: uppercase; color: var(--ink); z-index: 1;
   }
   .bar-fill {
@@ -175,7 +175,7 @@
   .bar-ticks { position: relative; height: 20px; margin-top: 4px; }
   .bar-tick {
     position: absolute; top: 0; transform: translateX(-50%);
-    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px;
     letter-spacing: .12em; color: var(--muted); text-align: center; line-height: 1;
   }
   .bar-tick::before {
@@ -190,7 +190,7 @@
   .coffee-marker .stem { width: 1px; height: 6px; background: var(--rule); }
   .coffee-label {
     position: absolute; transform: translateX(-50%); top: 4px;
-    font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+    font-family: 'Outfit', sans-serif; font-size: 8.5px;
     letter-spacing: .18em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
   }
   .info-strip {
@@ -203,26 +203,26 @@
   }
   .info-cell:last-child { border-right: none; }
   .info-cell .k {
-    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px;
     letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
   }
   .info-cell .v {
-    font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600;
+    font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 600;
     color: var(--ink); letter-spacing: -.01em; font-variant-numeric: tabular-nums;
   }
-  .info-cell .v em { font-style: italic; color: var(--accent); font-weight: 400; }
-  .info-cell .sub { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--muted); font-style: italic; }
+  .info-cell .v em {  color: var(--accent); font-weight: 400; }
+  .info-cell .sub { font-family: 'Outfit', sans-serif; font-size: 11px; color: var(--muted);  }
   .callout {
     margin-top: 28px; border: 1px solid var(--accent); background: var(--accent-soft);
     padding: 20px 24px; display: flex; align-items: center; gap: 18px;
   }
   .callout .co-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    font-family: 'Outfit', sans-serif; font-size: 10px;
     letter-spacing: .2em; text-transform: uppercase; color: var(--accent);
     font-weight: 700; white-space: nowrap; padding-right: 18px; border-right: 1px solid var(--accent);
   }
   .callout .co-text {
-    font-family: 'Fraunces', serif; font-style: italic; font-size: 18px;
+    font-family: 'Outfit', sans-serif;  font-size: 18px;
     color: var(--ink); line-height: 1.35;
   }
   .week-grid {
@@ -238,27 +238,27 @@
   .week-day.today { background: var(--paper); }
   .week-day.today::before {
     content: "HEUTE"; position: absolute; top: 10px; right: 12px;
-    font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+    font-family: 'Outfit', sans-serif; font-size: 8.5px;
     letter-spacing: .2em; color: var(--accent); font-weight: 700;
   }
   .week-day .wd-name {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    font-family: 'Outfit', sans-serif; font-size: 10px;
     letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
   }
   .week-day .wd-hours {
-    font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600;
+    font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 600;
     color: var(--ink); font-variant-numeric: tabular-nums;
     line-height: 1; letter-spacing: -.01em;
   }
-  .week-day .wd-hours em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .week-day .wd-hours em {  color: var(--accent); font-weight: 400; }
   .week-day .wd-hours .unit {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 500;
     color: var(--muted); margin-left: 4px; letter-spacing: .08em; text-transform: lowercase;
   }
-  .week-day.empty .wd-hours { color: var(--muted); font-style: italic; font-size: 22px; }
+  .week-day.empty .wd-hours { color: var(--muted);  font-size: 22px; }
   .week-day .wd-sub {
-    font-family: 'Inter', sans-serif; font-size: 11px;
-    color: var(--muted); font-style: italic; margin-top: auto;
+    font-family: 'Outfit', sans-serif; font-size: 11px;
+    color: var(--muted);  margin-top: auto;
   }
   .week-day .wd-bar {
     height: 4px; background: var(--rule-soft); position: relative; overflow: hidden;
@@ -271,22 +271,22 @@
   .week-total {
     grid-column: 1 / -1; border-top: 1px solid var(--rule);
     padding: 12px 18px; display: flex; justify-content: space-between; align-items: baseline;
-    background: var(--paper); font-family: 'JetBrains Mono', monospace;
+    background: var(--paper); font-family: 'Outfit', sans-serif;
     font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); gap: 12px;
   }
   .week-total .total-right { display: flex; gap: 18px; align-items: baseline; }
   .week-total .total-value {
-    font-family: 'Fraunces', serif; font-size: 22px; color: var(--ink);
+    font-family: 'Outfit', sans-serif; font-size: 22px; color: var(--ink);
     text-transform: none; font-variant-numeric: tabular-nums; letter-spacing: -.01em;
   }
   .week-total .total-value .unit {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
+    font-family: 'Outfit', sans-serif; font-size: 11px; color: var(--muted);
     margin-left: 4px; letter-spacing: .08em;
   }
   .week-actions { display: flex; gap: 8px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
   .week-btn {
     border: 1px solid var(--rule); background: transparent; color: var(--ink);
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    font-family: 'Outfit', sans-serif; font-size: 10px;
     letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px;
     cursor: pointer; transition: background .15s;
   }
@@ -305,12 +305,12 @@
   }
   .milestone-note.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .milestone-note .m-eyebrow {
-    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px;
     letter-spacing: .22em; text-transform: uppercase; color: var(--accent);
     font-weight: 700; white-space: nowrap;
   }
   .milestone-note .m-text {
-    font-family: 'Fraunces', serif; font-style: italic;
+    font-family: 'Outfit', sans-serif; 
     font-size: 16px; line-height: 1.3; color: var(--ink);
   }
   @media (max-width: 980px) {
@@ -491,7 +491,7 @@
   <div class="week-actions">
     <button class="week-btn" id="saveTodayBtn" title="Aktuelle Netto-Zeit für heute speichern">Heute speichern</button>
     <button class="week-btn danger" id="resetWeekBtn" title="Ganze Woche zurücksetzen">Woche zurücksetzen</button>
-    <span style="font-family:'Inter',sans-serif;font-size:11.5px;color:var(--muted);font-style:italic;">
+    <span style="font-family:'Outfit',sans-serif;font-size:11.5px;color:var(--muted);">
       Speichert automatisch nach Feierabend · lokal im Browser
     </span>
   </div>
@@ -844,7 +844,7 @@ function update() {
     $("#statLeftSub").textContent = "bis Feierabend";
   }
   $("#infoPct").innerHTML  = `${pct.toFixed(1).replace('.',',')}<em>%</em>`;
-  $("#infoNet").innerHTML  = `${fmtHMShort(netElapsed)} / ${fmtHMShort(netTotal)}<span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-left:4px;">std</span>`;
+  $("#infoNet").innerHTML  = `${fmtHMShort(netElapsed)} / ${fmtHMShort(netTotal)}<span style="font-family:'Outfit', sans-serif;font-size:11px;color:var(--muted);margin-left:4px;">std</span>`;
   if (now < pause) $("#infoPause").textContent = `um ${pauseStr}`;
   else if (now < pauseEnd) $("#infoPause").innerHTML = `<em>läuft</em>`;
   else $("#infoPause").textContent = "erledigt";

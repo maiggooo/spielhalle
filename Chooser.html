@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 <title>Chooser — Maiko's Tools</title>
 <meta name="description" content="Finger auflegen — der Zufall wählt einen aus.">
-<meta name="theme-color" content="#f4efe6">
+<meta name="theme-color" content="#0B3B2A">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Maiko&#39;s Spiele &amp; Tools">
 <meta property="og:locale" content="de_DE">
@@ -20,7 +20,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
 <style>
 
@@ -40,11 +40,11 @@
   /* ————————————— CHOOSER ————————————— */
   .chooser-head { padding:28px 0 18px; text-align:center; }
   .headline {
-    font-family:'Fraunces', serif; font-weight:800;
+    font-family:'Outfit', sans-serif; font-weight:800;
     font-size:clamp(44px, 8vw, 84px);
     line-height:.95; letter-spacing:-.02em;
   }
-  .headline em { font-style:italic; font-weight:400; color:var(--accent); }
+  .headline em {  font-weight:400; color:var(--accent); }
 
   /* Slider */
   .slider-box {
@@ -55,12 +55,12 @@
     display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:center;
   }
   .slider-label {
-    font-family:'JetBrains Mono', monospace; font-size:11px;
+    font-family:'Outfit', sans-serif; font-size:11px;
     letter-spacing:.18em; text-transform:uppercase; color:var(--muted);
     white-space:nowrap;
   }
   .slider-value {
-    font-family:'Fraunces', serif; font-weight:800; font-style:italic;
+    font-family:'Outfit', sans-serif; font-weight:800; 
     font-size:32px; color:var(--accent); line-height:1;
     min-width:34px; text-align:right;
   }
@@ -111,7 +111,7 @@
     display:flex; flex-direction:column;
     align-items:center; justify-content:center;
     text-align:center; padding:20px;
-    font-family:'Fraunces', serif; font-style:italic;
+    font-family:'Outfit', sans-serif; 
     color:var(--muted);
     pointer-events:none;
     transition:opacity .3s ease;
@@ -121,7 +121,7 @@
     color:var(--ink-soft); margin-bottom:6px;
   }
   .stage-hint .small {
-    font-family:'JetBrains Mono', monospace; font-style:normal;
+    font-family:'Outfit', sans-serif; font-style:normal;
     font-size:11px; letter-spacing:.22em; text-transform:uppercase;
     color:var(--muted);
   }
@@ -130,7 +130,7 @@
   .stage-status {
     position:absolute; top:14px; left:0; right:0;
     text-align:center;
-    font-family:'JetBrains Mono', monospace; font-size:11px;
+    font-family:'Outfit', sans-serif; font-size:11px;
     letter-spacing:.22em; text-transform:uppercase;
     color:var(--muted); pointer-events:none;
     transition:color .2s ease;
@@ -222,7 +222,7 @@
   .btn {
     border:1px solid var(--rule); background:var(--paper);
     color:var(--ink); padding:10px 16px;
-    font-family:'JetBrains Mono', monospace; font-size:11px;
+    font-family:'Outfit', sans-serif; font-size:11px;
     letter-spacing:.14em; text-transform:uppercase; font-weight:700;
     cursor:pointer; transition:background .15s, transform .1s, box-shadow .15s;
     box-shadow:3px 3px 0 var(--ink);

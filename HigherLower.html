@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
 <style>
 
@@ -45,18 +45,18 @@
     border-bottom:1px solid var(--rule); padding-bottom:14px;
   }
   .lede h1 {
-    font-family:'Fraunces', serif; font-weight:800;
+    font-family:'Outfit', sans-serif; font-weight:800;
     font-size:clamp(30px, 5vw, 52px); line-height:.95;
     letter-spacing:-.02em;
   }
-  .lede h1 em { font-style:italic; font-weight:400; color:var(--accent); }
+  .lede h1 em {  font-weight:400; color:var(--accent); }
   .lede .kicker {
-    font-family:'JetBrains Mono', monospace; font-size:10.5px;
+    font-family:'Outfit', sans-serif; font-size:10.5px;
     letter-spacing:.18em; text-transform:uppercase; color:var(--muted);
     margin-bottom:10px;
   }
   .lede .period {
-    text-align:right; font-family:'JetBrains Mono', monospace;
+    text-align:right; font-family:'Outfit', sans-serif;
     font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
     color:var(--muted);
   }
@@ -76,15 +76,15 @@
   }
   .scoreboard > div:last-child { border-right:none; }
   .score-label {
-    font-family:'JetBrains Mono', monospace; font-size:9.5px;
+    font-family:'Outfit', sans-serif; font-size:9.5px;
     letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
     margin-bottom:4px;
   }
   .score-val {
-    font-family:'Fraunces', serif; font-weight:800;
+    font-family:'Outfit', sans-serif; font-weight:800;
     font-size:26px; line-height:1;
   }
-  .score-val em { font-style:italic; color:var(--accent); font-weight:400; }
+  .score-val em {  color:var(--accent); font-weight:400; }
 
   .board {
     display:grid;
@@ -105,7 +105,7 @@
   }
   .card.dim { opacity:.5; }
   .card .eyebrow {
-    font-family:'JetBrains Mono', monospace; font-size:10px;
+    font-family:'Outfit', sans-serif; font-size:10px;
     letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
     padding-bottom:8px; border-bottom:1px solid var(--rule);
     display:flex; justify-content:space-between; align-items:center;
@@ -115,13 +115,13 @@
     font-size:9px; letter-spacing:.15em;
   }
   .card .headline {
-    font-family:'Fraunces', serif; font-weight:800;
+    font-family:'Outfit', sans-serif; font-weight:800;
     font-size:clamp(24px, 3.4vw, 34px); line-height:1.05;
     letter-spacing:-.01em; margin:14px 0 8px;
     min-height:120px; display:flex; align-items:center;
   }
   .card .subline {
-    font-family:'Fraunces', serif; font-style:italic;
+    font-family:'Outfit', sans-serif; 
     font-size:14px; color:var(--muted); margin-bottom:14px;
   }
   .card .value-block {
@@ -129,15 +129,15 @@
     text-align:center;
   }
   .card .value-label {
-    font-family:'JetBrains Mono', monospace; font-size:9.5px;
+    font-family:'Outfit', sans-serif; font-size:9.5px;
     letter-spacing:.22em; text-transform:uppercase; color:var(--muted);
     margin-bottom:6px;
   }
   .card .value {
-    font-family:'Fraunces', serif; font-weight:800;
+    font-family:'Outfit', sans-serif; font-weight:800;
     font-size:44px; line-height:1; letter-spacing:-.02em;
   }
-  .card .value em { font-style:italic; color:var(--accent); font-weight:400; }
+  .card .value em {  color:var(--accent); font-weight:400; }
   .card .value.reveal { animation: valueReveal .55s cubic-bezier(.7,0,.2,1); }
   @keyframes valueReveal {
     0% { opacity:0; transform:translateY(10px) scale(.92); filter:blur(2px); }
@@ -146,7 +146,7 @@
 
   .vs {
     display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces', serif; font-style:italic;
+    font-family:'Outfit', sans-serif; 
     font-size:34px; color:var(--muted);
   }
 
@@ -167,7 +167,7 @@
     .actions.center-bar::before, .actions.center-bar::after { display:none; }
   }
   .btn {
-    font-family:'JetBrains Mono', monospace; font-size:11px;
+    font-family:'Outfit', sans-serif; font-size:11px;
     letter-spacing:.18em; text-transform:uppercase; font-weight:700;
     padding:14px 10px; border:1px solid var(--ink); background:var(--paper);
     color:var(--ink); cursor:pointer;
@@ -180,25 +180,25 @@
   }
   .btn:active:not(:disabled) { transform:translate(1px,1px); box-shadow:1px 1px 0 var(--ink); }
   .btn:disabled { opacity:.4; cursor:not-allowed; box-shadow:none; }
-  .btn .arrow { display:block; font-family:'Fraunces', serif; font-style:italic; font-size:22px; margin-bottom:2px; letter-spacing:0; text-transform:none; }
+  .btn .arrow { display:block; font-family:'Outfit', sans-serif;  font-size:22px; margin-bottom:2px; letter-spacing:0; text-transform:none; }
 
   .verdict {
     margin-top:16px; padding:12px 16px; text-align:center;
-    font-family:'Fraunces', serif; font-style:italic; font-size:18px;
+    font-family:'Outfit', sans-serif;  font-size:18px;
     border:1px dashed var(--rule-soft); min-height:52px;
     display:flex; align-items:center; justify-content:center; gap:10px;
   }
   .verdict.correct { color:var(--ok); border-color:var(--ok); background:var(--ok-soft); }
   .verdict.wrong   { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
   .verdict .badge {
-    font-family:'JetBrains Mono', monospace; font-size:10px;
+    font-family:'Outfit', sans-serif; font-size:10px;
     letter-spacing:.18em; text-transform:uppercase; font-style:normal;
     padding:3px 8px; border:1px solid currentColor;
   }
 
   .wiki-link {
     display:inline-block; margin-top:8px;
-    font-family:'JetBrains Mono', monospace; font-size:10px;
+    font-family:'Outfit', sans-serif; font-size:10px;
     letter-spacing:.15em; text-transform:uppercase; color:var(--muted);
     text-decoration:none; border-bottom:1px solid var(--rule-soft);
     padding-bottom:1px;
@@ -220,19 +220,19 @@
   }
   .final.show { display:block; animation: valueReveal .5s ease; }
   .final-title {
-    font-family:'Fraunces', serif; font-style:italic; font-weight:600;
+    font-family:'Outfit', sans-serif;  font-weight:600;
     font-size:34px; margin-bottom:6px;
   }
   .final-sub {
-    font-family:'JetBrains Mono', monospace; font-size:11px;
+    font-family:'Outfit', sans-serif; font-size:11px;
     letter-spacing:.18em; text-transform:uppercase; color:var(--muted);
     margin-bottom:18px;
   }
   .final-score {
-    font-family:'Fraunces', serif; font-weight:800; font-size:64px;
+    font-family:'Outfit', sans-serif; font-weight:800; font-size:64px;
     line-height:1; margin-bottom:14px;
   }
-  .final-score em { font-style:italic; color:var(--accent); font-weight:400; }
+  .final-score em {  color:var(--accent); font-weight:400; }
 
   .rules {
     margin-top:32px; padding:18px 22px;
@@ -241,7 +241,7 @@
     columns:2; column-gap:32px;
   }
   .rules h3 {
-    font-family:'JetBrains Mono', monospace; font-size:10px;
+    font-family:'Outfit', sans-serif; font-size:10px;
     letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
     margin-bottom:6px; font-weight:600;
     column-span:all;
@@ -291,7 +291,7 @@
     <div class="vs" aria-hidden="true">·</div>
     <div class="period">
       <div id="periodLabel">Wikipedia-Aufrufe · lädt …</div>
-      <div style="margin-top:4px; opacity:.7;">Quelle: <span style="font-style:italic;">de.wikipedia</span></div>
+      <div style="margin-top:4px; opacity:.7;">Quelle: <span style="">de.wikipedia</span></div>
     </div>
   </section>
 
