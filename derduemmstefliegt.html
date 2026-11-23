@@ -572,6 +572,42 @@
   .recap-res.bad { background:#FF7A7A; }
   .winner-screen .crown { color:var(--gold); }
   @keyframes glow { 50% { text-shadow:0 0 28px rgba(255,216,107,.7); } }
+
+  /* ———— AUSWAHLMODUS: 3 Kategorie-Karten, aufgefächert wie ein Blatt auf der Hand ———— */
+  .card.picking .q-text, .card.picking .q-answer, .card.picking .q-judge, .card.picking .q-actions { display:none !important; }
+  .pick { display:none; }
+  .card.picking .pick { display:block; position:relative; height:262px; margin:10px 0 0; perspective:1100px; }
+  .pcard { position:absolute; left:50%; bottom:34px; width:108px; height:160px; margin-left:-54px; padding:0; border:0; background:none; cursor:pointer;
+    transform-origin:50% 120%; transform:translate(var(--x), calc(var(--y) + var(--lift, 0px))) rotate(var(--r));
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .4s;
+    animation:pdeal .6s cubic-bezier(.34,1.4,.64,1) backwards; animation-delay:calc(var(--n) * .12s); -webkit-tap-highlight-color:transparent; }
+  .pcard[data-i="1"] { z-index:2; }
+  .pcard:hover, .pcard:focus-visible { --lift:-18px; z-index:3; }
+  @keyframes pdeal { from { transform:translate(0, 170px) rotate(0deg) scale(.7); opacity:0; } }
+  .pc-inner { position:absolute; inset:0; transform-style:preserve-3d; transform:rotateY(180deg);
+    transition:transform .6s cubic-bezier(.5,0,.2,1.2); transition-delay:calc(var(--n) * .13s); }
+  .pick.shown .pc-inner { transform:none; }
+  .pc-face { position:absolute; inset:0; border-radius:12px; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .pc-front { gap:7px; padding:14px 8px 12px; color:#2A0A0F; background:linear-gradient(180deg, #FFFDF7, #EFE8D6);
+    box-shadow:inset 0 0 0 5px #FFFDF7, inset 0 0 0 7px #C8A24A, 0 10px 20px -6px rgba(0,0,0,.75), 0 2px 3px rgba(0,0,0,.4); }
+  .pc-corner { position:absolute; top:9px; left:12px; font:400 18px Limelight, serif; color:#8C1521; }
+  .pc-corner.b { top:auto; left:auto; bottom:9px; right:12px; transform:rotate(180deg); }
+  .pc-icon { font-size:40px; line-height:1; filter:drop-shadow(0 2px 2px rgba(0,0,0,.25)); }
+  .pc-topic { font:800 12px Outfit, sans-serif; letter-spacing:.03em; text-align:center; line-height:1.15; }
+  .pc-diff { font:700 10px Outfit, sans-serif; letter-spacing:.16em; text-transform:uppercase; padding:3px 9px; border-radius:99px; background:#8C1521; color:#FFD86B; }
+  .pc-back { transform:rotateY(180deg);
+    background:repeating-linear-gradient(45deg, rgba(255,216,107,.22) 0 5px, transparent 5px 11px),
+               repeating-linear-gradient(-45deg, rgba(255,216,107,.22) 0 5px, transparent 5px 11px), #7E1220;
+    box-shadow:inset 0 0 0 5px #FFFDF7, inset 0 0 0 7px #E8B83A, 0 10px 20px -6px rgba(0,0,0,.75), 0 2px 3px rgba(0,0,0,.4); }
+  .pc-back span { width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 35% 30%, #FFF1B8, #E8B83A 55%, #9A6B10); color:#6B4E08; font:400 24px Limelight, serif; box-shadow:0 2px 4px rgba(0,0,0,.45); }
+  .pick.chosen .pcard { pointer-events:none; }
+  .pick.chosen .pcard:not(.sel) { transform:translate(calc(var(--x) * 2.4), 280px) rotate(calc(var(--r) * 3)); opacity:0;
+    transition:transform .55s cubic-bezier(.5,0,.75,0), opacity .5s; }
+  .pick.chosen .pcard.sel { transform:translate(0, -26px) scale(1.18); z-index:5; transition:transform .45s cubic-bezier(.34,1.56,.64,1); }
+  .pick.chosen .pcard.sel .pc-front { box-shadow:inset 0 0 0 5px #FFFDF7, inset 0 0 0 7px #C8A24A, 0 0 0 3px #FFD86B, 0 0 34px 8px rgba(255,216,107,.7), 0 14px 26px -6px rgba(0,0,0,.7); }
+  @media (prefers-reduced-motion: reduce) { .pcard, .pc-inner { animation:none !important; transition:none !important; } }
 </style>
 </head>
 <body>
@@ -657,6 +693,7 @@
         </div>
       </div>
       <label class="check"><input type="checkbox" id="finaleToggle" checked> Schätzfinale, wenn nur noch zwei übrig sind</label>
+      <label class="check"><input type="checkbox" id="pickToggle"> Auswahlmodus: Wer dran ist, zieht aus 3 Kategorie-Karten</label>
     </details>
 
     <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
@@ -675,6 +712,7 @@
       </div>
       <div class="q-player" id="qPlayer">—</div>
       <div class="q-progress" id="qProgress">Frage 1 von X</div>
+      <div class="pick" id="pickArea"></div>
       <div class="q-text" id="qText">—</div>
       <div class="q-answer" id="qAnswer">
         <span class="lbl">Antwort</span>
@@ -906,6 +944,7 @@ $("#startBtn").addEventListener("click", () => {
   state.difficulties = diffs;
   state.topics = new Set(topics);
   state.finale = $("#finaleToggle").checked;
+  state.pick = $("#pickToggle").checked;
   state.lives = Math.round(+livesSlider.value);
   state.qmul = Math.round(+qmulSlider.value);
   state.players.forEach(p => { p.lives = state.lives; p.alive = true; });
@@ -934,15 +973,15 @@ function renderStats(barId) {
   });
 }
 
-function pickQuestion(diff) {
+function pickQuestion(diff, topic) {
   const all = QUESTIONS[diff].map((q,i)=>({q,i}));
-  let pool = all.filter(({q}) => state.topics.has(q.t));
+  let pool = all.filter(({q}) => topic ? q.t === topic : state.topics.has(q.t));
   if (pool.length === 0) pool = all; // gewählte Themen haben in dieser Stufe keine Fragen
   const available = pool.filter(({i}) => !state.usedQuestions.has(diff+"_"+i));
   if (available.length === 0) {
     // reset this pool
     pool.forEach(({i}) => state.usedQuestions.delete(diff+"_"+i));
-    return pickQuestion(diff);
+    return pickQuestion(diff, topic);
   }
   const pick = available[Math.floor(Math.random()*available.length)];
   state.usedQuestions.add(diff+"_"+pick.i);
@@ -960,7 +999,8 @@ function startRound() {
   for (let i=0; i<state.qmul; i++) {
     alive.forEach(p => {
       const diff = state.difficulties[Math.floor(Math.random()*state.difficulties.length)];
-      queue.push({player:p.name, diff, q:pickQuestion(diff)});
+      // Im Auswahlmodus wird die Frage erst gezogen, wenn die Karte gewählt ist
+      queue.push({player:p.name, diff, q: state.pick ? null : pickQuestion(diff)});
     });
   }
   state.queue = queue;
@@ -969,7 +1009,7 @@ function startRound() {
   // damit die Zusammenfassung unter dem Voting-Screen leicht nachvollziehbar ist.
   const order = alive.map(p => p.name);
   state.roundLog = queue
-    .map(item => item.log = {player:item.player, diff:item.diff, q:item.q.q, a:item.q.a, res:null})
+    .map(item => item.log = {player:item.player, diff:item.diff, q:item.q ? item.q.q : "", a:item.q ? item.q.a : "", res:null})
     .sort((a, b) => order.indexOf(a.player) - order.indexOf(b.player));
 
   nextQuestion();
@@ -986,19 +1026,27 @@ function showQuestion() {
   const shown = totalQs - state.queue.length;
 
   $("#roundInfo").textContent = "Runde " + state.round;
-  const topicChip = document.querySelector(`.diff-chip[data-topic="${state.currentQ.q.t}"]`);
-  $("#diffTag").textContent = state.currentQ.diff.charAt(0).toUpperCase()+state.currentQ.diff.slice(1)
-    + (topicChip ? " · " + topicChip.textContent : "");
   $("#qPlayer").textContent = state.currentQ.player;
   $("#qProgress").textContent = `Frage ${shown} von ${totalQs}`;
-  $("#qText").textContent = state.currentQ.q.q;
-  $("#qAnswerText").textContent = state.currentQ.q.a;
-  $("#qAnswer").classList.remove("show");
-  $("#revealBtn").textContent = "Antwort aufdecken";
-  $("#nextQBtn").style.display = "none";
-  renderJudge();
   renderStats("statsBar");
   const card = document.querySelector("#screen-game .card");
+  const picking = !state.currentQ.q;
+  card.classList.toggle("picking", picking);
+  if (picking) {
+    $("#diffTag").textContent = "Auswahl";
+    $("#qProgress").textContent += " · Wähle eine Karte";
+    renderPick();
+  } else {
+    const topicChip = document.querySelector(`.diff-chip[data-topic="${state.currentQ.q.t}"]`);
+    $("#diffTag").textContent = state.currentQ.diff.charAt(0).toUpperCase()+state.currentQ.diff.slice(1)
+      + (topicChip ? " · " + topicChip.textContent : "");
+    $("#qText").textContent = state.currentQ.q.q;
+    $("#qAnswerText").textContent = state.currentQ.q.a;
+    $("#qAnswer").classList.remove("show");
+    $("#revealBtn").textContent = "Antwort aufdecken";
+    $("#nextQBtn").style.display = "none";
+    renderJudge();
+  }
   card.classList.remove("q-anim");
   void card.offsetWidth;
   card.classList.add("q-anim");
@@ -1009,6 +1057,60 @@ function showQuestion() {
     if (scrollY > top + 4) follow(top);
   }
 }
+/* ————————————— AUSWAHLMODUS ————————————— */
+const TOPIC_ICON = { geo:"🌍", gesch:"🏛️", wiss:"🔬", pop:"🎬", sport:"⚽", essen:"🍝", kunst:"🎨", marken:"📱", alltag:"🏠" };
+const diffLabel = d => d.charAt(0).toUpperCase() + d.slice(1);
+const calmDDF = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FAN = [[-70, -10, 14], [0, 0, 0], [70, 10, 14]]; // x, Drehung, y je Karte
+
+function renderPick() {
+  const cq = state.currentQ;
+  if (!cq.options) {
+    // 3 Karten: je eine Schwierigkeit und ein Thema, das darin Fragen hat; Themen möglichst verschieden
+    const used = new Set();
+    cq.options = [0, 1, 2].map(() => {
+      const diff = state.difficulties[Math.floor(Math.random() * state.difficulties.length)];
+      const has = [...state.topics].filter(t => QUESTIONS[diff].some(q => q.t === t));
+      const fresh = has.filter(t => !used.has(t));
+      const pool = fresh.length ? fresh : has.length ? has : [...state.topics];
+      const t = pool[Math.floor(Math.random() * pool.length)];
+      used.add(t);
+      return { t, diff };
+    });
+  }
+  const area = $("#pickArea");
+  area.className = "pick";
+  area.innerHTML = cq.options.map((o, i) => {
+    const label = escape(document.querySelector(`.diff-chip[data-topic="${o.t}"]`)?.textContent || o.t);
+    const d = diffLabel(o.diff);
+    return `<button class="pcard" data-i="${i}" style="--x:${FAN[i][0]}px;--r:${FAN[i][1]}deg;--y:${FAN[i][2]}px;--n:${i}" aria-label="${label}, ${d}">
+      <span class="pc-inner">
+        <span class="pc-face pc-front"><span class="pc-corner">${d[0]}</span><span class="pc-corner b">${d[0]}</span>
+          <span class="pc-icon">${TOPIC_ICON[o.t] || "★"}</span><span class="pc-topic">${label}</span><span class="pc-diff">${d}</span></span>
+        <span class="pc-face pc-back"><span>S</span></span>
+      </span></button>`;
+  }).join("");
+  area.querySelectorAll(".pcard").forEach(b => b.addEventListener("click", () => choosePick(+b.dataset.i)));
+  // erst austeilen, dann nacheinander umdrehen
+  setTimeout(() => area.classList.add("shown"), calmDDF ? 0 : 650);
+}
+
+function choosePick(i) {
+  const area = $("#pickArea");
+  if (area.classList.contains("chosen")) return;
+  const cq = state.currentQ, o = cq.options[i];
+  area.classList.add("shown", "chosen");
+  area.querySelector(`.pcard[data-i="${i}"]`).classList.add("sel");
+  navigator.vibrate?.(20);
+  setTimeout(() => {
+    cq.diff = o.diff;
+    cq.q = pickQuestion(o.diff, o.t);
+    Object.assign(cq.log, { diff: o.diff, q: cq.q.q, a: cq.q.a });
+    delete cq.options;
+    showQuestion();
+  }, calmDDF ? 0 : 800);
+}
+
 function follow(y) {
   scrollTo({ top: Math.max(0, y), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }
@@ -1324,7 +1426,13 @@ function resumeDDF(d) {
   Object.assign(state, d, { topics: new Set(d.topics), usedQuestions: new Set(d.usedQuestions), usedEstimates: new Set(d.usedEstimates) });
   delete state.screen;
   // Fragen der Runde wieder mit dem Rundenprotokoll verknüpfen (geht beim Speichern verloren)
-  const link = item => { if (item) item.log = state.roundLog.find(l => l.player === item.player && l.q === item.q.q); };
+  // Noch nicht gezogene Fragen (Auswahlmodus) haben leeren Text, darum jedes Protokoll nur einmal vergeben
+  const taken = new Set();
+  const link = item => {
+    if (!item) return;
+    item.log = state.roundLog.find(l => !taken.has(l) && l.player === item.player && l.q === (item.q ? item.q.q : ""));
+    taken.add(item.log);
+  };
   link(state.currentQ); state.queue.forEach(link);
   renderPlayers();
   if (d.screen === "screen-vote") startVote();
@@ -1336,7 +1444,8 @@ function saveSetup() {
     names: state.players.map(p => p.name),
     lives: Math.round(+livesSlider.value), qmul: Math.round(+qmulSlider.value),
     off: [...document.querySelectorAll(".diff-chip:not(.on)")].map(c => c.dataset.diff || c.dataset.topic), // neue Themen sind so automatisch an
-    finale: $("#finaleToggle").checked
+    finale: $("#finaleToggle").checked,
+    pick: $("#pickToggle").checked
   })); } catch {}
 }
 const savedSetup = loadSaved("ddf-setup");
@@ -1347,6 +1456,7 @@ if (savedSetup) {
   qmulSlider.value = savedSetup.qmul; qmulSlider.dispatchEvent(new Event("input"));
   if (savedSetup.off) document.querySelectorAll(".diff-chip").forEach(c => c.classList.toggle("on", !savedSetup.off.includes(c.dataset.diff || c.dataset.topic)));
   $("#finaleToggle").checked = savedSetup.finale;
+  $("#pickToggle").checked = !!savedSetup.pick;
 }
 addEventListener("pagehide", saveSetup);
 
