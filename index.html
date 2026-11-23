@@ -164,7 +164,13 @@
 
   .cell:active, .card:active { filter: brightness(.9); }
   a:focus-visible, button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-  @media (prefers-reduced-motion: reduce) { .smoke, .ember, .lever.pull i { animation: none; } .smoke { opacity: .5; } }
+  /* Geheimnis: Bis zum ersten Zug am Hebel ist der Automat aus. Kein Spielgeld, kein Preis, die Birnen glimmen nur. */
+  .stage:not(.lit) .lever .price { visibility: hidden; }
+  .stage:not(.lit) .fx-bulbs i { animation: none; background: #5A3E0C; box-shadow: none; }
+  .stage:not(.lit) .fx-shine { animation: none; }
+  .stage.on .sign { animation: power .9s steps(1); }
+  @keyframes power { 0%, 30%, 55% { filter: brightness(.35); } 15%, 42%, 100% { filter: none; } }
+  @media (prefers-reduced-motion: reduce) { .smoke, .ember, .lever.pull i, .stage.on .sign { animation: none; } .smoke { opacity: .5; } }
 </style>
 </head>
 <body>
@@ -217,7 +223,7 @@
         </div>
       </div>
 
-      <div class="led">
+      <div class="led slot-only">
         <div>GUTHABEN<b id="credit"></b></div>
         <div>TOPF<b id="pot"></b></div>
       </div>
@@ -232,7 +238,7 @@
       <p class="hint" id="hint" aria-live="polite"></p>
     </section>
 
-    <button class="lever" id="lever" type="button" aria-label="Am Hebel ziehen, 20 Cent Spielgeld">
+    <button class="lever" id="lever" type="button" aria-label="Am Hebel ziehen">
       <i class="mount"></i><i class="stick"></i><i class="knob"></i><i class="price">20 CT</i>
     </button>
   </div>
@@ -334,8 +340,8 @@
   function setMode(m) {
     machine.dataset.mode = m;
     say(m === 'games'
-      ? 'Tippe auf ein Spiel, um es zu starten. Oder zieh am Hebel: 20 Cent pro Dreh, nur Spielgeld.'
-      : 'Jedes Symbol klettert seine Leiter hoch. Nimm den Topf, bevor der Blitz kommt.');
+      ? 'Tippe auf ein Spiel, um es zu starten.'
+      : 'Nur Spielgeld, 20 Cent pro Dreh. Jedes Symbol klettert seine Leiter hoch. Nimm den Topf, bevor der Blitz kommt.');
   }
 
   async function pull() {
@@ -364,8 +370,16 @@
     busy = false; draw();
   }
 
+  const stage = document.querySelector('.stage');
   $('lever').addEventListener('click', () => {
     const l = $('lever'); l.classList.remove('pull'); l.offsetWidth; l.classList.add('pull');
+    if (!stage.classList.contains('lit')) {
+      // Einschalten: Schild flackert, Lauflicht startet, danach geht es ins Automatenspiel
+      stage.classList.add('lit', 'on');
+      navigator.vibrate?.([30, 60, 30, 60, 80]);
+      setTimeout(pull, calm ? 0 : 900);
+      return;
+    }
     pull();
   });
   $('start').addEventListener('click', pull);
