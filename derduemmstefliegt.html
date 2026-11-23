@@ -649,7 +649,8 @@
           <div class="diff-chip on" data-topic="sport">Sport</div>
           <div class="diff-chip on" data-topic="essen">Essen &amp; Trinken</div>
           <div class="diff-chip on" data-topic="kunst">Kunst &amp; Literatur</div>
-          <div class="diff-chip on" data-topic="alltag">Alltag &amp; Allerlei</div>
+          <div class="diff-chip on" data-topic="marken">Marken &amp; Technik</div>
+          <div class="diff-chip on" data-topic="alltag">Alltag &amp; Leben</div>
         </div>
       </div>
       <label class="check"><input type="checkbox" id="finaleToggle" checked> Schätzfinale, wenn nur noch zwei übrig sind</label>
@@ -1318,7 +1319,7 @@ function saveSetup() {
   try { localStorage.setItem("ddf-setup", JSON.stringify({
     names: state.players.map(p => p.name),
     lives: Math.round(+livesSlider.value), qmul: Math.round(+qmulSlider.value),
-    chips: [...document.querySelectorAll(".diff-chip.on")].map(c => c.dataset.diff || c.dataset.topic),
+    off: [...document.querySelectorAll(".diff-chip:not(.on)")].map(c => c.dataset.diff || c.dataset.topic), // neue Themen sind so automatisch an
     finale: $("#finaleToggle").checked
   })); } catch {}
 }
@@ -1328,7 +1329,7 @@ if (savedSetup) {
   renderPlayers();
   livesSlider.value = savedSetup.lives; livesSlider.dispatchEvent(new Event("input"));
   qmulSlider.value = savedSetup.qmul; qmulSlider.dispatchEvent(new Event("input"));
-  document.querySelectorAll(".diff-chip").forEach(c => c.classList.toggle("on", savedSetup.chips.includes(c.dataset.diff || c.dataset.topic)));
+  if (savedSetup.off) document.querySelectorAll(".diff-chip").forEach(c => c.classList.toggle("on", !savedSetup.off.includes(c.dataset.diff || c.dataset.topic)));
   $("#finaleToggle").checked = savedSetup.finale;
 }
 addEventListener("pagehide", saveSetup);
