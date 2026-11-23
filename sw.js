@@ -4,7 +4,7 @@ const CACHE = "spielhalle";
 const CORE = [
   "./", "index.html", "site.css", "site.js", "favicon.png", "manifest.json",
   "derduemmstefliegt.html", "fragen.json", "zuendschnur.html", "stirnraten.html",
-  "spyfall.html", "werwolf.html", "wizard.html", "multiplayer.js"
+  "spyfall.html", "werwolf.html", "wizard.html", "multiplayer.js", "fx.js"
 ];
 
 self.addEventListener("install", e => {

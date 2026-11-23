@@ -23,6 +23,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Spielhalle">
 <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
+<script src="fx.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -746,7 +747,7 @@
     <div class="winner-screen">
       <div class="crown">♛</div>
       <div class="sub">Sieger*in des Abends</div>
-      <div class="name" id="winnerName">—</div>
+      <div class="name fx-shine" id="winnerName">—</div>
       <div class="sub" style="margin-top:30px;">Herzlichen Glückwunsch!</div>
       <div style="margin-top:40px;">
         <button class="btn primary" id="restartBtn">Neues Spiel</button>
@@ -1205,7 +1206,8 @@ function revealEstimate() {
     <div class="col"><div class="name">${escape(n1)}</div><div class="guess">${g1}${unit}</div></div>
     <div class="col"><div class="name">${escape(n2)}</div><div class="guess">${g2}${unit}</div></div>
   `;
-  $("#estActual").textContent = actual + unit;
+  if (window.fx) { $("#estActual").dataset.fxText = ""; fx.roll($("#estActual"), actual + unit); }
+  else $("#estActual").textContent = actual + unit;
 
   if (winner) {
     $("#estWinner").textContent = winner + " gewinnt die Runde!";
@@ -1257,6 +1259,7 @@ function showWinner(player) {
   clearGame("ddf-game");
   $("#winnerName").textContent = player.name;
   switchScreen("screen-winner");
+  window.fx?.burst();
 }
 $("#restartBtn").addEventListener("click", () => {
   // reset state, aber Spielernamen behalten

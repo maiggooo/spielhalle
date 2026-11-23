@@ -23,6 +23,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Spielhalle">
 <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
+<script src="fx.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -280,7 +281,7 @@
         <div class="player-name" id="handTo">—</div>
       </div>
 
-      <div class="flip-card" id="flipCard" role="button" aria-label="Karte umdrehen">
+      <div class="flip-card" data-fx-tilt id="flipCard" role="button" aria-label="Karte umdrehen">
         <div class="flip-inner">
           <div class="card-face card-back">
             <div class="back-label">Streng geheim</div>
@@ -315,7 +316,7 @@
 
     <!-- Seherin: Ergebnis-Kartenreveal -->
     <div class="card-stage" id="seherinReveal" style="display:none; padding-top:10px;">
-      <div class="flip-card" id="seherinFlipCard" role="button" aria-label="Karte umdrehen">
+      <div class="flip-card" data-fx-tilt id="seherinFlipCard" role="button" aria-label="Karte umdrehen">
         <div class="flip-inner">
           <div class="card-face card-back">
             <div class="back-label">Streng geheim</div>
@@ -347,7 +348,7 @@
     </div>
     <div class="card-stage">
       <div class="hand-msg"><div id="deathPlayerLabel">—</div></div>
-      <div class="flip-card" id="deathFlipCard" role="button" aria-label="Karte umdrehen">
+      <div class="flip-card" data-fx-tilt id="deathFlipCard" role="button" aria-label="Karte umdrehen">
         <div class="flip-inner">
           <div class="card-face card-back">
             <div class="back-label">Streng geheim</div>
@@ -369,7 +370,7 @@
   <section id="screen-result" class="screen">
     <div class="hero" style="border-bottom:none;">
       <div class="eyebrow" id="resultEyebrow">Spiel beendet</div>
-      <h1 id="resultHeadline">—</h1>
+      <h1 class="fx-shine" id="resultHeadline">—</h1>
       <div class="lede" id="resultLede"></div>
     </div>
     <div class="section-title">Überlebende</div>
@@ -1012,6 +1013,7 @@ function showResult(winner) {
   clearGame("ww-game");
   switchScreen("screen-result");
   applyPhaseTheme(false);
+  window.fx?.burst();
   $("#resultHeadline").textContent = winner === "dorf" ? "Das Dorf gewinnt" : "Die Werwölfe gewinnen";
   $("#resultLede").textContent = winner === "dorf" ? "Alle Werwölfe wurden gefunden." : "Die Wölfe haben das Dorf überwältigt.";
   $("#resultList").innerHTML = game.state.map(p=>`

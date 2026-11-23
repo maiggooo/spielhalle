@@ -23,6 +23,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Spielhalle">
 <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
+<script src="fx.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -472,6 +473,7 @@
     navigator.vibrate && navigator.vibrate([400, 100, 400]);
     $('bombGlyph').textContent = '💥';
     $('bombGlyph').className = 'bomb boom';
+    window.fx?.burst('boom', 1.2);
     $('bombHint').innerHTML = '<b>BOOM!</b> Wer das Handy jetzt hält, trinkt 3.';
     const box = document.createElement('div');
     box.className = 'chips';

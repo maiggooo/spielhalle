@@ -23,6 +23,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Spielhalle">
 <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
+<script src="fx.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
@@ -59,7 +60,7 @@
   }
   .machine[data-mode="games"] .slot-only, .machine[data-mode="slot"] .games-only { display: none; }
 
-  .sign { background: var(--dark); border-radius: 12px; padding: 8px 12px 10px; }
+  .sign { position: relative; background: var(--dark); border-radius: 12px; padding: 16px 16px 15px; }
   .bulbs {
     height: 10px; margin-bottom: 4px;
     background: radial-gradient(circle, var(--gold-hi) 3px, transparent 4px) center / 18px 10px;
@@ -171,7 +172,7 @@
 
   <header class="display">
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 0l7 7-7 7-7-7z" fill="currentColor"/></svg>
-    MAIKOS SPIELHALLE
+    <span class="fx-neon">MAIKOS SPIELH<span class="fx-flicker">A</span>LLE</span>
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 0l7 7-7 7-7-7z" fill="currentColor"/></svg>
   </header>
 
@@ -192,9 +193,8 @@
     </svg>
 
     <section class="machine" data-mode="games" aria-label="Spielautomat">
-      <div class="sign">
-        <div class="bulbs" aria-hidden="true"></div>
-        <h1 class="display">
+      <div class="sign" data-fx-bulbs>
+        <h1 class="display fx-shine">
           <svg viewBox="0 0 64 64" aria-hidden="true">
             <g stroke="#FFD86B" stroke-width="5" stroke-linecap="round"><path d="M32 3v8M32 53v8M3 32h8M53 32h8M11.5 11.5l5.7 5.7M46.8 46.8l5.7 5.7M11.5 52.5l5.7-5.7M46.8 17.2l5.7-5.7"/></g>
             <circle cx="32" cy="32" r="16" fill="#FFD86B"/>
@@ -273,7 +273,7 @@
   const icon = g => `<svg viewBox="0 0 64 64" aria-hidden="true"><path fill="${g.fg}" fill-rule="evenodd" d="${g.d}"/></svg>`;
   const cell = g => `<a class="cell" href="${g.p}" style="background:${g.bg};color:${g.fg}">${icon(g)}<span>${g.n}</span></a>`;
   document.querySelector('.all').innerHTML = G.map(g =>
-    `<a class="card" href="${g.p}"><span class="chip" style="background:${g.bg}">${icon(g)}</span>${g.n}</a>`).join('');
+    `<a class="card" data-fx-tilt href="${g.p}"><span class="chip" style="background:${g.bg}">${icon(g)}</span>${g.n}</a>`).join('');
 
   const strips = [...document.querySelectorAll('.games .strip')];
   const rand = n => Math.floor(Math.random() * n);
@@ -321,8 +321,9 @@
   const pot = () => lad.reduce((sum, l, i) => sum + (l ? S[i].steps[l - 1] : 0), 0);
 
   function draw() {
-    $('credit').textContent = euro(credit);
-    $('pot').textContent = euro(pot());
+    const put = (id, t) => window.fx ? fx.roll($(id), t) : $(id).textContent = t;
+    put('credit', euro(credit));
+    put('pot', euro(pot()));
     $('take').disabled = busy || !pot();
     $('start').disabled = busy;
     $('ladders').innerHTML = S.map((s, i) => `<div class="ladder" style="--c:${s.c}">${svg(i)}${
@@ -356,6 +357,7 @@
     } else if (++lad[i] === S[i].steps.length) {
       const win = S[i].steps.at(-1); credit += win; lad[i] = 0;
       say(`Leiter voll! ${euro(win)} gewonnen.`);
+      window.fx?.burst('coins', 1.5);
     } else {
       say(`Im Topf: ${euro(pot())}. Nehmen oder weiterdrehen?`);
     }
@@ -370,8 +372,14 @@
   $('take').addEventListener('click', () => {
     const win = pot(); credit += win; lad = [0, 0, 0]; draw();
     say(`${euro(win)} genommen.`);
+    if (win) window.fx?.burst('coins', Math.min(1.5, .3 + win / 1000));
   });
   $('back').addEventListener('click', () => setMode('games'));
+
+  // Spielekarten werden ausgeteilt, sobald sie ins Bild kommen
+  new IntersectionObserver((es, o) => {
+    if (es[0].isIntersecting && window.fx) { fx.deal([...document.querySelectorAll('.all .card')]); o.disconnect(); }
+  }).observe(document.querySelector('.all'));
 
   $('sreel').innerHTML = sym(0);
   setMode('games'); draw();
