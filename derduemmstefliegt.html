@@ -187,6 +187,8 @@
     margin-bottom:6px; opacity:.8;
   }
   .q-actions { display:flex; gap:10px; flex-wrap:wrap; }
+  /* Platz unter der Frage, damit die Seite beim Aufdecken mitscrollen kann, auch während der Kasten noch wächst */
+  #screen-game { padding-bottom:45vh; }
 
   /* Live/heart display */
   .stats-bar {
@@ -1001,6 +1003,14 @@ function showQuestion() {
   void card.offsetWidth;
   card.classList.add("q-anim");
   saveDDF("screen-game");
+  // Neue Frage: zurück nach oben zur Frage, falls die Seite noch unten steht
+  if ($("#screen-game").classList.contains("active")) {
+    const top = scrollY + $("#statsBar").getBoundingClientRect().top - 8;
+    if (scrollY > top + 4) follow(top);
+  }
+}
+function follow(y) {
+  scrollTo({ top: Math.max(0, y), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }
 
 $("#revealBtn").addEventListener("click", () => {
@@ -1011,6 +1021,9 @@ $("#revealBtn").addEventListener("click", () => {
   $("#revealBtn").textContent = open ? "Antwort zudecken" : "Antwort aufdecken";
   $("#nextQBtn").style.display = "inline-flex";
   if (!open) return;
+  // Seite geht mit: Ziel ist die fertige Kastenhöhe, damit Antwort und „Weiter“ ins Bild kommen
+  const bottom = scrollY + card.getBoundingClientRect().top + card.offsetHeight + 16;
+  if (bottom > scrollY + innerHeight) follow(bottom - innerHeight);
   // Kasten federt auf die neue Höhe, leuchtet golden auf, die Antwort springt hinein
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const spring = "cubic-bezier(.34,1.56,.64,1)";
