@@ -1231,6 +1231,8 @@ $("#nextPlayerBtn").addEventListener("click", () => {
 });
 $("#startRoundBtn").addEventListener("click", () => {
   startGame();
+  // Münzwurf: wer stellt die erste Frage?
+  window.fx?.toss(state.players[Math.floor(Math.random() * state.players.length)], "stellt die erste Frage");
 });
 
 /* ================= GAME PHASE ================= */

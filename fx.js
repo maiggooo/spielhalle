@@ -35,7 +35,32 @@
   .btn:active { transform:translateY(3px) scale(.98); }
 
   #fx-canvas { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:9999; }
-  @media (prefers-reduced-motion: reduce) { .fx-flicker, .fx-bulbs i, .fx-shine, .fx-deal { animation:none !important; } }`;
+  /* Neon-Rahmen, der um wichtige Knöpfe kreist */
+  @property --fx-a { syntax:"<angle>"; initial-value:0deg; inherits:false; }
+  /* Ring liegt innen am Rand (Maske schneidet die Mitte aus), damit er auch bei overflow:hidden sichtbar ist */
+  .fx-ring { position:relative; }
+  .fx-ring::before { content:""; position:absolute; inset:0; padding:3px; border-radius:inherit; pointer-events:none; z-index:2;
+    background:conic-gradient(from var(--fx-a), #FFD86B, #FF2D87, #3BB8FF, #3BFFB0, #FFD86B); animation:fx-ring 3s linear infinite;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
+  .fx-ring:disabled::before { opacity:.25; animation-play-state:paused; }
+  @keyframes fx-ring { to { --fx-a:360deg; } }
+
+  /* Münzwurf */
+  .fx-toss { position:fixed; inset:0; z-index:9998; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
+    background:rgba(4,16,11,.86); cursor:pointer; animation:fx-fade .25s; perspective:800px; text-align:center; padding:20px; }
+  @keyframes fx-fade { from { opacity:0; } }
+  .fx-coin { width:130px; height:130px; position:relative; transform-style:preserve-3d; animation:fx-flip 1.5s cubic-bezier(.3,.6,.4,1) forwards; }
+  .fx-coin div { position:absolute; inset:0; border-radius:50%; backface-visibility:hidden; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 35% 30%, #FFF1B8, #E8B83A 55%, #9A6B10); border:6px solid #B98A17; box-shadow:inset 0 0 0 4px #FFE9A3;
+    font:400 44px Limelight, serif; color:#6B4E08; }
+  .fx-coin div + div { transform:rotateY(180deg); }
+  @keyframes fx-flip { 0% { transform:translateY(0) rotateY(0) scale(1); } 50% { transform:translateY(-120px) rotateY(900deg) scale(1.3); } 100% { transform:translateY(0) rotateY(1800deg) scale(1); } }
+  .fx-toss .who { font:400 clamp(34px, 9vw, 56px) Limelight, serif; opacity:0; transform:scale(.6); transition:opacity .3s, transform .5s cubic-bezier(.34,1.56,.64,1); }
+  .fx-toss .what { font:700 15px Outfit, sans-serif; letter-spacing:.18em; text-transform:uppercase; color:#FFE9EC; opacity:0; transition:opacity .3s .15s; }
+  .fx-toss.done .who { opacity:1; transform:none; }
+  .fx-toss.done .what { opacity:1; }
+
+  @media (prefers-reduced-motion: reduce) { .fx-flicker, .fx-bulbs i, .fx-shine, .fx-deal, .fx-ring::before, .fx-coin { animation:none !important; } }`;
   document.head.insertAdjacentHTML("beforeend", `<style>${css}</style>`);
 
   // 1 Neon: Spielname im Kopf jeder Spielseite leuchtet, der hervorgehobene Teil flackert.
@@ -139,5 +164,23 @@
     });
   }
 
-  window.fx = { burst, tilt, bulbs, roll, deal };
+  // 9 Münzwurf: Münze fliegt hoch, dann steht groß da, wer anfängt. Antippen schließt, sonst nach 5 s.
+  function toss(name, text = "fängt an!") {
+    const o = document.createElement("div");
+    o.className = "fx-toss"; o.setAttribute("role", "dialog"); o.setAttribute("aria-label", `${name} ${text}`);
+    o.innerHTML = `<div class="fx-coin" aria-hidden="true"><div>♛</div><div>S</div></div><div class="who fx-shine"></div><div class="what"></div>`;
+    o.querySelector(".who").textContent = name;
+    o.querySelector(".what").textContent = text;
+    document.body.appendChild(o);
+    navigator.vibrate?.([10, 80, 10, 80, 10]);
+    const close = () => o.remove();
+    o.addEventListener("click", close);
+    setTimeout(() => { o.classList.add("done"); navigator.vibrate?.(40); }, calm ? 0 : 1500);
+    setTimeout(close, 5000);
+  }
+
+  // 10 Neon-Rahmen automatisch um die Start-Knöpfe der Spiele
+  document.querySelectorAll("#startBtn, #startGameBtn, #spin").forEach(b => b.classList.add("fx-ring"));
+
+  window.fx = { burst, tilt, bulbs, roll, deal, toss };
 })();

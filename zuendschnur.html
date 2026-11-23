@@ -361,7 +361,7 @@
     players.splice(+c.dataset.i, 1);
     renderSetup();
   });
-  $('startBtn').addEventListener('click', () => { turn = Math.floor(Math.random() * players.length); nextTurn(true); });
+  $('startBtn').addEventListener('click', () => { turn = Math.floor(Math.random() * players.length); nextTurn(true); window.fx?.toss(cur().name); });
 
   /* ---------- Rundenablauf ---------- */
   function nextTurn(first) {
