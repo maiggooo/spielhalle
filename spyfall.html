@@ -1046,6 +1046,7 @@ $("#startGameBtn").addEventListener("click", () => {
   if (state.activePlaces.length < 1) { flashSetupError("Mindestens 1 Ort aktivieren."); return; }
   if (state.modes.confused && state.activePlaces.length < 2) { flashSetupError("Verwirrter-Modus braucht mindestens 2 aktive Orte."); return; }
   if (state.spyCount >= state.players.length) { flashSetupError("Zu viele Spione."); return; }
+  saveSpySetup();
   setupRound();
 });
 
@@ -1122,6 +1123,7 @@ function renderCard() {
   const r = state.round;
   const idx = r.revealedIdx;
   const info = r.roles[idx];
+  saveSpy("cards");
   $("#handTo").textContent = info.player;
   $("#cardInstr").textContent = "Nur du solltest die Karte sehen.";
   $("#nextPlayerBtn").style.display = "none";
@@ -1261,6 +1263,7 @@ function updateTimerDisplay() {
   el.textContent = r.unendlich ? fmtTime(r.remaining) : fmtTime(r.remaining);
   el.classList.toggle("warn", !r.unendlich && r.remaining <= 30 && r.remaining > 0);
   el.classList.toggle("paused", r.paused);
+  saveSpy("game");
 }
 function runTimer() {
   const r = state.round;
@@ -1292,6 +1295,7 @@ $("#pauseBtn").addEventListener("click", () => {
 $("#abortBtn").addEventListener("click", () => {
   confirmDo("Runde wirklich abbrechen?", "Die aktuelle Runde wird ohne Auflösung beendet.", () => {
     stopRoundTimers();
+    clearGame("spy-game");
     show("screen-setup");
   });
 });
@@ -1395,6 +1399,7 @@ $("#confirmVoteBtn").addEventListener("click", () => {
   if (info.isSpy) {
     // Spion erwischt
     r.votingFound.push(idx);
+    saveSpy("game");
     btn.classList.remove("selected");
     btn.classList.add("done-spy");
     btn.disabled = true;
@@ -1463,6 +1468,7 @@ $("#confirmGuessBtn").addEventListener("click", () => {
 function endRound({ winner, reason }) {
   const r = state.round;
   stopRoundTimers();
+  clearGame("spy-game");
   $("#resultEyebrow").textContent = winner === "spies" ? "Sieg für die Spione" : "Sieg für die Mitspieler";
   $("#resultHeadline").textContent = winner === "spies" ? "Der Spion triumphiert" : "Enttarnt!";
   $("#resultLede").textContent = reason;
@@ -1503,7 +1509,7 @@ function endRound({ winner, reason }) {
 }
 
 $("#newRoundBtn").addEventListener("click", () => setupRound());
-$("#backMenuBtn").addEventListener("click", () => { stopRoundTimers(); show("screen-setup"); });
+$("#backMenuBtn").addEventListener("click", () => { stopRoundTimers(); clearGame("spy-game"); show("screen-setup"); });
 
 /* ================= CONFIRM MODAL ================= */
 function confirmDo(title, text, cb) {
@@ -1516,6 +1522,45 @@ function confirmDo(title, text, cb) {
   cancel.onclick = close;
 }
 
+
+/* ================= SPEICHERN ================= */
+// Laufende Runde (spy-game) und letzte Einstellungen (spy-setup) bleiben beim Neuladen erhalten.
+function spySettings() {
+  const { players, spyCount, durationMin, activePlaces, modes } = state;
+  return { players, spyCount, durationMin, activePlaces, modes };
+}
+function saveSpy(phase) {
+  if (!state.round) return;
+  saveGame("spy-game", { phase, ...spySettings(), round: { ...state.round, timerId: null, eventTimeoutId: null } });
+}
+function resumeSpy(d) {
+  applySpySettings(d);
+  state.round = d.round;
+  const r = state.round;
+  if (d.phase === "cards") { show("screen-cards"); renderCard(); return; }
+  // Runde läuft weiter, aber pausiert, bis der Host auf „Fortsetzen“ tippt
+  const rem = r.remaining;
+  startGame();
+  r.remaining = rem;
+  r.paused = true;
+  $("#pauseBtn").textContent = "▶ Fortsetzen";
+  updateTimerDisplay();
+}
+function applySpySettings(d) {
+  const names = new Set(PLACES.map(p => p.name));
+  Object.assign(state, { players: d.players, spyCount: d.spyCount, durationMin: d.durationMin,
+    activePlaces: d.activePlaces.filter(n => names.has(n)), modes: d.modes });
+  renderPlayers(); renderSpyCount(); renderPlaces();
+  $$("#durationControls .chip").forEach(c => c.classList.toggle("active", +c.dataset.min === state.durationMin));
+  $$("#modesControls .chip").forEach(c => c.classList.toggle("active", !!state.modes[c.dataset.mode]));
+}
+function saveSpySetup() {
+  try { localStorage.setItem("spy-setup", JSON.stringify(spySettings())); } catch {}
+}
+const spySetup = loadSaved("spy-setup");
+if (spySetup) applySpySettings(spySetup);
+addEventListener("pagehide", saveSpySetup);
+offerResume("spy-game", d => (d.phase === "cards" ? "Karten verteilen" : "Runde läuft") + " · " + d.players.join(", "), resumeSpy);
 </script>
 </body>
 </html>

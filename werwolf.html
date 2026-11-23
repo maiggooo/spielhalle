@@ -491,6 +491,7 @@ $("#startGameBtn").addEventListener("click", ()=>{
   if (players.length < 5) { err.textContent = "Mindestens 5 Spieler nötig."; return; }
   if (players.length < minNeeded) { err.textContent = "Zu wenige Spieler für die Wolfsanzahl."; return; }
   err.textContent = "";
+  saveWWSetup();
   startGame();
 });
 
@@ -545,6 +546,7 @@ function presentCard() {
   $("#nextPlayerBtn").style.display = "none";
   $("#startMayorOrNightBtn").style.display = "none";
   const p = game.state[cardQueueIndex];
+  saveWW("cards");
   $("#handTo").textContent = p.name;
   const info = ROLE_INFO[p.role];
   const wolfNames = p.role === "werwolf" ? game.state.filter(x=>x.role==="werwolf" && x.name!==p.name).map(x=>x.name) : [];
@@ -583,6 +585,7 @@ $("#nextPlayerBtn").addEventListener("click", ()=>{
       $("#handMsgWrap").innerHTML = `<div>Alle Rollen wurden verteilt.</div>`;
       $("#startMayorOrNightBtn").style.display = "inline-flex";
       cardQueueIndex = 0;
+      saveWW("night");
     }
   }, FLIP_MS + 40);
 });
@@ -741,6 +744,7 @@ function buildNightQueue() {
 }
 
 function startNight() {
+  saveWW("night"); // Neuladen mitten in der Nacht startet die Nacht von vorn
   game.isNight = true;
   applyPhaseTheme(true);
   nightQueue = buildNightQueue();
@@ -936,6 +940,7 @@ function checkWin() {
 
 /* --- Bürgermeisterwahl (nach der ersten Nacht) --- */
 function startMayorVote(onDone) {
+  saveWW("mayor");
   switchScreen("screen-narr");
   applyPhaseTheme(false);
   resetNarrButtons();
@@ -951,6 +956,7 @@ function startMayorVote(onDone) {
 
 /* ================= TAG-PHASE ================= */
 function startDay() {
+  saveWW("day");
   applyPhaseTheme(false);
   switchScreen("screen-narr");
   resetNarrButtons();
@@ -1003,6 +1009,7 @@ function chooseMayorSuccessor(onDone) {
 
 /* ================= RESULT ================= */
 function showResult(winner) {
+  clearGame("ww-game");
   switchScreen("screen-result");
   applyPhaseTheme(false);
   $("#resultHeadline").textContent = winner === "dorf" ? "Das Dorf gewinnt" : "Die Werwölfe gewinnen";
@@ -1029,6 +1036,35 @@ function showResult(winner) {
 $("#newRoundBtn").addEventListener("click", ()=>{ startGame(); });
 $("#backMenuBtn").addEventListener("click", ()=>{ switchScreen("screen-setup"); applyPhaseTheme(false); });
 
+
+/* ================= SPEICHERN ================= */
+// Laufendes Spiel (ww-game) und letzte Einstellungen (ww-setup) bleiben beim Neuladen erhalten.
+function saveWW(phase) {
+  saveGame("ww-game", { phase, idx: cardQueueIndex, game, settings: { ...settings, roles: [...settings.roles] } });
+}
+function resumeWW(d) {
+  game = d.game;
+  Object.assign(settings, d.settings, { roles: new Set(d.settings.roles) });
+  if (d.phase === "cards") { cardQueueIndex = d.idx; showCardsScreen(); }
+  else if (d.phase === "mayor") startMayorVote(() => { game.mayorDone = true; startDay(); });
+  else if (d.phase === "day") startDay();
+  else startNight();
+}
+function saveWWSetup() {
+  try { localStorage.setItem("ww-setup", JSON.stringify({ players, settings: { ...settings, roles: [...settings.roles] } })); } catch {}
+}
+const wwSetup = loadSaved("ww-setup");
+if (wwSetup) {
+  players = wwSetup.players;
+  Object.assign(settings, wwSetup.settings, { roles: new Set(wwSetup.settings.roles) });
+  renderPlayers(); renderWolfControls();
+  $$("#rolesControls .chip").forEach(c => c.classList.toggle("active", settings.roles.has(c.dataset.role)));
+  $("[data-toggle='mayor']").classList.toggle("active", settings.mayor);
+  $("[data-toggle='reveal']").classList.toggle("active", settings.reveal);
+}
+addEventListener("pagehide", saveWWSetup);
+offerResume("ww-game", d => (d.phase === "cards" ? "Rollen verteilen" : (d.phase === "night" ? "Nacht " : "Tag ") + d.game.day)
+  + " · " + d.game.state.filter(p => p.alive).length + " Spieler leben", resumeWW);
 </script>
 </body>
 </html>

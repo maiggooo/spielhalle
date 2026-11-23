@@ -782,6 +782,7 @@ $("#startBtn").disabled = true;
 fetch("fragen.json").then(r => r.json()).then(d => {
   QUESTIONS = d.fragen; ESTIMATE_QUESTIONS = d.schaetzfragen;
   $("#startBtn").disabled = false;
+  offerResume("ddf-game", d => "Runde " + d.round + " · " + d.players.filter(p => p.alive).map(p => p.name).join(", "), resumeDDF);
 }).catch(() => alert("Fragen konnten nicht geladen werden. Seite neu laden."));
 
 /* ————————————— STATE ————————————— */
@@ -904,6 +905,7 @@ $("#startBtn").addEventListener("click", () => {
   state.lives = Math.round(+livesSlider.value);
   state.qmul = Math.round(+qmulSlider.value);
   state.players.forEach(p => { p.lives = state.lives; p.alive = true; });
+  saveSetup();
   startRound();
 });
 
@@ -973,6 +975,9 @@ function startRound() {
 function nextQuestion() {
   if (state.queue.length === 0) return startVote();
   state.currentQ = state.queue.shift();
+  showQuestion();
+}
+function showQuestion() {
   const totalQs = alivePlayers().length * state.qmul;
   const shown = totalQs - state.queue.length;
 
@@ -993,6 +998,7 @@ function nextQuestion() {
   card.classList.remove("q-anim");
   void card.offsetWidth;
   card.classList.add("q-anim");
+  saveDDF("screen-game");
 }
 
 $("#revealBtn").addEventListener("click", () => {
@@ -1028,6 +1034,7 @@ document.querySelectorAll(".q-judge .btn").forEach(b => b.addEventListener("clic
   const log = state.currentQ.log;
   log.res = log.res === b.dataset.res ? null : b.dataset.res; // nochmal tippen hebt die Wahl auf
   renderJudge();
+  saveDDF("screen-game");
 }));
 
 /* ————————————— VOTE ————————————— */
@@ -1058,6 +1065,7 @@ function startVote() {
   });
   renderRoundRecap();
   switchScreen("screen-vote");
+  saveDDF("screen-vote");
 }
 
 function animateLifeLoss(playerName, wasEliminated, cb) {
@@ -1150,6 +1158,7 @@ function renderEstimateStep() {
   $("#estInputLabel").textContent = "Schätzung von " + name + (state.estQ.unit ? " (in "+state.estQ.unit+")" : "");
   $("#estInput").value = "";
   $("#estInput").focus();
+  saveDDF("screen-estimate");
 }
 
 $("#estConfirmBtn").addEventListener("click", () => {
@@ -1244,6 +1253,7 @@ $("#estContinueBtn").addEventListener("click", () => {
 
 /* ————————————— WINNER ————————————— */
 function showWinner(player) {
+  clearGame("ddf-game");
   $("#winnerName").textContent = player.name;
   switchScreen("screen-winner");
 }
@@ -1287,6 +1297,41 @@ function escape(s) {
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
+/* ————————————— SPEICHERN ————————————— */
+// Laufendes Spiel (ddf-game) und letzte Einstellungen (ddf-setup) bleiben beim Neuladen erhalten.
+function saveDDF(screen) {
+  saveGame("ddf-game", { ...state, screen,
+    topics: [...state.topics], usedQuestions: [...state.usedQuestions], usedEstimates: [...state.usedEstimates] });
+}
+function resumeDDF(d) {
+  Object.assign(state, d, { topics: new Set(d.topics), usedQuestions: new Set(d.usedQuestions), usedEstimates: new Set(d.usedEstimates) });
+  delete state.screen;
+  // Fragen der Runde wieder mit dem Rundenprotokoll verknüpfen (geht beim Speichern verloren)
+  const link = item => { if (item) item.log = state.roundLog.find(l => l.player === item.player && l.q === item.q.q); };
+  link(state.currentQ); state.queue.forEach(link);
+  renderPlayers();
+  if (d.screen === "screen-vote") startVote();
+  else if (d.screen === "screen-estimate") { renderEstimateStep(); renderStats("estStats"); switchScreen("screen-estimate"); }
+  else { showQuestion(); switchScreen("screen-game"); }
+}
+function saveSetup() {
+  try { localStorage.setItem("ddf-setup", JSON.stringify({
+    names: state.players.map(p => p.name),
+    lives: Math.round(+livesSlider.value), qmul: Math.round(+qmulSlider.value),
+    chips: [...document.querySelectorAll(".diff-chip.on")].map(c => c.dataset.diff || c.dataset.topic),
+    finale: $("#finaleToggle").checked
+  })); } catch {}
+}
+const savedSetup = loadSaved("ddf-setup");
+if (savedSetup) {
+  state.players = savedSetup.names.map(name => ({ name, lives: 0, alive: true }));
+  renderPlayers();
+  livesSlider.value = savedSetup.lives; livesSlider.dispatchEvent(new Event("input"));
+  qmulSlider.value = savedSetup.qmul; qmulSlider.dispatchEvent(new Event("input"));
+  document.querySelectorAll(".diff-chip").forEach(c => c.classList.toggle("on", savedSetup.chips.includes(c.dataset.diff || c.dataset.topic)));
+  $("#finaleToggle").checked = savedSetup.finale;
+}
+addEventListener("pagehide", saveSetup);
 
 </script>
 

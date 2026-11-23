@@ -124,3 +124,32 @@ initTheme();
 // Some pages put the ad slots after their scripts, so wait for the full page.
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => { initAds(); initReveal(); });
 else { initAds(); initReveal(); }
+
+// Spielstand: bleibt beim Neuladen erhalten (nur auf diesem Gerät).
+// saveGame/clearGame entfernen den „Fortsetzen“-Knopf, sobald ein neues Spiel läuft oder eins endet.
+function saveGame(key, data) {
+  document.querySelector(".resume-btn")?.remove();
+  try { localStorage.setItem(key, JSON.stringify(data)); } catch {}
+}
+function loadSaved(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+}
+function clearGame(key) {
+  document.querySelector(".resume-btn")?.remove();
+  localStorage.removeItem(key);
+}
+// Zeigt oben im Setup „Laufendes Spiel fortsetzen“, wenn ein Spielstand da ist.
+function offerResume(key, detail, onResume) {
+  const data = loadSaved(key);
+  if (!data) return;
+  const b = document.createElement("button");
+  b.className = "btn primary resume-btn";
+  b.style.cssText = "display:flex;width:100%;justify-content:center;margin:0 0 18px;flex-direction:column;gap:2px";
+  b.innerHTML = "<span>▶ Laufendes Spiel fortsetzen</span>";
+  const small = document.createElement("small");
+  small.style.cssText = "font-weight:500;opacity:.8;text-transform:none;letter-spacing:0";
+  small.textContent = detail(data);
+  b.appendChild(small);
+  b.onclick = () => { b.remove(); onResume(data); };
+  document.getElementById("screen-setup").prepend(b);
+}
