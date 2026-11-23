@@ -29,7 +29,8 @@ body {
   /* Filz: Lichtkegel + Fasern aus SVG-Rauschen */
   background-color:var(--felt);
   background-image:
-    radial-gradient(ellipse at 50% 25%, rgba(255,255,255,.09), transparent 65%),
+    radial-gradient(ellipse 70% 40% at 50% 12%, rgba(255,230,170,.15), transparent 70%),
+    radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(0,0,0,.6) 100%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-attachment:fixed;
 }
@@ -106,3 +107,7 @@ button, a, input, select, label, [role="button"] { -webkit-tap-highlight-color:t
   /* iOS zoomt in Eingabefelder unter 16px */
   input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), select, textarea { font-size:16px; }
 }
+
+/* ————————————— MATERIALIEN ————————————— */
+/* Einstellungsblöcke (Werwölfe, Spyfall) als Lackkästen wie in Der Dümmste fliegt; fx.js gibt ihnen den Lackglanz */
+html .setting { background:var(--paper-2); border:2px solid var(--rule); border-radius:16px; padding:14px 16px; margin:10px 0 18px; }

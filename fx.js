@@ -10,10 +10,13 @@
   @keyframes fx-flicker { 0%,17%,21%,24%,61%,64%,100% { opacity:1; } 19%,23%,62% { opacity:.3; text-shadow:none; } }
 
   .fx-bulbs { position:absolute; inset:5px; pointer-events:none; z-index:1; }
-  .fx-bulbs i { position:absolute; width:9px; height:9px; border-radius:50%; transform:translate(-50%,-50%);
-    background:#6B4A10; animation:fx-chase 1.1s infinite steps(1); }
+  .fx-bulbs i { position:absolute; width:10px; height:10px; border-radius:50%; transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 35% 30%, #C9A867, #6B4A10 55%, #2E1E05); box-shadow:inset 0 -1px 2px rgba(0,0,0,.6);
+    animation:fx-chase 1.1s infinite steps(1); }
   .fx-bulbs i:nth-child(even) { animation-delay:-.55s; }
-  @keyframes fx-chase { 0%,49% { background:#FFF2B8; box-shadow:0 0 5px #fff, 0 0 12px #FFD86B; } 50%,100% { background:#6B4A10; box-shadow:none; } }
+  @keyframes fx-chase {
+    0%,49% { background:radial-gradient(circle at 38% 32%, #fff 0 18%, #FFF4C2 30%, #FFD86B 60%, #E8A31A); box-shadow:0 0 4px 1px rgba(255,236,170,.95), 0 0 14px 3px rgba(255,190,40,.55); }
+    50%,100% { background:radial-gradient(circle at 35% 30%, #C9A867, #6B4A10 55%, #2E1E05); box-shadow:inset 0 -1px 2px rgba(0,0,0,.6); } }
 
   .fx-shine { background:linear-gradient(110deg, #C08A17 20%, #FFE9A3 40%, #fff 50%, #FFE9A3 60%, #C08A17 80%) 0 0 / 250% 100%;
     -webkit-background-clip:text; background-clip:text; color:transparent !important; -webkit-text-fill-color:transparent;
@@ -60,8 +63,38 @@
   .fx-toss.done .who { opacity:1; transform:none; }
   .fx-toss.done .what { opacity:1; }
 
+  /* Materialien, automatisch nach Farbe vergeben (siehe materials() unten) */
+  .fx-lacquer { background-image:
+      linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.03) 14%, transparent 40%, rgba(0,0,0,.22)),
+      linear-gradient(110deg, transparent 35%, rgba(255,255,255,.07) 42%, transparent 50%) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.28), inset 0 -3px 8px rgba(0,0,0,.35), 0 14px 26px -10px rgba(0,0,0,.75) !important; }
+  .fx-gold { background-image:linear-gradient(180deg, #FFF3C4 0%, #FFD86B 35%, #F0BE3E 70%, #C9961C 100%) !important; }
+  .fx-gold:not(.fx-ring)::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0) 45%); mix-blend-mode:soft-light; }
+  .fx-ivory { background-image:linear-gradient(180deg, #FFFFFF, #F3EDDF) !important; box-shadow:inset 0 -2px 0 rgba(0,0,0,.10), 0 1px 0 rgba(255,255,255,.4), 0 4px 8px -2px rgba(0,0,0,.45); }
+  .fx-sunk { box-shadow:inset 0 3px 8px rgba(0,0,0,.85), inset 0 -1px 0 rgba(255,255,255,.08), 0 1px 0 rgba(255,255,255,.12) !important; }
+
   @media (prefers-reduced-motion: reduce) { .fx-flicker, .fx-bulbs i, .fx-shine, .fx-deal, .fx-ring::before, .fx-coin { animation:none !important; } }`;
   document.head.insertAdjacentHTML("beforeend", `<style>${css}</style>`);
+
+  // 0 Materialien: Rote Kästen werden Lack, goldene Knöpfe Metall, dunkle Felder vertieft.
+  // Erkennung über die Farbe, weil jedes Spiel eigene Klassennamen hat. Neue Elemente werden laufend mitgenommen.
+  const MAT = { "rgb(142, 22, 34)": "fx-lacquer", "rgb(255, 216, 107)": "fx-gold", "rgb(26, 10, 13)": "fx-sunk", "rgb(255, 255, 255)": "fx-ivory" };
+  function materials() {
+    document.querySelectorAll(".wrap *").forEach(el => {
+      let want = MAT[getComputedStyle(el).backgroundColor];
+      // Karten (Rollen, Wizard-Spielkarten, Münzwurf) behalten ihr eigenes Design
+      if (el.closest(".flip-card, .fx-toss") || (want === "fx-ivory" && el.closest(".card"))) want = undefined;
+      for (const cls of Object.values(MAT)) if (el.classList.contains(cls) !== (cls === want)) el.classList.toggle(cls, cls === want);
+      if (want === "fx-gold" && getComputedStyle(el).position === "static") el.style.position = "relative";
+    });
+  }
+  let queued = false;
+  // sofort prüfen und nach typischen Farbübergängen (bis ca. 0,4 s) noch einmal
+  const later = () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; materials(); setTimeout(materials, 450); }); } };
+  materials();
+  new MutationObserver(later).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+  addEventListener("transitionend", later); // Farbwechsel mit Übergang erst am Ende prüfen
 
   // 1 Neon: Spielname im Kopf jeder Spielseite leuchtet, der hervorgehobene Teil flackert.
   document.querySelectorAll(".mast .brand").forEach(b => { b.classList.add("fx-neon"); b.querySelector("em")?.classList.add("fx-flicker"); });
