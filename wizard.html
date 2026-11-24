@@ -4,13 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Wizard — Maikos Spielhalle</title>
-<meta name="description" content="Wizard online: Stiche ansagen, Trumpf beachten, Punkte sammeln — jeder auf seinem eigenen Handy.">
+<meta name="description" content="Wizard online: Stiche ansagen, Trumpf beachten, Punkte sammeln, jeder auf seinem eigenen Handy.">
 <meta name="theme-color" content="#0B3B2A">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Maikos Spielhalle">
 <meta property="og:locale" content="de_DE">
 <meta property="og:title" content="Wizard — Maikos Spielhalle">
-<meta property="og:description" content="Wizard online: Stiche ansagen, Trumpf beachten, Punkte sammeln — jeder auf seinem eigenen Handy.">
+<meta property="og:description" content="Wizard online: Stiche ansagen, Trumpf beachten, Punkte sammeln, jeder auf seinem eigenen Handy.">
 <meta property="og:url" content="https://maiggooo.github.io/spielhalle/wizard.html">
 <meta property="og:image" content="https://maiggooo.github.io/spielhalle/og/wizard.jpg">
 <meta property="og:image:width" content="1200">
@@ -44,7 +44,6 @@
     font-family:'Outfit', sans-serif; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
     border-top:1px solid var(--rule-soft); padding-top:10px; margin:20px 0 10px; display:flex; align-items:center; gap:8px;
   }
-  .section-title::before { content:"§"; color:var(--accent); font-family:'Outfit', sans-serif;  }
   .section-title .count { margin-left:auto; color:var(--ink); }
 
   .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
@@ -245,9 +244,6 @@
 
   <!-- ============= START ============= -->
   <section id="screen-start" class="screen active">
-    <div class="hero">
-      <h1>Wiz<em>ard</em></h1>
-    </div>
 
     <div class="section-title">Dein Name</div>
     <input type="text" id="nameInput" maxlength="16" placeholder="Name eingeben …" autocomplete="off">
@@ -268,7 +264,7 @@
       <summary>Spielregeln in Kürze</summary>
       <ul>
         <li>60 Karten: vier Farben von 1 bis 13, dazu 4 Zauberer (Z) und 4 Narren (N).</li>
-        <li>Runde 1 hat 1 Karte pro Person, Runde 2 hat 2 und so weiter — bis alle Karten verteilt sind.</li>
+        <li>Runde 1 hat 1 Karte pro Person, Runde 2 hat 2 und so weiter, bis alle Karten verteilt sind.</li>
         <li>Die nächste Karte vom Stapel bestimmt Trumpf. Zauberer: Der Geber wählt. Narr: kein Trumpf.</li>
         <li>Jeder sagt an, wie viele Stiche er holt. Dann wird gespielt: Farbe bedienen, Zauberer und Narr gehen immer.</li>
         <li>Der erste Zauberer gewinnt den Stich, sonst der höchste Trumpf, sonst die höchste Karte der ausgespielten Farbe.</li>
@@ -279,7 +275,7 @@
       <p class="note">Tipp: Halte eine Sonderkarte, einen Zauberer oder Narren lange gedrückt (am PC: Rechtsklick), um zu sehen, was sie schlägt und was sie kann.</p>
       <div style="margin-top:12px; font-family:'Outfit', sans-serif; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted)">Sonderkarten (einzeln zuschaltbar)</div>
       <ul id="specialRules"></ul>
-      <p class="note">Sonderkarten dürfen immer gespielt werden. Liegt eine als Trumpfkarte: Drache, Wolke, Jongleur, Gestaltwandler und Vampir — der Geber wählt Trumpf; Fee, Bombe und Hexe — kein Trumpf; Werwolf — die nächste Karte entscheidet.</p>
+      <p class="note">Sonderkarten dürfen immer gespielt werden. Liegt eine als Trumpfkarte: Drache, Wolke, Jongleur, Gestaltwandler und Vampir: Der Geber wählt Trumpf. Fee, Bombe und Hexe: kein Trumpf. Werwolf: Die nächste Karte entscheidet.</p>
     </details>
   </section>
 
@@ -374,13 +370,13 @@
 ========================================================= */
 const SUITS = { R:"Rot", B:"Blau", G:"Grün", Y:"Gelb" };
 const SPECIALS = {
-  XD: { name:"Drache",         icon:"🐉", text:"Schlägt alles, auch Zauberer — nur nicht die Fee." },
+  XD: { name:"Drache",         icon:"🐉", text:"Schlägt alles, auch Zauberer, nur nicht die Fee." },
   XF: { name:"Fee",            icon:"🧚", text:"Verliert gegen alles, sogar gegen Narren. Liegt der Drache im Stich, gewinnt die Fee." },
   XB: { name:"Bombe",          icon:"💣", text:"Den Stich bekommt niemand. Wer die höchste Karte gelegt hat, spielt aus." },
   XW: { name:"Werwolf",        icon:"🐺", text:"Wer ihn bekommt, tauscht ihn gegen die Trumpfkarte und bestimmt Trumpf (oder keinen)." },
   XJ: { name:"Jongleur",       icon:"🤹", text:"Zählt 7½ in einer Farbe deiner Wahl. Danach gibt jeder eine Karte nach links weiter." },
   XC: { name:"Wolke",          icon:"☁️", text:"Zählt 9¾ in einer Farbe deiner Wahl. Wer den Stich gewinnt, ändert seine Ansage um +1 oder −1." },
-  XS: { name:"Gestaltwandler", icon:"🎭", text:"Spielst du als Zauberer oder als Narr — deine Wahl." },
+  XS: { name:"Gestaltwandler", icon:"🎭", text:"Spielst du als Zauberer oder als Narr, deine Wahl." },
   XV: { name:"Vampir",         icon:"🧛", text:"Kopiert die aufgedeckte Trumpfkarte samt ihren Fähigkeiten." },
   XH: { name:"Hexe",           icon:"🧙", text:"Niedriger als Narr und Fee. Nach dem Stich darfst du eine Handkarte gegen eine Karte aus dem Stich tauschen." },
 };
@@ -662,15 +658,15 @@ const CARD_INFO = {
   N:  { name:"Narr", icon:"N",
         beats:["die Fee und die Hexe", "spätere Narren, wenn nur Narren im Stich liegen"],
         loses:["alle Farbkarten", "Zauberer und Drache"],
-        perks:["Darf immer gespielt werden — der sichere Weg, einen Stich nicht zu bekommen", "Spielst du ihn aus, bestimmt die nächste Farbkarte die Farbe", "Als Trumpfkarte: kein Trumpf"] },
+        perks:["Darf immer gespielt werden: der sichere Weg, einen Stich nicht zu bekommen", "Spielst du ihn aus, bestimmt die nächste Farbkarte die Farbe", "Als Trumpfkarte: kein Trumpf"] },
   XD: { name:"Drache", icon:"🐉",
-        beats:["alles — auch jeden Zauberer"],
+        beats:["alles, auch jeden Zauberer"],
         loses:["die Fee, wenn sie im selben Stich liegt"],
         perks:["Darf immer gespielt werden", "Spielst du ihn aus, darf jeder beliebige Karten legen", "Mit einer Bombe im Stich bekommt trotzdem niemand den Stich", "Als Trumpfkarte: Der Geber wählt Trumpf"] },
   XF: { name:"Fee", icon:"🧚",
-        beats:["den Drachen — liegt er im Stich, gewinnt die Fee", "sonst nur die Hexe"],
+        beats:["den Drachen (liegt er im Stich, gewinnt die Fee)", "sonst nur die Hexe"],
         loses:["alles andere, sogar Narren"],
-        perks:["Darf immer gespielt werden — perfekt, um keinen Stich zu machen", "Die Antwort auf den Drachen", "Als Trumpfkarte: kein Trumpf"] },
+        perks:["Darf immer gespielt werden. Perfekt, um keinen Stich zu machen", "Die Antwort auf den Drachen", "Als Trumpfkarte: kein Trumpf"] },
   XB: { name:"Bombe", icon:"💣",
         beats:["— niemand gewinnt einen Stich mit Bombe"],
         loses:["—"],
@@ -678,7 +674,7 @@ const CARD_INFO = {
   XW: { name:"Werwolf", icon:"🐺",
         beats:["— wirkt beim Austeilen, nicht im Stich"],
         loses:["— liegt er doch im Stich, zählt er wie ein Narr"],
-        perks:["Wer ihn bekommt, tauscht ihn sofort gegen die Trumpfkarte", "Du bestimmst Trumpf — oder dass es keinen gibt", "Wird er als Trumpfkarte aufgedeckt, entscheidet die nächste Karte"] },
+        perks:["Wer ihn bekommt, tauscht ihn sofort gegen die Trumpfkarte", "Du bestimmst Trumpf, oder dass es keinen gibt", "Wird er als Trumpfkarte aufgedeckt, entscheidet die nächste Karte"] },
   XJ: { name:"Jongleur", icon:"🤹",
         beats:["Karten 1–7 der gewählten Farbe", "andere Farben, wenn deine Farbe Trumpf ist oder ausgespielt wurde", "Narren, Fee und Hexe"],
         loses:["Karten 8–13 der gewählten Farbe", "Trumpf (wenn deine Farbe kein Trumpf ist)", "Zauberer und Drache"],
@@ -694,9 +690,9 @@ const CARD_INFO = {
   XV: { name:"Vampir", icon:"🧛",
         beats:["genau das, was die kopierte Karte schlägt"],
         loses:["genau das, wogegen die kopierte Karte verliert"],
-        perks:["Kopiert die aufgedeckte Trumpfkarte samt Fähigkeiten", "Darf immer gespielt werden — auch wenn Trumpf ausgespielt wurde", "Liegt der Werwolf als Trumpfkarte, wird die nächste Karte aufgedeckt: Sie gilt ab sofort als Trumpf und wird kopiert", "Als Trumpfkarte: Der Geber wählt Trumpf"] },
+        perks:["Kopiert die aufgedeckte Trumpfkarte samt Fähigkeiten", "Darf immer gespielt werden, auch wenn Trumpf ausgespielt wurde", "Liegt der Werwolf als Trumpfkarte, wird die nächste Karte aufgedeckt: Sie gilt ab sofort als Trumpf und wird kopiert", "Als Trumpfkarte: Der Geber wählt Trumpf"] },
   XH: { name:"Hexe", icon:"🧙",
-        beats:["nichts — sie ist die niedrigste Karte"],
+        beats:["nichts, sie ist die niedrigste Karte"],
         loses:["alles, auch Narr und Fee"],
         perks:["Nach dem Stich darfst du eine Handkarte gegen eine Karte aus dem Stich tauschen (keine Hexe)", "Die getauschte Karte im Stich hat keine Wirkung mehr", "Wirkt nach allen anderen Sonderkarten", "Spielst du sie aus, bestimmt die nächste Farbkarte die Farbe", "Als Trumpfkarte: kein Trumpf"] },
 };
@@ -868,7 +864,7 @@ function renderLobby(r, s) {
   $("#startBtn").disabled = !isHost || players.length < 3;
   $("#startBtn").style.display = isHost ? "" : "none";
   $("#lobbyNote").textContent = players.length < 3
-    ? `Noch ${3 - players.length} Mitspieler nötig — teile den Code.`
+    ? `Noch ${3 - players.length} Mitspieler nötig, teile den Code.`
     : isHost ? `${players.length} Spieler · ${maxRounds(players.length)} Runden` : "Warte, bis der Gastgeber startet …";
 }
 
@@ -927,7 +923,7 @@ function renderGame(r, s) {
     : `💣 <b>Bombe:</b> Niemand bekommt den Stich. ${who(s.nextLead)} ${s.nextLead === mine ? "spielst" : "spielt"} aus.`;
   else if (s.phase === "pass") status = "🤹 <b>Jongleur:</b> " + (s.passes[mine] ? "Warte auf die anderen …" : "Wähle eine Karte, die du nach links weitergibst.");
   else if (s.phase === "cloud") status = "☁️ <b>Wolke:</b> " + (s.trickWinner === mine ? "Ändere deine Ansage um +1 oder −1." : `${nameOf(s.trickWinner)} ändert die Ansage …`);
-  else if (s.phase === "witch") status = "🧙 <b>Hexe:</b> " + (s.fxWitch === mine ? "Tausche eine Handkarte gegen eine Karte aus dem Stich — oder lass es." : `${nameOf(s.fxWitch)} darf tauschen …`);
+  else if (s.phase === "witch") status = "🧙 <b>Hexe:</b> " + (s.fxWitch === mine ? "Tausche eine Handkarte gegen eine Karte aus dem Stich, oder lass es." : `${nameOf(s.fxWitch)} darf tauschen …`);
   $("#status").innerHTML = status;
 
   // Hand
@@ -959,7 +955,7 @@ function renderGame(r, s) {
     const f = forbiddenBid(s);
     html = `<div class="bids">${Array.from({ length: s.round + 1 }, (_, i) =>
       `<button class="btn ${i === f ? "" : "ghost"}" data-bid="${i}" ${i === f ? "disabled title='Ansagen dürfen nicht aufgehen'" : ""}>${i}</button>`).join("")}</div>` +
-      (f !== null ? `<div class="hint" style="margin-top:8px">${f} ist gesperrt — die Ansagen dürfen nicht aufgehen.</div>` : "");
+      (f !== null ? `<div class="hint" style="margin-top:8px">${f} ist gesperrt, die Ansagen dürfen nicht aufgehen.</div>` : "");
   } else if (myPlay && selected) {
     const card = blind ? realHand[0] : selected;
     const need = blind ? null : choiceFor(card, s);
@@ -1057,7 +1053,7 @@ function cardInfoHTML(c) {
     const t = st.trump.card, ik = infoKey(t);
     now = `<div class="now">Gerade kopiert der Vampir: <b>${ik ? CARD_INFO[ik].name : SUITS[t[0]] + " " + valOf(t)}</b></div>`;
   }
-  if (st?.trump?.suit && (k === "XJ" || k === "XC")) now = `<div class="now">Trumpf ist gerade <b>${SUITS[st.trump.suit]}</b> — wählst du diese Farbe, ist die Karte ein Trumpf.</div>`;
+  if (st?.trump?.suit && (k === "XJ" || k === "XC")) now = `<div class="now">Trumpf ist gerade <b>${SUITS[st.trump.suit]}</b>. Wählst du diese Farbe, ist die Karte ein Trumpf.</div>`;
   return `<button class="close" aria-label="Schließen">×</button>
     <h4><span class="ic">${info.icon}</span>${info.name}</h4>
     <div class="sec good">Schlägt</div><ul>${li(info.beats)}</ul>

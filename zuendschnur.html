@@ -4,13 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Zündschnur — Maikos Spielhalle</title>
-<meta name="description" content="Das Trinkspiel für ein Handy — weitergeben, bevor es knallt.">
+<meta name="description" content="Das Trinkspiel für ein Handy. Weitergeben, bevor es knallt.">
 <meta name="theme-color" content="#0B3B2A">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Maikos Spielhalle">
 <meta property="og:locale" content="de_DE">
 <meta property="og:title" content="Zündschnur — Maikos Spielhalle">
-<meta property="og:description" content="Das Trinkspiel für ein Handy — weitergeben, bevor es knallt.">
+<meta property="og:description" content="Das Trinkspiel für ein Handy. Weitergeben, bevor es knallt.">
 <meta property="og:url" content="https://maiggooo.github.io/spielhalle/zuendschnur.html">
 <meta property="og:image" content="https://maiggooo.github.io/spielhalle/og/zuendschnur.jpg">
 <meta property="og:image:width" content="1200">
@@ -182,7 +182,7 @@
     <section class="screen" id="sPass">
       <div class="kicker">Gib das Handy an</div>
       <div class="big-name" id="passName"></div>
-      <div class="cta-row"><button class="btn primary" id="revealBtn">Ich hab's — Karte zeigen</button></div>
+      <div class="cta-row"><button class="btn primary" id="revealBtn">Ich hab's, Karte zeigen</button></div>
       <ul class="rules" id="rulesList"></ul>
       <div class="cta-row"><button class="btn" id="tallyBtn">Strichliste</button></div>
     </section>
@@ -214,7 +214,7 @@
     <section class="screen" id="sHold">
       <div class="kicker">Ruhige Hand</div>
       <div class="card" style="text-align:center">
-        <div class="text">Halte den Kreis gedrückt — genau <em>5 Sekunden</em>. Ohne Uhr, ohne Zählen laut.</div>
+        <div class="text">Halte den Kreis gedrückt, genau <em>5 Sekunden</em>. Ohne Uhr, ohne Zählen laut.</div>
         <div class="sub">±0,5 s: verteile 2 Schlücke. Sonst trinkst du 2.</div>
       </div>
       <div class="hold-pad" id="holdPad">Gedrückt halten</div>
@@ -252,21 +252,21 @@
   // {p} = aktuelle Person, {o} = zufällige andere Person
   const TASKS = [
     "{p}, trink so viele Schlücke, wie du heute schon Nachrichten ignoriert hast (max. 4).",
-    "{p} und {o} tauschen für eine Runde die Plätze — wer sich weigert, trinkt 3.",
+    "{p} und {o} tauschen für eine Runde die Plätze. Wer sich weigert, trinkt 3.",
     "{p}, mach {o} ein ehrliches Kompliment. Gefällt es nicht, trinkst du 2.",
     "Alle, die gerade ein Getränk in der Hand halten, trinken 1. Ja, auch du, {p}.",
-    "{p}, erzähl in 20 Sekunden eine peinliche Geschichte — oder trink 3.",
+    "{p}, erzähl in 20 Sekunden eine peinliche Geschichte, oder trink 3.",
     "{p}, ahme jemanden in der Runde nach. Wer zuerst errät, wer es ist, verteilt 2.",
-    "{p} verteilt 3 Schlücke — beliebig aufgeteilt.",
+    "{p} verteilt 3 Schlücke, beliebig aufgeteilt.",
     "{p} und {o} trinken gleichzeitig. Wer zuerst absetzt, trinkt 1 extra.",
     "Wer zuletzt im Urlaub war, trinkt 2. {p} entscheidet bei Streit.",
     "{p}, nenne 3 Biermarken in 5 Sekunden. Geschafft: verteile 2. Sonst trink 2.",
     "{p}, wer in der Runde hat zuletzt Geburtstag gehabt? Falsch geraten: trink 2.",
     "Der jüngste Mensch in der Runde trinkt 2. Der älteste verteilt 2.",
-    "{p}, sing eine Zeile aus deinem Lieblingslied — oder trink 3.",
+    "{p}, sing eine Zeile aus deinem Lieblingslied, oder trink 3.",
     "{p}, rede bis zu deiner nächsten Karte nur in Fragen. Jeder Fehler: 1 Schluck.",
     "Alle mit Brille trinken 1. Keine Brille in der Runde? Dann trinkt {p} 2.",
-    "{p}, zeig das letzte Foto in deiner Galerie — oder trink 3.",
+    "{p}, zeig das letzte Foto in deiner Galerie, oder trink 3.",
     "{o} darf {p} eine Frage stellen. Antwort verweigert: 3 Schlücke.",
     "{p} und {o}: Schnick-Schnack-Schnuck. Verlierer trinkt 2.",
     "Wasserpause! Alle trinken einen Schluck Wasser. Ja, wirklich.",
@@ -274,7 +274,7 @@
     "Alle zeigen auf den Ort, an dem {p} am ehesten einschläft. {p} trinkt 1.",
     "{p}, wähle eine Person als Trinkbuddy: Bis zum Spielende trinkt sie immer mit dir.",
     "Kategorie-Reim: {p} sagt ein Wort, reihum wird gereimt. Wer hängt, trinkt 2.",
-    "{p}, buchstabiere deinen Namen rückwärts — schnell! Gestolpert: 2 Schlücke.",
+    "{p}, buchstabiere deinen Namen rückwärts, schnell! Gestolpert: 2 Schlücke.",
     "Wer heute am längsten gearbeitet hat, verteilt 3."
   ];
   const VOTES = [
@@ -303,7 +303,7 @@
     "Niemand darf das Wort „trinken“ sagen. 1 Schluck pro Verstoß.",
     "Vor jedem Schluck „Prost, {p}!“ sagen. Vergessen: 1 extra.",
     "Nur mit der linken Hand trinken.",
-    "Keine Vornamen benutzen — nur Spitznamen.",
+    "Keine Vornamen benutzen, nur Spitznamen.",
     "Wer lacht, trinkt 1.",
     "{p} ist Fragenmeister: Wer eine Frage von {p} beantwortet, trinkt 1.",
     "Daumen auf den Tisch: {p} darf das jederzeit tun. Wer zuletzt folgt, trinkt 1.",
@@ -311,7 +311,7 @@
     "Jeder Satz endet mit „…im Bett“. Vergessen: 1 Schluck.",
     "Fluchen verboten. Pro Schimpfwort 1 Schluck.",
     "Bevor man trinkt, muss man auf seinen Becher zeigen.",
-    "Wer auf die Toilette geht, verteilt bei Rückkehr 1 — wer fragt, wohin man geht, trinkt."
+    "Wer auf die Toilette geht, verteilt bei Rückkehr 1. Wer fragt, wohin man geht, trinkt."
   ];
   const CATS = [
     "Automarken", "Dinge im Kühlschrank", "Fußballvereine", "Länder in Europa", "Disney-Figuren",
@@ -508,7 +508,7 @@
     const ok = Math.abs(t - 5) <= .5;
     $('holdResult').textContent = t.toFixed(2).replace('.', ',') + ' s';
     if (!ok) cur().sips += 2;
-    buttons('holdBtns', [[ok ? 'Treffer! Verteile 2 →' : 'Daneben — trink 2 →', () => nextTurn(), true]]);
+    buttons('holdBtns', [[ok ? 'Treffer! Verteile 2 →' : 'Daneben, trink 2 →', () => nextTurn(), true]]);
   }
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => $('holdPad').addEventListener(ev, release));
   $('holdPad').addEventListener('contextmenu', e => e.preventDefault());

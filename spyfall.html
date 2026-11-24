@@ -55,7 +55,6 @@
     border-top:1px solid var(--rule-soft); padding-top:10px; margin-top:18px; margin-bottom:10px;
     display:flex; align-items:center; gap:8px;
   }
-  .section-title::before { content:"§"; color:var(--accent); font-family:'Outfit', sans-serif;  }
 
   /* Inputs / Buttons */
   .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
@@ -419,9 +418,6 @@
 
   <!-- ============= SETUP ============= -->
   <section id="screen-setup" class="screen active">
-    <div class="hero">
-      <h1>Spy<em>fall</em></h1>
-    </div>
 
     <div class="section-title">Mitspieler <span class="count-badge" id="playerCount" style="margin-left:auto;">0 Spieler</span></div>
     <div class="row">
@@ -471,7 +467,7 @@
     <div class="setting">
       <div class="setting-label">
         Kombinierbar
-        <span class="hint">Aktiviere so viele du willst — auch alle gleichzeitig</span>
+        <span class="hint">Aktiviere so viele du willst, auch alle gleichzeitig</span>
       </div>
       <div class="setting-controls" id="modesControls">
         <button class="chip accent" data-mode="confused">🎭 Verwirrter</button>
@@ -743,16 +739,16 @@ const EVENTS = [
   { title:"Flüster-Modus", desc:"Ab jetzt wird nur noch geflüstert (30 Sek.)." },
   { title:"Reim-Zwang", desc:"Alle Antworten müssen sich reimen (60 Sek.)." },
   { title:"Ein-Wort-Antworten", desc:"Nur noch ein einziges Wort pro Antwort (30 Sek.)." },
-  { title:"Gestikulier-Modus", desc:"Keine Wörter mehr — nur noch Gesten (30 Sek.)." },
+  { title:"Gestikulier-Modus", desc:"Keine Wörter mehr, nur noch Gesten (30 Sek.)." },
   { title:"Akzent-Runde", desc:"Alle sprechen mit einem übertriebenen Akzent (60 Sek.)." },
   // Wortverbote
-  { title:"Kein „Ja/Nein“", desc:"Niemand darf „Ja“ oder „Nein“ sagen — bis zum nächsten Ereignis." },
-  { title:"Kein „Ich“", desc:"Das Wort „ich“ ist ab jetzt verboten — bis zum nächsten Ereignis." },
-  { title:"Pflichtwort: „eigentlich“", desc:"Alle müssen in jeder Antwort das Wort „eigentlich“ verwenden — bis zum nächsten Ereignis." },
+  { title:"Kein „Ja/Nein“", desc:"Niemand darf „Ja“ oder „Nein“ sagen, bis zum nächsten Ereignis." },
+  { title:"Kein „Ich“", desc:"Das Wort „ich“ ist ab jetzt verboten, bis zum nächsten Ereignis." },
+  { title:"Pflichtwort: „eigentlich“", desc:"Alle müssen in jeder Antwort das Wort „eigentlich“ verwenden, bis zum nächsten Ereignis." },
   // Fragerhythmus
-  { title:"Reihum im Uhrzeigersinn", desc:"Fragen nur noch im Uhrzeigersinn — bis zum nächsten Ereignis." },
-  { title:"Reihum gegen den Uhrzeigersinn", desc:"Fragen nur noch gegen den Uhrzeigersinn — bis zum nächsten Ereignis." },
-  { title:"Doppelfrage", desc:"Wer gefragt wird, stellt die Frage sofort an eine andere Person weiter — bis zum nächsten Ereignis." },
+  { title:"Reihum im Uhrzeigersinn", desc:"Fragen nur noch im Uhrzeigersinn, bis zum nächsten Ereignis." },
+  { title:"Reihum gegen den Uhrzeigersinn", desc:"Fragen nur noch gegen den Uhrzeigersinn, bis zum nächsten Ereignis." },
+  { title:"Doppelfrage", desc:"Wer gefragt wird, stellt die Frage sofort an eine andere Person weiter, bis zum nächsten Ereignis." },
   // Meta
   { title:"Themenwechsel", desc:"Die nächsten 3 Fragen müssen sich um Essen drehen." },
   { title:"Themenwechsel", desc:"Die nächsten 3 Fragen müssen sich um Wetter drehen." },
@@ -1159,7 +1155,7 @@ function populateCardFront() {
       </div>
       <div>
         <div class="cf-role-label">Auftrag</div>
-        <div class="cf-role">Errate den Ort — bleib unentdeckt.</div>
+        <div class="cf-role">Errate den Ort, bleib unentdeckt.</div>
         ${missionHtml}
       </div>
       <div class="cf-footer"><span>Streng geheim</span><span>${idx+1}/${r.roles.length}</span></div>
@@ -1416,8 +1412,8 @@ $("#confirmVoteBtn").addEventListener("click", () => {
       btn.disabled = true;
     }
     endRound({ winner:"spies", reason: anon
-      ? `Falscher Verdacht — ${info.player} war kein Spion.`
-      : `Falsch! ${info.player} war „${info.role}“ — kein Spion.` });
+      ? `Falscher Verdacht, ${info.player} war kein Spion.`
+      : `Falsch! ${info.player} war „${info.role}“, kein Spion.` });
   }
 });
 

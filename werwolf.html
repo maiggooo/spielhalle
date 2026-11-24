@@ -4,13 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Werwölfe — Maikos Spielhalle</title>
-<meta name="description" content="Dorfbewohner gegen Werwölfe — wer überlebt die Nacht?">
+<meta name="description" content="Dorfbewohner gegen Werwölfe, wer überlebt die Nacht?">
 <meta name="theme-color" content="#0B3B2A">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Maikos Spielhalle">
 <meta property="og:locale" content="de_DE">
 <meta property="og:title" content="Werwölfe — Maikos Spielhalle">
-<meta property="og:description" content="Dorfbewohner gegen Werwölfe — wer überlebt die Nacht?">
+<meta property="og:description" content="Dorfbewohner gegen Werwölfe, wer überlebt die Nacht?">
 <meta property="og:url" content="https://maiggooo.github.io/spielhalle/werwolf.html">
 <meta property="og:image" content="https://maiggooo.github.io/spielhalle/og/werwolf.jpg">
 <meta property="og:image:width" content="1200">
@@ -55,7 +55,6 @@
   }
 
   .section-title { font-family:'Outfit', sans-serif; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); border-top:1px solid var(--rule-soft); padding-top:10px; margin-top:18px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-  .section-title::before { content:"§"; color:var(--accent); font-family:'Outfit', sans-serif;  }
 
   .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   input[type="text"] { flex:1; min-width:0; padding:11px 12px; background:var(--paper); color:var(--ink); border:1px solid var(--rule); border-radius:0; font-family:'Outfit', sans-serif; font-size:15px; outline:none; transition:border-color .15s; }
@@ -216,9 +215,6 @@
 
   <!-- ============= SETUP ============= -->
   <section id="screen-setup" class="screen active">
-    <div class="hero">
-      <h1>Werw<em>ö</em>lfe</h1>
-    </div>
 
     <div class="section-title">Mitspieler <span class="count-badge" id="playerCount" style="margin-left:auto;">0 Spieler</span></div>
     <div class="row">
@@ -412,13 +408,13 @@ const ROLE_INFO = {
     icon:`<svg class="cf-icon" viewBox="0 0 100 100"><path d="M50 8 C36 8 30 20 30 20 C22 16 12 16 8 20 C13 26 16 34 16 34 C10 42 10 54 16 62 L14 88 L30 78 C36 82 44 84 50 84 C56 84 64 82 70 78 L86 88 L84 62 C90 54 90 42 84 34 C84 34 87 26 92 20 C88 16 78 16 70 20 C70 20 64 8 50 8 Z" fill="currentColor"/><path d="M38 46 L44 54 L38 58 Z" fill="var(--paper)"/><path d="M62 46 L56 54 L62 58 Z" fill="var(--paper)"/><path d="M46 62 L50 70 L54 62 Z" fill="var(--paper)"/></svg>` },
   seherin: { label:"Seherin", team:"dorf", color:"#2f5d8a", desc:"Wähle nachts einen Spieler und erfahre heimlich dessen Rolle.",
     icon:`<svg class="cf-icon" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="40" ry="24" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="currentColor"/></svg>` },
-  hexe: { label:"Hexe", team:"dorf", color:"#7a4a9c", desc:"Du besitzt einen Heiltrank und einen Gifttrank — jeweils einmalig im Spiel.",
+  hexe: { label:"Hexe", team:"dorf", color:"#7a4a9c", desc:"Du besitzt einen Heiltrank und einen Gifttrank, jeweils einmalig im Spiel.",
     icon:`<svg class="cf-icon" viewBox="0 0 100 100"><path d="M40 20 L60 20 L55 55 L70 90 L30 90 L45 55 Z" fill="currentColor"/><circle cx="50" cy="42" r="5" fill="var(--paper)"/></svg>` },
   jaeger: { label:"Jäger", team:"dorf", color:"#3e7d3f", desc:"Stirbst du, darfst du sofort einen weiteren Spieler mit dir nehmen.",
     icon:`<svg class="cf-icon" viewBox="0 0 100 100"><rect x="46" y="10" width="8" height="80" fill="currentColor"/><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="4"/></svg>` },
-  maedchen: { label:"Lunsenmädchen", team:"dorf", color:"#c9a02a", desc:"Du hast keine feste Aktion — aber du darfst heimlich lunsen, wenn die Werwölfe erwachen.",
+  maedchen: { label:"Lunsenmädchen", team:"dorf", color:"#c9a02a", desc:"Du hast keine feste Aktion, aber du darfst heimlich lunsen, wenn die Werwölfe erwachen.",
     icon:`<svg class="cf-icon" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="38" ry="18" fill="none" stroke="currentColor" stroke-width="5"/><ellipse cx="50" cy="50" rx="9" ry="9" fill="currentColor"/><path d="M20 50 Q10 40 6 50" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/></svg>` },
-  amor: { label:"Amor", team:"dorf", color:"#e0459c", desc:"In der ersten Nacht verliebst du zwei Spieler ineinander — stirbt einer, stirbt auch der andere.",
+  amor: { label:"Amor", team:"dorf", color:"#e0459c", desc:"In der ersten Nacht verliebst du zwei Spieler ineinander. Stirbt einer, stirbt auch der andere.",
     icon:`<svg class="cf-icon" viewBox="0 0 100 100"><path d="M50 88 C20 66 6 46 6 28 C6 12 18 4 32 4 C42 4 48 10 50 16 C52 10 58 4 68 4 C82 4 94 12 94 28 C94 46 80 66 50 88 Z" fill="currentColor"/></svg>` }
 };
 
@@ -768,7 +764,7 @@ function runNightStep() {
     };
   } else if (step.role === "seherin") {
     const seherinName = findRoleHolderName("seherin");
-    setNarr("Nacht "+game.day, "Wen <em>durchschaut</em> die Seherin?", "Wähle einen Spieler. Danach erscheint unten seine Karte — zeige sie nur der Seherin.", null, seherinName);
+    setNarr("Nacht "+game.day, "Wen <em>durchschaut</em> die Seherin?", "Wähle einen Spieler. Danach erscheint unten seine Karte. Zeige sie nur der Seherin.", null, seherinName);
     renderNarrGrid(alivePlayers().filter(p=>p.name !== seherinName));
     $("#narrConfirmBtn").disabled = false;
     $("#narrConfirmBtn").textContent = "Weiter";

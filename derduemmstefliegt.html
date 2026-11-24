@@ -638,7 +638,7 @@
   <!-- ————— SETUP SCREEN ————— -->
   <section class="screen active" id="screen-setup">
     <h1 class="headline">Die <em>dümmste</em> Antwort verliert.</h1>
-    <p class="deck">Trage alle Mitspieler ein (ohne dich selbst als Host). Nach jeder Runde wählt die Gruppe gemeinsam, wer die peinlichste Antwort gegeben hat — dieser Spieler verliert ein Leben. Wenn nur noch zwei übrig sind, entscheiden Schätzfragen. Themen und Schätzfinale lassen sich unter „Erweitert“ einstellen.</p>
+    <p class="deck">Trage alle Mitspieler ein (ohne dich selbst als Host). Nach jeder Runde wählt die Gruppe gemeinsam, wer die peinlichste Antwort gegeben hat, dieser Spieler verliert ein Leben. Wenn nur noch zwei übrig sind, entscheiden Schätzfragen. Themen und Schätzfinale lassen sich unter „Erweitert“ einstellen.</p>
 
     <div class="card">
       <h3>Spieler hinzufügen</h3>
@@ -731,7 +731,7 @@
   <section class="screen" id="screen-vote">
     <div class="kicker">Voting-Phase</div>
     <h1 class="headline">Wer hatte die <em>dümmste</em> Antwort?</h1>
-    <p class="deck">Die Gruppe stimmt gemeinsam ab. Der Host tippt auf den ausgewählten Spieler — dieser verliert ein Leben.</p>
+    <p class="deck">Die Gruppe stimmt gemeinsam ab. Der Host tippt auf den ausgewählten Spieler. Dieser verliert ein Leben.</p>
     <div class="stats-bar" id="statsBarVote"></div>
     <div class="vote-grid" id="voteGrid"></div>
     <div style="margin-top:10px;">
@@ -1263,7 +1263,7 @@ function renderEstimateStep() {
   $("#estConfirmBtn").style.display = "inline-flex";
   const name = state.estOrder[state.estStep];
   $("#estWho").textContent = name;
-  $("#estSub").textContent = state.estStep === 0 ? "schätzt zuerst — Handy übergeben!" : "ist dran — Handy übergeben!";
+  $("#estSub").textContent = state.estStep === 0 ? "schätzt zuerst, Handy übergeben!" : "ist dran, Handy übergeben!";
   $("#estQText").textContent = state.estQ.q;
   $("#estInputLabel").textContent = "Schätzung von " + name + (state.estQ.unit ? " (in "+state.estQ.unit+")" : "");
   $("#estInput").value = "";
@@ -1322,7 +1322,7 @@ function revealEstimate() {
     $("#estLoser").textContent = loser + " verliert ein Leben.";
     state._pendingEstLoser = loser;
   } else {
-    $("#estWinner").textContent = "Unentschieden — niemand verliert.";
+    $("#estWinner").textContent = "Unentschieden, niemand verliert.";
     $("#estLoser").textContent = "Nächste Frage entscheidet.";
     state._pendingEstLoser = null;
   }
