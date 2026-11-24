@@ -283,6 +283,14 @@
     font-family:'Outfit', sans-serif; font-weight:800; 
     font-size:clamp(44px, 7vw, 80px); color:var(--accent); line-height:1;
   }
+  .win-stats { max-width:520px; margin:36px auto 0; text-align:left; }
+  .win-stats .hl { font-family:'Outfit', sans-serif; font-size:16px; margin:0 0 8px; }
+  .win-stats .hl b { color:var(--gold-hi); }
+  .win-stats table { width:100%; border-collapse:collapse; margin-top:16px; font-family:'Outfit', sans-serif; font-size:15px; }
+  .win-stats th { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .win-stats th, .win-stats td { padding:7px 6px; border-bottom:1px solid rgba(255,255,255,.2); text-align:center; }
+  .win-stats th:first-child, .win-stats td:first-child { text-align:left; }
+  .q-player .chain { display:block; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-top:4px; }
   .winner-screen .sub {
     font-family:'Outfit', sans-serif; font-size:14px;
     letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
@@ -692,6 +700,7 @@
         </div>
       </div>
       <label class="check"><input type="checkbox" id="finaleToggle" checked> Schätzfinale, wenn nur noch zwei übrig sind</label>
+      <label class="check"><input type="checkbox" id="chainToggle"> Kettenrunde: Bei falscher Antwort geht dieselbe Frage an den Nächsten</label>
       <label class="check"><input type="checkbox" id="pickToggle"> Auswahlmodus: Wer dran ist, zieht aus 3 Kategorie-Karten</label>
     </details>
 
@@ -723,6 +732,7 @@
       </div>
       <div class="q-actions">
         <button class="btn" id="revealBtn">Antwort aufdecken</button>
+        <button class="btn" id="chainBtn" style="display:none;"></button>
         <button class="btn primary" id="nextQBtn" style="display:none;">Weiter &rarr;</button>
       </div>
     </div>
@@ -788,6 +798,7 @@
       <div class="sub">Sieger*in des Abends</div>
       <div class="name fx-shine" id="winnerName">—</div>
       <div class="sub" style="margin-top:30px;">Herzlichen Glückwunsch!</div>
+      <div class="win-stats" id="winStats"></div>
       <div style="margin-top:40px;">
         <button class="btn primary" id="restartBtn">Neues Spiel</button>
       </div>
@@ -939,6 +950,9 @@ $("#startBtn").addEventListener("click", () => {
   state.topics = new Set(topics);
   state.finale = $("#finaleToggle").checked;
   state.pick = $("#pickToggle").checked;
+  state.chain = $("#chainToggle").checked;
+  state.stats = {};
+  state.roundLog = [];
   state.lives = Math.round(+livesSlider.value);
   state.qmul = Math.round(+qmulSlider.value);
   state.players.forEach(p => { p.lives = state.lives; p.alive = true; });
@@ -982,7 +996,18 @@ function pickQuestion(diff, topic) {
   return pick.q;
 }
 
+// Fertige Runde in die Statistik übernehmen (erst hier, weil der Host bis zum Voting umbewerten kann)
+function stat(name) { return (state.stats ||= {})[name] ??= { ok: 0, bad: 0, votes: 0, chain: 0 }; }
+function commitRound() {
+  (state.roundLog || []).forEach(l => {
+    if (l.res === "ok") { stat(l.player).ok++; if (l.chain) stat(l.player).chain++; }
+    if (l.res === "bad") stat(l.player).bad++;
+  });
+  state.roundLog = [];
+}
+
 function startRound() {
+  commitRound();
   state.round++;
   const alive = alivePlayers();
   if (alive.length <= 1) return showWinner(alive[0]);
@@ -1021,11 +1046,13 @@ function showQuestion() {
 
   $("#roundInfo").textContent = "Runde " + state.round;
   $("#qPlayer").textContent = state.currentQ.player;
+  if (state.currentQ.chain) $("#qPlayer").insertAdjacentHTML("beforeend", `<span class="chain">Kette · ${state.currentQ.tried.length}. Versuch</span>`);
   $("#qProgress").textContent = `Frage ${shown} von ${totalQs}`;
   renderStats("statsBar");
   const card = document.querySelector("#screen-game .card");
   const picking = !state.currentQ.q;
   card.classList.toggle("picking", picking);
+  $("#chainBtn").style.display = "none";
   if (picking) {
     $("#diffTag").textContent = "Auswahl";
     $("#qProgress").textContent += " · Wähle eine Karte";
@@ -1140,7 +1167,33 @@ $("#nextQBtn").addEventListener("click", nextQuestion);
 
 function renderJudge() {
   document.querySelectorAll(".q-judge .btn").forEach(b => b.classList.toggle("on", state.currentQ.log.res === b.dataset.res));
+  const next = state.chain && state.currentQ.log.res === "bad" && chainNext();
+  $("#chainBtn").style.display = next ? "inline-flex" : "none";
+  if (next) $("#chainBtn").textContent = "Kette: weiter an " + next;
 }
+
+/* ————————————— KETTENRUNDE ————————————— */
+// Nächster lebender Spieler nach dem, der die Frage zuerst bekam, der sie noch nicht hatte
+function chainNext() {
+  const cq = state.currentQ, names = alivePlayers().map(p => p.name);
+  const tried = cq.tried || [cq.player], start = names.indexOf(tried[0]);
+  for (let k = 1; k < names.length; k++) {
+    const n = names[(start + k) % names.length];
+    if (!tried.includes(n)) return n;
+  }
+  return null;
+}
+$("#chainBtn").addEventListener("click", () => {
+  const cq = state.currentQ, player = chainNext();
+  if (!player) return;
+  const log = { player, diff: cq.diff, q: cq.q.q, a: cq.q.a, res: null, chain: true };
+  const order = alivePlayers().map(p => p.name);
+  state.roundLog.push(log);
+  state.roundLog.sort((a, b) => order.indexOf(a.player) - order.indexOf(b.player));
+  state.currentQ = { player, diff: cq.diff, q: cq.q, log, chain: true, tried: [...(cq.tried || [cq.player]), player] };
+  navigator.vibrate?.(20);
+  showQuestion();
+});
 document.querySelectorAll(".q-judge .btn").forEach(b => b.addEventListener("click", () => {
   const log = state.currentQ.log;
   log.res = log.res === b.dataset.res ? null : b.dataset.res; // nochmal tippen hebt die Wahl auf
@@ -1200,6 +1253,7 @@ function confirmVote(player) {
     () => {
       hideModal();
       // render vote bar with the updated state after slight delay so animation is visible
+      stat(player.name).votes++;
       player.lives--;
       const eliminated = player.lives <= 0;
       if (eliminated) player.alive = false;
@@ -1367,8 +1421,22 @@ $("#estContinueBtn").addEventListener("click", () => {
 function showWinner(player) {
   clearGame("ddf-game");
   $("#winnerName").textContent = player.name;
+  renderWinStats();
   switchScreen("screen-winner");
   window.fx?.burst();
+}
+function renderWinStats() {
+  const rows = state.players.map(p => ({ name: p.name, ...stat(p.name) }));
+  // Gleichstand: alle mit dem Höchstwert nennen
+  const hl = (label, key) => {
+    const max = Math.max(...rows.map(r => r[key]));
+    const names = rows.filter(r => r[key] === max).map(r => escape(r.name)).join(", ");
+    return max ? `<p class="hl">${label}: <b>${names}</b> (${max})</p>` : "";
+  };
+  $("#winStats").innerHTML = hl("Meiste richtige Antworten", "ok") + hl("Meiste falsche Antworten", "bad")
+    + hl("Am häufigsten rausgewählt", "votes") + (state.chain ? hl("Bester Kettenretter", "chain") : "")
+    + `<table><tr><th>Spieler</th><th>&#10003;</th><th>&#10007;</th><th>Stimmen</th></tr>`
+    + rows.map(r => `<tr><td>${escape(r.name)}</td><td>${r.ok}</td><td>${r.bad}</td><td>${r.votes}</td></tr>`).join("") + `</table>`;
 }
 $("#restartBtn").addEventListener("click", () => {
   // reset state, aber Spielernamen behalten
