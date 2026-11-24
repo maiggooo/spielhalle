@@ -215,5 +215,158 @@
   // 10 Neon-Rahmen automatisch um die Start-Knöpfe der Spiele
   document.querySelectorAll("#startBtn, #startGameBtn, #spin").forEach(b => b.classList.add("fx-ring"));
 
+  // 11 Kamerafahrt: Spiel antippen, die Kamera fährt in die Walze hinein, durchs Glas, und das Spiel öffnet sich
+  // aus dem Licht in seiner Farbe. „Zurück zur Startseite“ fährt den Weg rückwärts. Braucht spiele.js im <head>.
+  if (typeof SPIELE !== "undefined") {
+    document.head.insertAdjacentHTML("beforeend", `<style>
+    @property --fx-hole { syntax:"<length>"; inherits:false; initial-value:-80px; }
+    .fx-portal { position:fixed; inset:0; z-index:10000; display:grid; place-items:center; pointer-events:none; --fx-hole:-80px;
+      background:radial-gradient(circle at 50% 47%, color-mix(in srgb, var(--bg) 72%, #fff) 0, var(--bg) 38%, color-mix(in srgb, var(--bg) 45%, #000) 100%);
+      -webkit-mask:radial-gradient(circle, transparent var(--fx-hole), #000 calc(var(--fx-hole) + 80px));
+      mask:radial-gradient(circle, transparent var(--fx-hole), #000 calc(var(--fx-hole) + 80px)); }
+    .fx-portal svg { width:30vmin; height:30vmin; filter:drop-shadow(0 0 18px rgba(255,255,255,.45)) drop-shadow(0 0 60px rgba(255,255,255,.25)); }
+    .fx-vignette { position:fixed; inset:0; z-index:9998; pointer-events:none; opacity:0;
+      background:radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,.45) 60%, rgba(0,0,0,.85) 100%); }
+    .fx-glass { position:fixed; inset:-20%; z-index:9999; pointer-events:none; opacity:0;
+      background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,.08) 44%, rgba(255,255,255,.42) 50%, rgba(255,255,255,.08) 56%, transparent 62%); }
+    html.fx-moving, html.fx-moving * { pointer-events:none !important; }
+    html.fx-moving, html.fx-moving body { overflow:hidden !important; } /* sonst wird die Seite durch die Vergrößerung breiter und das Handy zoomt raus */
+    html.fx-moving .fx-bulbs i { animation-duration:.28s; }
+    </style>`);
+
+    const wrap = document.querySelector(".wrap");
+    const here = location.pathname.split("/").pop() || "index.html";
+    const home = here === "index.html";
+    const game = href => SPIELE.find(g => g.p === new URL(href, location.href).pathname.split("/").pop());
+    let trail = []; // alles von der letzten Fahrt, damit „Zurück“ im Browser sie rückwärts abspielen kann
+
+    const add = (cls, g) => {
+      const el = document.createElement("div"); el.className = cls;
+      if (g) { el.style.setProperty("--bg", g.bg);
+        el.innerHTML = `<svg viewBox="0 0 64 64" aria-hidden="true"><path fill="${g.fg}" fill-rule="evenodd" d="${g.d}"/></svg>`; }
+      document.body.append(el); trail.push(el); return el;
+    };
+    const anim = (el, frames, opt) => { const a = el.animate(frames, { fill: "both", ...opt }); trail.push(a); return a; };
+    const reach = () => Math.hypot(innerWidth, innerHeight) / 2 + 90 + "px";
+    // Kamera auf ein Element: dessen Mitte wandert in die Bildmitte, dann so nah ran, dass es weit über den Rand geht
+    const camOn = el => {
+      const r = el.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      wrap.style.transformOrigin = `${cx - w.left}px ${cy - w.top}px`;
+      const s = Math.max(innerWidth / r.width, innerHeight / r.height) * 1.5;
+      return `translate(${innerWidth / 2 - cx}px, ${innerHeight / 2 - cy}px) scale(${s})`;
+    };
+    const centerOrigin = () => { const w = wrap.getBoundingClientRect(); wrap.style.transformOrigin = `${innerWidth / 2 - w.left}px ${innerHeight / 2 - w.top}px`; };
+    const leave = (href, g, back) => {
+      sessionStorage.setItem("fx-dolly", JSON.stringify({ p: g.p, back, t: Date.now() }));
+      setTimeout(() => { location.href = href; }, 0);
+    };
+
+    // Startseite: in die Walze (oder in den Chip der Spielkarte) hineinfahren
+    function dive(el, href, g) {
+      trail = [];
+      document.documentElement.classList.add("fx-moving");
+      navigator.vibrate?.([8, 60, 14]);
+      const D = 1050, W = 160; // Fahrt, Ausholen davor
+      anim(el, [{ transform: "scale(1)", filter: "brightness(1)" }, { transform: "scale(.93)", filter: "brightness(1.25)", offset: .45 }, { transform: "scale(1)", filter: "brightness(1.15)" }],
+        { duration: 300, easing: "ease-out" });
+      anim(wrap, [{ transform: "none" }, { transform: camOn(el) }], { duration: D, delay: W, easing: "cubic-bezier(.72,0,.24,1)" });
+      anim(add("fx-vignette"), [{ opacity: 0 }, { opacity: 1 }], { duration: D * .85, delay: W, easing: "cubic-bezier(.6,0,.4,1)" });
+      // durchs Walzenglas: ein Lichtstreif zieht vorbei
+      anim(add("fx-glass"), [{ opacity: 0, transform: "translateX(-45%)" }, { opacity: 1, offset: .35 }, { opacity: 0, transform: "translateX(45%)" }],
+        { duration: 420, delay: W + D * .58, easing: "ease-in-out" });
+      const p = add("fx-portal", g);
+      // erst füllt die Spielfarbe das Bild, dann leuchtet das Symbol darin auf
+      anim(p, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: W + D - 300, easing: "ease-in" });
+      anim(p.firstChild, [{ transform: "scale(.55)", opacity: 0, filter: "brightness(2)" }, { transform: "scale(1)", opacity: 1, filter: "brightness(1)" }],
+        { duration: 420, delay: W + D - 20, easing: "cubic-bezier(.2,.9,.3,1.2)" })
+        .finished.then(() => leave(href, g));
+    }
+
+    // Spielseite: „Zurück“ zieht die Blende zu, das Spiel fällt nach hinten weg
+    function retreat(href, g) {
+      trail = [];
+      document.documentElement.classList.add("fx-moving");
+      navigator.vibrate?.(10);
+      centerOrigin();
+      anim(wrap, [{ transform: "none", opacity: 1 }, { transform: "scale(.86)", opacity: .35 }], { duration: 760, easing: "cubic-bezier(.6,0,.4,1)" });
+      const p = add("fx-portal", g);
+      anim(p, [{ "--fx-hole": reach() }, { "--fx-hole": "-80px" }], { duration: 760, easing: "cubic-bezier(.7,0,.35,1)" });
+      anim(p.firstChild, [{ transform: "scale(2.4)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: 520, delay: 300, easing: "cubic-bezier(.2,.8,.3,1)" })
+        .finished.then(() => leave(href, g, true));
+    }
+
+    // Ankunft im Spiel: Symbol fliegt an der Kamera vorbei, die Blende geht auf, das Spiel kommt nach vorn
+    function emerge(g) {
+      document.documentElement.classList.add("fx-moving");
+      centerOrigin();
+      const p = add("fx-portal", g);
+      document.getElementById("fx-enter")?.remove();
+      anim(p, [{ "--fx-hole": "-80px" }, { "--fx-hole": reach() }], { duration: 1000, delay: 180, easing: "cubic-bezier(.6,0,.3,1)" });
+      anim(p, [{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: 180 + 800, easing: "ease-out" }); // falls --fx-hole nicht animiert
+      anim(p.firstChild, [{ transform: "scale(1)", opacity: 1 }, { transform: "scale(3.2)", opacity: 0 }], { duration: 650, delay: 120, easing: "cubic-bezier(.55,0,.8,.4)" });
+      anim(wrap, [{ transform: "scale(.84)", opacity: .2 }, { transform: "none", opacity: 1 }], { duration: 1250, delay: 180, easing: "cubic-bezier(.35,.2,.15,1)" })
+        .finished.then(tidy);
+    }
+
+    // Ankunft auf der Startseite: Kamera steckt noch in der Walze und fährt zurück, der Automat kommt ins Bild
+    function pullBack(g) {
+      const cell = [...document.querySelectorAll(".games .reel")][1]?.querySelector("a.cell");
+      if (!cell) return emerge(g);
+      document.documentElement.classList.add("fx-moving");
+      scrollTo(0, 0);
+      const z = camOn(cell);
+      const p = add("fx-portal", g);
+      document.getElementById("fx-enter")?.remove();
+      anim(wrap, [{ transform: z }, { transform: "none" }], { duration: 1300, delay: 120, easing: "cubic-bezier(.3,0,.12,1)" }).finished.then(tidy);
+      anim(add("fx-vignette"), [{ opacity: 1 }, { opacity: 0 }], { duration: 1100, delay: 120, easing: "cubic-bezier(.3,0,.3,1)" });
+      anim(p.firstChild, [{ transform: "scale(1)", opacity: 1 }, { transform: "scale(1.6)", opacity: 0 }], { duration: 220, delay: 60, easing: "ease-in" });
+      anim(p, [{ opacity: 1 }, { opacity: 0 }], { duration: 420, delay: 200, easing: "ease-in" });
+    }
+
+    function tidy() {
+      trail.forEach(t => t instanceof Animation ? t.cancel() : t.remove());
+      trail = [];
+      wrap.style.transformOrigin = "";
+      document.documentElement.classList.remove("fx-moving");
+    }
+
+    if (!calm && wrap) {
+      document.addEventListener("click", e => {
+        if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        const a = e.target.closest("a[href]");
+        if (!a || a.target) return;
+        if (home) {
+          const g = a.matches("a.cell, .all a.card") && game(a.href);
+          if (!g) return;
+          e.preventDefault();
+          dive(a.querySelector(".chip") || a, a.href, game(a.href));
+        } else if (a.matches(".back") && a.getAttribute("href") === "index.html") {
+          const g = game(here);
+          if (!g) return;
+          e.preventDefault();
+          retreat(a.href, g);
+        }
+      });
+      // Seite vorladen, sobald der Finger drauf ist
+      document.addEventListener("pointerdown", e => {
+        const a = e.target.closest("a.cell, .all a.card, a.back");
+        if (a && !document.querySelector(`link[rel=prefetch][href="${a.getAttribute("href")}"]`))
+          document.head.insertAdjacentHTML("beforeend", `<link rel="prefetch" href="${a.getAttribute("href")}">`);
+      }, { passive: true });
+    }
+
+    // Mit „Zurück“ im Browser kommt die Seite aus dem Zwischenspeicher, noch mitten in der Fahrt: rückwärts abspielen
+    addEventListener("pageshow", e => {
+      if (!e.persisted || !trail.length) return;
+      const anims = trail.filter(t => t instanceof Animation);
+      anims.forEach(a => { a.effect.updateTiming({ delay: 0 }); a.reverse(); });
+      Promise.all(anims.map(a => a.finished)).then(tidy, tidy);
+    });
+
+    if (window.DOLLY && !calm && wrap) (home && DOLLY.back ? pullBack : emerge)(DOLLY);
+    else document.getElementById("fx-enter")?.remove();
+  }
+
   window.fx = { burst, tilt, bulbs, roll, deal, toss };
 })();
