@@ -151,6 +151,8 @@
     color: var(--gold); font-size: 18px; letter-spacing: .06em;
   }
   .all-title::before, .all-title::after { content: ""; flex: 1; height: 1px; background: var(--gold); }
+  .more { display: block; margin: 26px 0 8px; text-align: center; color: var(--gold); font-size: 15px; text-decoration: none; }
+  .more:hover { text-decoration: underline; }
   .all { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .card {
     min-height: 72px; padding: 10px; border-radius: 12px; background: #fff; color: var(--ink);
@@ -315,6 +317,7 @@
 
   <h2 class="all-title display">ALLE SPIELE</h2>
   <nav class="all" aria-label="Alle Spiele"></nav>
+  <a class="more" href="/start.html">Weitere Spiele &amp; Tools &rarr;</a>
 </div>
 
 <script>
