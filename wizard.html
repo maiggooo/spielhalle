@@ -225,7 +225,7 @@
 <div class="wrap">
 
   <header class="mast">
-    <div class="edition left">Vol. I · SS 2026 · Nº 09</div>
+    <div class="edition left"></div>
     <div class="brand">Wiz<em>ard</em></div>
     <div class="edition right">
       <button class="toggle" id="themeToggle" aria-label="Theme wechseln">
@@ -240,15 +240,13 @@
       <span class="arrow">&larr;</span>
       <span>Zurück zur Startseite</span>
     </a>
-    <span class="meta" id="roomMeta">Online · 3–6 Spieler</span>
+    <span class="meta" id="roomMeta"></span>
   </div>
 
   <!-- ============= START ============= -->
   <section id="screen-start" class="screen active">
     <div class="hero">
-      <div class="eyebrow">Das Kartenspiel · Online · jeder am eigenen Handy</div>
       <h1>Wiz<em>ard</em></h1>
-      <div class="lede">Sag an, wie viele Stiche du holst — und dann hol genau so viele.</div>
     </div>
 
     <div class="section-title">Dein Name</div>
@@ -345,11 +343,6 @@
     <div class="table-scroll"><table class="score-table" id="scoreTable"></table></div>
     <div style="margin-top:18px; display:grid; gap:10px;" id="scoreActions"></div>
   </section>
-
-  <footer class="foot">
-    <span>Strauss · Biebergemünd</span>
-    <span>© SS 2026 — Editorial edition</span>
-  </footer>
 </div>
 
 <div class="admin-bar admin-only" id="adminBar">
@@ -778,7 +771,7 @@ async function leaveRoom() {
   room = null;
   await getMp().leave();
   $("#awayOverlay").classList.remove("show");
-  $("#roomMeta").textContent = "Online · 3–6 Spieler";
+  $("#roomMeta").textContent = "";
   showScreen("screen-start");
 }
 $("#leaveLobbyBtn").addEventListener("click", leaveRoom);
@@ -1132,7 +1125,7 @@ function setAdmin(on) {
   admin = on;
   document.body.classList.toggle("admin", on);
   try { localStorage.setItem("wz-admin", on ? "1" : "0"); } catch {}
-  $("#roomMeta").textContent = on ? "Admin-Modus an" : (getMp().code ? "Raum " + getMp().code : "Online · 3–6 Spieler");
+  $("#roomMeta").textContent = on ? "Admin-Modus an" : (getMp().code ? "Raum " + getMp().code : "");
   if (room) onRoom(room);
 }
 setAdmin(admin);
